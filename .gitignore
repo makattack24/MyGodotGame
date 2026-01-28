@@ -1,0 +1,18 @@
+# Ignore auto-generated files Godot uses
+.import/
+.export/
+.godot/           # Ignore all .godot files and subdirectories (including shader_cache)
+.godot/shader_cache/ # Explicitly ignore shader cache files
+.cache/
+*.godot/
+_logs/
+*.log
+
+# Temporary editor and OS files
+*.tmp
+*.swp
+*.swo
+
+# Operating system-specific files
+.DS_Store
+Thumbs.db
