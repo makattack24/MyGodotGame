@@ -6,6 +6,7 @@
 [ext_resource type="Script" uid="uid://dhe277carbq2o" path="res://Scripts/ground.gd" id="2_rgh2o"]
 [ext_resource type="PackedScene" uid="uid://lhtrljjsc78f" path="res://Scenes/forest_tree.tscn" id="4_v1gob"]
 [ext_resource type="PackedScene" uid="uid://m8jkj4116ude" path="res://Scenes/pause_menu.tscn" id="5_pbw6q"]
+[ext_resource type="Script" uid="uid://b7d4q264esmek" path="res://Scripts/hud.gd" id="7_jw32o"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_pbw6q"]
 texture = ExtResource("1_kln2b")
@@ -146,3 +147,13 @@ scale = Vector2(0.063, 0.063)
 
 [node name="PauseMenu" parent="." unique_id=1755396194 instance=ExtResource("5_pbw6q")]
 visible = false
+
+[node name="HUD" type="CanvasLayer" parent="." unique_id=464400877]
+script = ExtResource("7_jw32o")
+
+[node name="HBoxContainer" type="HBoxContainer" parent="HUD" unique_id=414544683]
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="WoodCount" type="Label" parent="HUD/HBoxContainer" unique_id=1617039893]
+layout_mode = 2

@@ -1,11 +1,13 @@
 [gd_scene format=3 uid="uid://lhtrljjsc78f"]
 
 [ext_resource type="Texture2D" uid="uid://cweeljsofoc46" path="res://Assets/FreeDownloadedAssets/FreeEnvironment/FreePack 2.png" id="1_0vwjc"]
+[ext_resource type="Script" uid="uid://cbe6ko12lqd3m" path="res://Scripts/tree.gd" id="1_y0lnq"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_rsuno"]
 size = Vector2(26, 95)
 
 [node name="Tree" type="Node2D" unique_id=1899550819]
+script = ExtResource("1_y0lnq")
 
 [node name="ForestTreeSprite" type="Sprite2D" parent="." unique_id=1455693674]
 texture = ExtResource("1_0vwjc")

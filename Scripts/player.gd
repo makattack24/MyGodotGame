@@ -115,6 +115,14 @@ func _on_attack_hit(body: Node) -> void:
 		var parent_tree = body.get_parent()
 		print("Removing tree node:", parent_tree.name)
 
+		# Check if the parent has item drop information
+		# Direct access to item properties in the parent_tree
+		if parent_tree is Node2D:
+			var item_name = parent_tree.item_name
+			var item_quantity = parent_tree.item_quantity
+			Inventory.add_item(item_name, item_quantity)  # Add items to inventory
+			print("Added ", item_quantity, " ", item_name, " to inventory.")
+
 		# Notify ground to remove the tree reference
 		var ground = get_parent()  # Replace this with the actual reference to ground.gd, if necessary
 		if ground and ground.has_method("_on_tree_removed"):
