@@ -159,9 +159,14 @@ func die() -> void:
 	print("Player died! Game Over.")
 	velocity = Vector2.ZERO
 	
-	# Wait a moment then reload the scene
-	await get_tree().create_timer(2.0).timeout
-	get_tree().reload_current_scene()
+	# Find and show the game over screen
+	var game_over = get_tree().root.find_child("GameOver", true, false)
+	if game_over and game_over.has_method("show_game_over"):
+		game_over.call("show_game_over")
+	else:
+		# Fallback: reload scene after 2 seconds if no game over screen exists
+		await get_tree().create_timer(2.0).timeout
+		get_tree().reload_current_scene()
 
 func _on_attack_hit(body: Node) -> void:
 	print("Attack hit body:", body.name)  # Output what `AttackArea` hits
