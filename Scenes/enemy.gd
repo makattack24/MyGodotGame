@@ -21,6 +21,14 @@ func _physics_process(_delta: float) -> void:
 	
 	# Move the slime based on the velocity
 	move_and_slide()
+	
+	# Check if we collided with the player
+	for i in range(get_slide_collision_count()):
+		var collision = get_slide_collision(i)
+		var collider = collision.get_collider()
+		if collider and collider.is_in_group("Player"):
+			if collider.has_method("take_damage"):
+				collider.call("take_damage", 1)  # Deal 1 damage to player
 
 func _on_hit(damage: int, knockback_direction: Vector2) -> void:
 	# Reduce health based on damage received
@@ -64,6 +72,7 @@ func set_player_reference(player_ref: Node2D) -> void:
 func _ready() -> void:
 	# Add enemy to the Enemies group for player attack detection
 	add_to_group("Enemies")
+	print("Enemy added to Enemies group!")
 	
 	# Ensure player reference exists (if assigned dynamically)
 	if player == null:

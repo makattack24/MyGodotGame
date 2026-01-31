@@ -2,6 +2,11 @@ extends CharacterBody2D
 
 # Movement variables
 @export var speed: float = 130.0  # Speed of the character
+@export var max_health: int = 10  # Maximum health
+var current_health: int = 10  # Current health
+var damage_cooldown: float = 0.0  # Cooldown timer for taking damage
+@export var damage_cooldown_time: float = 1.0  # Time between damage instances (in seconds)
+var is_dead: bool = false  # Track if player is dead
 
 # Reference to the AnimatedSprite2D node
 @onready var anim_sprite: AnimatedSprite2D = $AnimatedSprite2D
@@ -27,6 +32,9 @@ func _ready() -> void:
 	# Add player to the Player group for item detection
 	add_to_group("Player")
 	
+	# Initialize health
+	current_health = max_health
+	
 	# Initialize input mappings
 	initialize_input()
 
@@ -42,6 +50,13 @@ func _ready() -> void:
 		print("Error: AttackArea node not found!")
 
 func _process(_delta: float) -> void:
+	# Update damage cooldown
+	if damage_cooldown > 0:
+		damage_cooldown -= _delta
+	
+	if is_dead:
+		return  # Don't process input if dead
+	
 	handle_input()
 	if not is_attacking:
 		move_and_animate()
@@ -113,11 +128,40 @@ func update_attack_hitbox() -> void:
 	if attack_offsets.has(facing_direction):
 		attack_area.position = attack_offsets[facing_direction]
 
+func take_damage(damage: int) -> void:
+	# Check if we're in cooldown or already dead
+	if damage_cooldown > 0 or is_dead:
+		return
+	
+	# Player takes damage
+	current_health -= damage
+	damage_cooldown = damage_cooldown_time  # Start cooldown
+	print("Player hit! Health: ", current_health, "/", max_health)
+	
+	# Visual feedback - flash the sprite red
+	if anim_sprite:
+		anim_sprite.modulate = Color(1, 0.5, 0.5)  # Red tint
+		await get_tree().create_timer(0.2).timeout
+		anim_sprite.modulate = Color(1, 1, 1)  # Back to normal
+	
+	# Check if player died
+	if current_health <= 0:
+		die()
+
+func die() -> void:
+	is_dead = true
+	print("Player died! Game Over.")
+	velocity = Vector2.ZERO
+	
+	# Wait a moment then reload the scene
+	await get_tree().create_timer(2.0).timeout
+	get_tree().reload_current_scene()
+
 func _on_attack_hit(body: Node) -> void:
 	print("Attack hit body:", body.name)  # Output what `AttackArea` hits
 
-	# Ensure we are referencing the root node if body is a child (e.g., ForestTreeBody)
-	while body and not body.is_in_group("Trees") and body.get_parent() != null:
+	# Ensure we are referencing the root node if body is a child (e.g., ForestTreeBody or enemy parts)
+	while body and not body.is_in_group("Trees") and not body.is_in_group("Enemies") and body.get_parent() != null:
 		body = body.get_parent()  # Walk up the node hierarchy
 	print("Attack hit body:", body.name)  # Output what `AttackArea` hits
 

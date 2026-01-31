@@ -1017,7 +1017,6 @@ animation = &"idle_down"
 autoplay = "idle_down"
 
 [node name="AttackArea" type="Area2D" parent="." unique_id=1642067877]
-collision_mask = 2
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="AttackArea" unique_id=1263485978]
 shape = SubResource("RectangleShape2D_qqcod")
