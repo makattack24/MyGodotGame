@@ -7,7 +7,7 @@
 [ext_resource type="PackedScene" uid="uid://lhtrljjsc78f" path="res://Scenes/forest_tree.tscn" id="4_v1gob"]
 [ext_resource type="PackedScene" uid="uid://m8jkj4116ude" path="res://Scenes/pause_menu.tscn" id="5_pbw6q"]
 [ext_resource type="Script" uid="uid://b7d4q264esmek" path="res://Scripts/hud.gd" id="7_jw32o"]
-[ext_resource type="Script" uid="uid://bejfhiqmhj4y4" path="res://Scenes/enemy_spawner.gd" id="8_vy5pj"]
+[ext_resource type="Script" uid="uid://bejfhiqmhj4y4" path="res://Scripts/enemy_spawner.gd" id="8_vy5pj"]
 [ext_resource type="PackedScene" uid="uid://csfnht04fmb5" path="res://Scenes/enemy.tscn" id="9_bmxlf"]
 [ext_resource type="Script" uid="uid://bj6l66uirqsrp" path="res://Scripts/object_spawner.gd" id="9_vy5pj"]
 [ext_resource type="Script" uid="uid://douacjntnpvln" path="res://Scripts/game_over.gd" id="11_4kpch"]

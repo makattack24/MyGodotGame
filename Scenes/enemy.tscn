@@ -1,11 +1,28 @@
 [gd_scene format=3 uid="uid://csfnht04fmb5"]
 
-[ext_resource type="Script" uid="uid://bv3aq5wyq6n5t" path="res://Scenes/enemy.gd" id="1_1f0kj"]
+[ext_resource type="Script" uid="uid://bv3aq5wyq6n5t" path="res://Scripts/enemy.gd" id="1_1f0kj"]
 [ext_resource type="Texture2D" uid="uid://dev5bpuufirpb" path="res://Assets/red slime.png" id="1_hghv2"]
 [ext_resource type="AudioStream" uid="uid://kl86c1mvqic6" path="res://Audio/chopping-wood-96709.mp3" id="3_afpow"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_1f0kj"]
 radius = 11.0
+
+[sub_resource type="Gradient" id="Gradient_afpow"]
+interpolation_mode = 2
+colors = PackedColorArray(0, 0, 0, 1, 0.84313726, 0.23529412, 0.28627452, 1)
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_287tu"]
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_0830c"]
+width = 4
+height = 4
+noise = SubResource("FastNoiseLite_287tu")
+color_ramp = SubResource("Gradient_afpow")
+seamless = true
+
+[sub_resource type="Curve" id="Curve_afpow"]
+_data = [Vector2(0, 0.8651686), 0.0, 0.0, 0, 0, Vector2(0.98936176, 0.11235964), 0.0, 0.0, 0, 0]
+point_count = 2
 
 [node name="CharacterBody2D" type="CharacterBody2D" unique_id=1868272876]
 script = ExtResource("1_1f0kj")
@@ -21,3 +38,26 @@ shape = SubResource("CircleShape2D_1f0kj")
 stream = ExtResource("3_afpow")
 
 [node name="DeathEffect" type="CPUParticles2D" parent="." unique_id=1621623514]
+emitting = false
+amount = 12
+texture = SubResource("NoiseTexture2D_0830c")
+lifetime = 2.0
+one_shot = true
+explosiveness = 0.45
+randomness = 0.45
+lifetime_randomness = 0.08
+direction = Vector2(3, 2)
+spread = 75.0
+gravity = Vector2(0, 0)
+initial_velocity_min = 10.0
+initial_velocity_max = 10.0
+angular_velocity_min = 2.0
+angular_velocity_max = 6.0
+angle_min = 20.0
+angle_max = 45.0
+scale_amount_min = 0.25
+scale_amount_max = 0.75
+scale_amount_curve = SubResource("Curve_afpow")
+color = Color(0.6554161, 0.24537528, 0.35566056, 1)
+hue_variation_min = 0.65
+hue_variation_max = 0.75

@@ -81,9 +81,13 @@ func play_hit_feedback() -> void:
 	if hit_sound:
 		hit_sound.play()
 
-	# Emit particles for visual feedback
+	# Emit particles for visual feedback (brief burst)
 	if death_effect:
 		death_effect.emitting = true
+		get_tree().create_timer(0.5).timeout.connect(func(): 
+			if death_effect:
+				death_effect.emitting = false
+		)
 
 func die() -> void:
 	# Handle death behavior

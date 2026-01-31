@@ -22,6 +22,10 @@ height = 2
 noise = SubResource("FastNoiseLite_2yptp")
 color_ramp = SubResource("Gradient_wjmfy")
 
+[sub_resource type="Curve" id="Curve_2yptp"]
+_data = [Vector2(0, 1), 0.0, 0.0, 0, 0, Vector2(0.5, 0.7191012), 0.0, 0.0, 0, 0, Vector2(1, 0.19101131), 0.0, 0.0, 0, 0]
+point_count = 3
+
 [node name="Tree" type="Node2D" unique_id=1899550819 groups=["Trees"]]
 script = ExtResource("1_y0lnq")
 item_scene = ExtResource("2_2yptp")
@@ -40,13 +44,20 @@ shape = SubResource("RectangleShape2D_rsuno")
 [node name="HitEffect" type="CPUParticles2D" parent="." unique_id=1448811323]
 position = Vector2(2, 33)
 emitting = false
-amount = 24
+amount = 36
 texture = SubResource("NoiseTexture2D_6dfie")
 lifetime = 0.2
 one_shot = true
+explosiveness = 0.65
+randomness = 0.18
+lifetime_randomness = 0.13
 emission_shape = 6
 emission_ring_inner_radius = 1.0
 emission_ring_radius = 4.0
+gravity = Vector2(0, 0)
+scale_amount_min = 0.65
+scale_amount_max = 0.85
+scale_amount_curve = SubResource("Curve_2yptp")
 
 [node name="HitSound" type="AudioStreamPlayer2D" parent="." unique_id=1844005204]
 stream = ExtResource("3_wjmfy")
