@@ -105,6 +105,9 @@ func trigger_attack_animation(attack_type: String) -> void:
 		return
 	is_attacking = true
 
+	# Speed up attack animation
+	anim_sprite.speed_scale = 2.0  # 2x speed (adjust this value: 1.5 = 50% faster, 2.0 = twice as fast)
+	
 	# Play attacking animation
 	anim_sprite.play(attack_type + "_" + facing_direction)
 
@@ -118,6 +121,9 @@ func trigger_attack_animation(attack_type: String) -> void:
 func _on_animation_finished() -> void:
 	# Reset attack state after animation finishes
 	is_attacking = false
+	
+	# Reset animation speed back to normal
+	anim_sprite.speed_scale = 1.0
 
 	# Disable the attack hitbox after the animation completes
 	attack_area.visible = false
