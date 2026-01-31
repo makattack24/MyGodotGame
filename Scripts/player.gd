@@ -1,12 +1,12 @@
 extends CharacterBody2D
 
 # Movement variables
-@export var speed: float = 130.0 # Speed of the character
+@export var speed: float = 130.0  # Speed of the character
 
 # Reference to the AnimatedSprite2D node
 @onready var anim_sprite: AnimatedSprite2D = $AnimatedSprite2D
 
-# Reference to the attack Area2D node
+# Reference to the AttackArea node (hitbox for sword attacks)
 @onready var attack_area: Area2D = $AttackArea
 
 # Offset for the attack hitbox positions
@@ -24,16 +24,20 @@ var is_attacking: bool = false
 var facing_direction: String = "down"
 
 func _ready() -> void:
+	# Add player to the Player group for item detection
+	add_to_group("Player")
+	
 	# Initialize input mappings
 	initialize_input()
+
+	# Connect animation finished signal to reset attack state
 	anim_sprite.animation_finished.connect(_on_animation_finished)
-	
-	# Ensure the attack area is ready and connected
+
+	# Ensure the attack area is monitoring collisions
 	if attack_area:
 		attack_area.body_entered.connect(_on_attack_hit)
 		attack_area.monitoring = false  # Disable initially
 		attack_area.visible = false    # Disable visibility initially
-		print("AttackArea initialized and body_entered signal connected.")
 	else:
 		print("Error: AttackArea node not found!")
 
@@ -56,6 +60,7 @@ func handle_input() -> void:
 		velocity.y -= 1
 	if velocity != Vector2.ZERO:
 		velocity = velocity.normalized() * speed
+	
 	# Update facing direction
 	if velocity.x > 0:
 		facing_direction = "right"
@@ -66,10 +71,14 @@ func handle_input() -> void:
 	elif velocity.y < 0:
 		facing_direction = "up"
 
-func move_and_animate() -> void:
-	if Input.is_action_just_pressed("attack1"):
+	# Attack actions
+	if Input.is_action_pressed("attack1"):
 		trigger_attack_animation("attack1")
-		return
+	elif Input.is_action_pressed("attack2"):
+		trigger_attack_animation("attack2")
+
+func move_and_animate() -> void:
+	# Move the player and animate based on velocity
 	move_and_slide()
 	if velocity != Vector2.ZERO:
 		anim_sprite.play("run_" + facing_direction)
@@ -77,20 +86,22 @@ func move_and_animate() -> void:
 		anim_sprite.play("idle_" + facing_direction)
 
 func trigger_attack_animation(attack_type: String) -> void:
+	if is_attacking:
+		return
 	is_attacking = true
 
 	# Play attacking animation
 	anim_sprite.play(attack_type + "_" + facing_direction)
-	
+
 	# Update attack hitbox position
 	update_attack_hitbox()
-	
-	# Enable attack detection
+
+	# Enable attack collision detection
 	attack_area.visible = true
-	attack_area.monitoring = true  # Enable collisions
-	print("Triggering attack in direction:", facing_direction)
+	attack_area.monitoring = true
 
 func _on_animation_finished() -> void:
+	# Reset attack state after animation finishes
 	is_attacking = false
 
 	# Disable the attack hitbox after the animation completes
@@ -98,41 +109,40 @@ func _on_animation_finished() -> void:
 	attack_area.monitoring = false
 
 func update_attack_hitbox() -> void:
-	# Ensure the attack area is positioned correctly for the facing direction
+	# Ensure the attack area is positioned correctly based on the facing direction
 	if attack_offsets.has(facing_direction):
 		attack_area.position = attack_offsets[facing_direction]
-		print("Updated AttackArea position to:", attack_area.position)
 
 func _on_attack_hit(body: Node) -> void:
+	print("Attack hit body:", body.name)  # Output what `AttackArea` hits
+
+	# Ensure we are referencing the root node if body is a child (e.g., ForestTreeBody)
+	while body and not body.is_in_group("Trees") and body.get_parent() != null:
+		body = body.get_parent()  # Walk up the node hierarchy
+	print("Attack hit body:", body.name)  # Output what `AttackArea` hits
+
+	# Check if the sword hit something and apply effects
 	if not is_attacking:
-		print("Collision ignored; not in attacking state.")
 		return
 
-	print("Hit detected! Colliding with:", body.name)
+	if body.is_in_group("Enemies"):
+		# Call the enemy's _on_hit method for damage and knockback
+		if body.has_method("_on_hit"):
+			var knockback_direction = (body.global_position - attack_area.global_position).normalized()
+			body.call("_on_hit", 1, knockback_direction)
 
-	# Handle tree destruction
-	if body and body.get_parent():
-		var parent_tree = body.get_parent()
-		print("Removing tree node:", parent_tree.name)
+	elif body.is_in_group("Trees"):
+		# Call the tree's take_damage method
+		print("Hit a tree!")  # <-- Add this line
+		if body.has_method("take_damage"):
+			body.call("take_damage", 1)  # Reduce the tree's health by 1
+		else:
+			print("Tree doesn't have take_damage method!")  # Debugging fallback
+			# If no `take_damage` method, just destroy the tree
+			body.queue_free()
 
-		# Check if the parent has item drop information
-		# Direct access to item properties in the parent_tree
-		if parent_tree is Node2D:
-			var item_name = parent_tree.item_name
-			var item_quantity = parent_tree.item_quantity
-			Inventory.add_item(item_name, item_quantity)  # Add items to inventory
-			print("Added ", item_quantity, " ", item_name, " to inventory.")
-
-		# Notify ground to remove the tree reference
-		var ground = get_parent()  # Replace this with the actual reference to ground.gd, if necessary
-		if ground and ground.has_method("_on_tree_removed"):
-			ground._on_tree_removed(parent_tree)
-
-		# Free the node
-		parent_tree.queue_free()		
-
-# Adds WASD key mappings if they don't exist
 func initialize_input() -> void:
+	# Adds WASD key mappings if they don't exist
 	var input_map = InputMap
 	if not input_map.has_action("move_up"):
 		input_map.add_action("move_up")
@@ -161,6 +171,7 @@ func initialize_input() -> void:
 		var event_attack1 = InputEventMouseButton.new()
 		event_attack1.button_index = MOUSE_BUTTON_LEFT
 		input_map.action_add_event("attack1", event_attack1)
+
 	if not input_map.has_action("attack2"):
 		input_map.add_action("attack2")
 		var event_attack2 = InputEventMouseButton.new()

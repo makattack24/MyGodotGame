@@ -1,0 +1,18 @@
+[gd_scene format=3 uid="uid://u118vcppdcdd"]
+
+[ext_resource type="Texture2D" uid="uid://5dwso8wk6esl" path="res://Assets/woodItem.png" id="1_7pgax"]
+[ext_resource type="Script" uid="uid://8pdtjc75jxx6" path="res://Scripts/wood_item.gd" id="1_iaoic"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_iaoic"]
+size = Vector2(8.25, 8.75)
+
+[node name="WoodItem" type="Node2D" unique_id=68424016]
+script = ExtResource("1_iaoic")
+
+[node name="WoodItemSprite" type="Sprite2D" parent="." unique_id=1383287365]
+texture = ExtResource("1_7pgax")
+
+[node name="Area2D" type="Area2D" parent="." unique_id=165874804]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D" unique_id=999929427]
+shape = SubResource("RectangleShape2D_iaoic")

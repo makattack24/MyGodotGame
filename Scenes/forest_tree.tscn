@@ -2,12 +2,29 @@
 
 [ext_resource type="Texture2D" uid="uid://cweeljsofoc46" path="res://Assets/FreeDownloadedAssets/FreeEnvironment/FreePack 2.png" id="1_0vwjc"]
 [ext_resource type="Script" uid="uid://cbe6ko12lqd3m" path="res://Scripts/tree.gd" id="1_y0lnq"]
+[ext_resource type="PackedScene" uid="uid://u118vcppdcdd" path="res://Scenes/wood_item.tscn" id="2_2yptp"]
+[ext_resource type="AudioStream" uid="uid://kl86c1mvqic6" path="res://Audio/chopping-wood-96709.mp3" id="3_wjmfy"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_rsuno"]
 size = Vector2(26, 95)
 
-[node name="Tree" type="Node2D" unique_id=1899550819]
+[sub_resource type="Gradient" id="Gradient_wjmfy"]
+interpolation_mode = 2
+interpolation_color_space = 1
+offsets = PackedFloat32Array(0, 0, 0.9879518)
+colors = PackedColorArray(0.42514628, 0.29988495, 0.058825575, 1, 0.5296258, 0.3193123, 0, 1, 0.44052416, 0.32672453, 0.10331517, 1)
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_2yptp"]
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_6dfie"]
+width = 2
+height = 2
+noise = SubResource("FastNoiseLite_2yptp")
+color_ramp = SubResource("Gradient_wjmfy")
+
+[node name="Tree" type="Node2D" unique_id=1899550819 groups=["Trees"]]
 script = ExtResource("1_y0lnq")
+item_scene = ExtResource("2_2yptp")
 
 [node name="ForestTreeSprite" type="Sprite2D" parent="." unique_id=1455693674]
 texture = ExtResource("1_0vwjc")
@@ -20,3 +37,18 @@ collision_layer = 2
 [node name="CollisionShape2D" type="CollisionShape2D" parent="ForestTreeBody" unique_id=1179893065]
 position = Vector2(2, 1)
 shape = SubResource("RectangleShape2D_rsuno")
+
+[node name="HitEffect" type="CPUParticles2D" parent="." unique_id=1448811323]
+position = Vector2(2, 33)
+emitting = false
+amount = 24
+texture = SubResource("NoiseTexture2D_6dfie")
+lifetime = 0.2
+one_shot = true
+emission_shape = 6
+emission_ring_inner_radius = 1.0
+emission_ring_radius = 4.0
+
+[node name="HitSound" type="AudioStreamPlayer2D" parent="." unique_id=1844005204]
+stream = ExtResource("3_wjmfy")
+pitch_scale = 1.3

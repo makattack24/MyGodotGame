@@ -1,32 +1,33 @@
 extends TileMapLayer
 
 # ==============================
-# CONFIG
+# CONFIGURATION
 # ==============================
 
-@export var tile_radius: int = 45        # how many tiles around player to generate
-@export var world_seed: int = 1337       # deterministic seed
+@export var tile_radius: int = 45          # Radius of tiles around player to generate
+@export var world_seed: int = 1337         # Deterministic seed for noise-based generation
 
-const SOURCE_ID: int = 0                 # make sure this matches your atlas source ID
+# Atlas source ID for the tileset (make sure this matches your Tileset source ID in the editor)
+const SOURCE_ID: int = 0
 
-# ALL allowed tiles (atlas coordinates)
+# Allowed ground tiles (atlas coordinates)
 const GROUND_TILES: Array[Vector2i] = [
-	Vector2i(8, 1),  Vector2i(8, 2),  Vector2i(9, 1),  Vector2i(9, 2),
+	Vector2i(8, 1), Vector2i(8, 2), Vector2i(9, 1), Vector2i(9, 2),
 	Vector2i(10, 1), Vector2i(10, 2), Vector2i(10, 3), Vector2i(10, 4),
 	Vector2i(11, 1), Vector2i(11, 2), Vector2i(11, 3), Vector2i(11, 4)
 ]
 
-@export var tree_scene: PackedScene  # Define the Tree scene as an export
-@export var tree_spawn_chance: float = 0.5  # 10% chance of a tree spawning
+@export var tree_scene: PackedScene          # Reference to the tree's scene
+@export var tree_spawn_chance: float = 0.5  # Probability of a tree spawning at a tile
 
 # ==============================
-# INTERNAL
+# INTERNAL STATE VARIABLES
 # ==============================
 
-var noise: FastNoiseLite = FastNoiseLite.new()
-var generated: Dictionary = {}  # keeps track of which tiles have already been placed
+var noise: FastNoiseLite = FastNoiseLite.new()  # Noise generator for deterministic terrain and objects
+var generated_tiles: Dictionary = {}           # Keeps track of which tiles have already been generated
 
-# Store references to spawned trees to manage them later if needed
+# Stores the references to all spawned tree instances
 var spawned_trees: Array[Node2D] = []
 
 # ==============================
@@ -34,41 +35,43 @@ var spawned_trees: Array[Node2D] = []
 # ==============================
 
 func _ready() -> void:
-	# Initialize noise for deterministic variation
+	# Initialize noise generator for deterministic variation
 	noise.seed = world_seed
 	noise.frequency = 0.05
 
 # ==============================
-# GENERATION
+# GENERATION (MAIN ENTRY POINT)
 # ==============================
 
 func generate_around(world_pos: Vector2) -> void:
+	# Main generation loop to handle terrain and trees around player
 	var center_tile: Vector2i = local_to_map(world_pos)
 
 	for x in range(center_tile.x - tile_radius, center_tile.x + tile_radius):
 		for y in range(center_tile.y - tile_radius, center_tile.y + tile_radius):
 			var tile_pos: Vector2i = Vector2i(x, y)
 
-			# skip tiles already generated
-			if generated.has(tile_pos):
+			# Skip tiles that have already been generated
+			if generated_tiles.has(tile_pos):
 				continue
 
 			_place_tile(tile_pos)
-			_try_spawn_tree(tile_pos)  # Try spawning a tree at this tile
+			_try_spawn_tree(tile_pos)  # Try spawning a tree at the tile
 
-			generated[tile_pos] = true
+			# Mark tile as generated
+			generated_tiles[tile_pos] = true
 
 # ==============================
-# TILE PLACEMENT
+# TILE PLACEMENT LOGIC
 # ==============================
 
 func _place_tile(pos: Vector2i) -> void:
-	# pick atlas coordinate deterministically based on tile position
+	# Pick atlas coordinate deterministically based on tile position
 	var atlas_coord: Vector2i = _choose_tile(pos)
 	set_cell(
-		pos,          # Vector2i tile coords
-		SOURCE_ID,    # tileset source ID
-		atlas_coord   # atlas coordinates
+		pos,          # Vector2i tile coordinates
+		SOURCE_ID,    # Source ID of tileset
+		atlas_coord   # Atlas coordinates for tile selection
 	)
 
 # ==============================
@@ -76,71 +79,64 @@ func _place_tile(pos: Vector2i) -> void:
 # ==============================
 
 func _try_spawn_tree(tile_pos: Vector2i) -> void:
-	# Random chance to spawn a tree
-	var n: float = (noise.get_noise_2d(tile_pos.x + 100, tile_pos.y + 100) + 1.0) * 0.5  # offset noise
-	
-	# Add spacing logic: check neighboring tiles for existing trees
+	# Adds a tree with random noise-based probability
+	var n: float = (noise.get_noise_2d(tile_pos.x + 100, tile_pos.y + 100) + 1.0) * 0.5  # Adjusted noise range
+
+	# Ensure the tile is appropriate for spawning a tree
 	if n < tree_spawn_chance and _can_spawn_tree_here(tile_pos):
-		# print("Spawning tree at ", tile_pos)  # Debug spawn success
-		var tree_instance: Node2D = tree_scene.instantiate()  # Instantiate a Tree scene
+		var tree_instance: Node2D = tree_scene.instantiate()  # Instantiate Tree scene
 		var world_pos: Vector2 = map_to_local(tile_pos)       # Convert tile position to world coordinates
-		tree_instance.position = world_pos                   # Set the Tree's position
-		get_parent().add_child(tree_instance)                # Add Tree to the scene
-		spawned_trees.append(tree_instance)                  # Keep track of spawned trees
+		tree_instance.position = world_pos                   # Set tree position correctly
+		get_parent().add_child(tree_instance)                # Add Tree to the game world
+
+		# Add tree to the "Trees" group for global recognition
+		tree_instance.add_to_group("Trees")                  # Ensure proper interaction via groups
+
+		# Keep track of the tree for management later
+		spawned_trees.append(tree_instance)
 	else:
-		pass
-		# print("Not spawning tree at ", tile_pos)  # Debug failure to spawn
+		pass  # Skip if tree spawn conditions not met
+
+# ==============================
+# TREE REMOVAL / MANAGEMENT
+# ==============================
 
 func _on_tree_removed(tree: Node2D) -> void:
-	# Remove a destroyed tree from the tracking array
+	# Removes destroyed tree from tracking
 	if tree in spawned_trees:
 		spawned_trees.erase(tree)
-		print("Tree removed from spawned_trees:", tree.name)
+		print("Tree removed from spawned list:", tree.name)
 
 func _can_spawn_tree_here(tile_pos: Vector2i) -> bool:
-	# Check neighboring tiles for trees to ensure spacing
-	for offset in [-1, 0, 1]:
-		for offset2 in [-1, 0, 1]:
-			var neighbor_tile: Vector2i = tile_pos + Vector2i(offset, offset2)
-			
+	# Checks neighboring tiles to ensure tree spacing
+	for offset_x in [-1, 0, 1]:
+		for offset_y in [-1, 0, 1]:
+			var neighbor_tile: Vector2i = tile_pos + Vector2i(offset_x, offset_y)
+
 			# Validate each tree reference before using it
-			spawned_trees = spawned_trees.filter(is_instance_valid)  # Remove invalid references
+			spawned_trees = spawned_trees.filter(is_instance_valid)  # Cleanup invalid references
 			for tree in spawned_trees:
-				if map_to_local(neighbor_tile).distance_to(tree.position) < 50:  # Adjust minimum distance here
+				if map_to_local(neighbor_tile).distance_to(tree.position) < 50:  # Minimum distance of 50
 					return false  # Too close to another tree
 	return true
-
-# Cleanup invalid references during gameplay
-func _cleanup_invalid_references() -> void:
-	for tree in spawned_trees:
-		if not is_instance_valid(tree):
-			spawned_trees.erase(tree)
-
 
 # ==============================
 # TILE SELECTION LOGIC
 # ==============================
 
 func _choose_tile(pos: Vector2i) -> Vector2i:
-	# deterministic selection using noise + tile coordinates
+	# Determines tile type using noise and tile position
 	var n: float = (noise.get_noise_2d(pos.x, pos.y) + 1.0) * 0.5
 	var index: int = int(floor(n * GROUND_TILES.size()))
 	index = clamp(index, 0, GROUND_TILES.size() - 1)
 	return GROUND_TILES[index]
 
-
-
-
 # ==============================
-# OPTIONAL: weighted tiles
+# REFERENCE CLEANUP
 # ==============================
 
-# Example:
-# Uncomment and replace GROUND_TILES in _choose_tile() if you want A tiles more common:
-# const WEIGHTED_TILES: Array[Vector2i] = [
-# 	GROUND_TILES[0], GROUND_TILES[0], GROUND_TILES[0],  # A common
-# 	GROUND_TILES[1], GROUND_TILES[1],                   # B less common
-# 	GROUND_TILES[2],                                    # C rare
-# 	# ...etc
-# ]
-# Then return: WEIGHTED_TILES[abs(hash(pos)) % WEIGHTED_TILES.size()]
+func _cleanup_invalid_references() -> void:
+	# Removes any invalid tree references during gameplay
+	for tree in spawned_trees:
+		if not is_instance_valid(tree):
+			spawned_trees.erase(tree)

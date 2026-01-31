@@ -7,6 +7,8 @@
 [ext_resource type="PackedScene" uid="uid://lhtrljjsc78f" path="res://Scenes/forest_tree.tscn" id="4_v1gob"]
 [ext_resource type="PackedScene" uid="uid://m8jkj4116ude" path="res://Scenes/pause_menu.tscn" id="5_pbw6q"]
 [ext_resource type="Script" uid="uid://b7d4q264esmek" path="res://Scripts/hud.gd" id="7_jw32o"]
+[ext_resource type="Script" uid="uid://bejfhiqmhj4y4" path="res://Scenes/enemy_spawner.gd" id="8_vy5pj"]
+[ext_resource type="PackedScene" uid="uid://csfnht04fmb5" path="res://Scenes/enemy.tscn" id="9_bmxlf"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_pbw6q"]
 texture = ExtResource("1_kln2b")
@@ -138,6 +140,11 @@ script = ExtResource("2_rgh2o")
 tree_scene = ExtResource("4_v1gob")
 tree_spawn_chance = 0.3
 
+[node name="EnemySpawner" type="Node2D" parent="." unique_id=403715541 node_paths=PackedStringArray("player")]
+script = ExtResource("8_vy5pj")
+enemy_scene = ExtResource("9_bmxlf")
+player = NodePath("../Player")
+
 [node name="Player" parent="." unique_id=1229123879 instance=ExtResource("1_r150o")]
 z_index = 1
 
@@ -152,8 +159,13 @@ visible = false
 script = ExtResource("7_jw32o")
 
 [node name="HBoxContainer" type="HBoxContainer" parent="HUD" unique_id=414544683]
-offset_right = 40.0
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -20.0
+offset_right = 20.0
 offset_bottom = 40.0
+grow_horizontal = 2
 
 [node name="WoodCount" type="Label" parent="HUD/HBoxContainer" unique_id=1617039893]
 layout_mode = 2

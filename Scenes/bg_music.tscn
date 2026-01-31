@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://cbongyooxyspb"]
 
-[ext_resource type="AudioStream" uid="uid://b1wp5kips52t5" path="res://Audio/Komiku_-_70_-_Ending(chosic.com).mp3" id="1_wrh0v"]
+[ext_resource type="AudioStream" uid="uid://68ax8haalxts" path="res://Audio/cyphermix.ogg" id="1_wrh0v"]
 
 [node name="AudioStreamPlayer2D" type="AudioStreamPlayer2D" unique_id=1827017702]
 stream = ExtResource("1_wrh0v")

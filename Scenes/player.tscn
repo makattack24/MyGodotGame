@@ -1013,7 +1013,7 @@ shape = SubResource("RectangleShape2D_f1ek2")
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=712080506]
 sprite_frames = SubResource("SpriteFrames_tx1dd")
-animation = &"attack2_up"
+animation = &"idle_down"
 autoplay = "idle_down"
 
 [node name="AttackArea" type="Area2D" parent="." unique_id=1642067877]

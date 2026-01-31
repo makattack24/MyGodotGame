@@ -1,0 +1,23 @@
+[gd_scene format=3 uid="uid://csfnht04fmb5"]
+
+[ext_resource type="Script" uid="uid://bv3aq5wyq6n5t" path="res://Scenes/enemy.gd" id="1_1f0kj"]
+[ext_resource type="Texture2D" uid="uid://dev5bpuufirpb" path="res://Assets/red slime.png" id="1_hghv2"]
+[ext_resource type="AudioStream" uid="uid://kl86c1mvqic6" path="res://Audio/chopping-wood-96709.mp3" id="3_afpow"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_1f0kj"]
+radius = 11.0
+
+[node name="CharacterBody2D" type="CharacterBody2D" unique_id=1868272876]
+script = ExtResource("1_1f0kj")
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=961764258]
+texture = ExtResource("1_hghv2")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=394148664]
+position = Vector2(0, 3)
+shape = SubResource("CircleShape2D_1f0kj")
+
+[node name="HitSound" type="AudioStreamPlayer2D" parent="." unique_id=1629555301]
+stream = ExtResource("3_afpow")
+
+[node name="DeathEffect" type="CPUParticles2D" parent="." unique_id=1621623514]
