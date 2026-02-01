@@ -2,6 +2,7 @@
 
 [ext_resource type="Script" uid="uid://houdtxxgxc2i" path="res://Scripts/player.gd" id="1_cvnsp"]
 [ext_resource type="Texture2D" uid="uid://bdr7hmu4qo20i" path="res://Assets/FreeDownloadedAssets/FREE_Adventurer 2D Pixel Art/Sprites/IDLE/idle_down.png" id="1_v0iea"]
+[ext_resource type="Shader" uid="uid://dvhoq6lpm7a86" path="res://Shaders/sword_remover.gdshader" id="2_igrcy"]
 [ext_resource type="Texture2D" uid="uid://c7i2tug5pbulj" path="res://Assets/FreeDownloadedAssets/FREE_Adventurer 2D Pixel Art/Sprites/ATTACK 1/attack1_down.png" id="2_qqcod"]
 [ext_resource type="Texture2D" uid="uid://wj00bbd81qqa" path="res://Assets/FreeDownloadedAssets/FREE_Adventurer 2D Pixel Art/Sprites/IDLE/idle_left.png" id="3_f1ek2"]
 [ext_resource type="Texture2D" uid="uid://d4egnsjsbg04l" path="res://Assets/FreeDownloadedAssets/FREE_Adventurer 2D Pixel Art/Sprites/ATTACK 1/attack1_left.png" id="3_igrcy"]
@@ -20,6 +21,11 @@
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_f1ek2"]
 size = Vector2(8, 28)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_fs7ks"]
+shader = ExtResource("2_igrcy")
+shader_parameter/target_color = Color(0.78039217, 0.8117647, 0.8666667, 1)
+shader_parameter/tolerance = 0.1
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_ss172"]
 atlas = ExtResource("2_qqcod")
@@ -1004,7 +1010,6 @@ animations = [{
 size = Vector2(40, 40)
 
 [node name="Player" type="CharacterBody2D" unique_id=1229123879]
-collision_mask = 2
 script = ExtResource("1_cvnsp")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=490325349]
@@ -1012,6 +1017,7 @@ position = Vector2(0, 4)
 shape = SubResource("RectangleShape2D_f1ek2")
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=712080506]
+material = SubResource("ShaderMaterial_fs7ks")
 sprite_frames = SubResource("SpriteFrames_tx1dd")
 animation = &"attack1_down"
 autoplay = "idle_down"

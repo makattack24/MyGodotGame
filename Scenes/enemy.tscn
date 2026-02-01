@@ -2,10 +2,20 @@
 
 [ext_resource type="Script" uid="uid://bv3aq5wyq6n5t" path="res://Scripts/enemy.gd" id="1_1f0kj"]
 [ext_resource type="Texture2D" uid="uid://dev5bpuufirpb" path="res://Assets/red slime.png" id="1_hghv2"]
+[ext_resource type="Shader" uid="uid://cvg5xlcv5wum7" path="res://Shaders/new_shader.gdshader" id="2_287tu"]
 [ext_resource type="AudioStream" uid="uid://kl86c1mvqic6" path="res://Audio/chopping-wood-96709.mp3" id="3_afpow"]
 
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_0830c"]
+shader = ExtResource("2_287tu")
+shader_parameter/color1 = Color(0.6745098, 0.19607843, 0.19607843, 1)
+shader_parameter/color2 = Color(0.6745098, 0.19607843, 0.19607843, 1)
+shader_parameter/threshold = 0.1
+shader_parameter/intensity = 0.9
+shader_parameter/opacity = 0.5
+shader_parameter/glow_color = Color(0.15294118, 0.99215686, 0, 1)
+
 [sub_resource type="CircleShape2D" id="CircleShape2D_1f0kj"]
-radius = 11.0
+radius = 7.0
 
 [sub_resource type="Gradient" id="Gradient_afpow"]
 interpolation_mode = 2
@@ -28,10 +38,12 @@ point_count = 2
 script = ExtResource("1_1f0kj")
 
 [node name="Sprite2D" type="Sprite2D" parent="." unique_id=961764258]
+material = SubResource("ShaderMaterial_0830c")
+scale = Vector2(0.65, 0.65)
 texture = ExtResource("1_hghv2")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=394148664]
-position = Vector2(0, 3)
+position = Vector2(0, 2)
 shape = SubResource("CircleShape2D_1f0kj")
 
 [node name="HitSound" type="AudioStreamPlayer2D" parent="." unique_id=1629555301]

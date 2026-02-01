@@ -1,0 +1,35 @@
+[gd_scene format=3 uid="uid://dghjn1o2gcy7a"]
+
+[ext_resource type="Script" uid="uid://du76ss0lwa80w" path="res://Scripts/coin_item.gd" id="1_coin"]
+[ext_resource type="Texture2D" uid="uid://br6thrn18capx" path="res://Assets/coin.png" id="2_coin"]
+[ext_resource type="Shader" uid="uid://cvg5xlcv5wum7" path="res://Shaders/new_shader.gdshader" id="2_jfmoh"]
+[ext_resource type="AudioStream" uid="uid://bgf418kln043u" path="res://Audio/drop-coin-384921.mp3" id="4_njwfr"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_njwfr"]
+shader = ExtResource("2_jfmoh")
+shader_parameter/color1 = Color(0, 0, 0, 1)
+shader_parameter/color2 = Color(0, 0, 0, 1)
+shader_parameter/threshold = 0.0
+shader_parameter/intensity = 0.0
+shader_parameter/opacity = 0.0
+shader_parameter/glow_color = Color(0, 0, 0, 1)
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_coin"]
+radius = 7.0
+
+[node name="CoinItem" type="Node2D" unique_id=609757839]
+script = ExtResource("1_coin")
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=2035674663]
+material = SubResource("ShaderMaterial_njwfr")
+scale = Vector2(0.75, 0.75)
+texture = ExtResource("2_coin")
+
+[node name="Area2D" type="Area2D" parent="." unique_id=278684104]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D" unique_id=2086055760]
+position = Vector2(1, 0)
+shape = SubResource("CircleShape2D_coin")
+
+[node name="AudioStreamPlayer2D" type="AudioStreamPlayer2D" parent="." unique_id=1942264645]
+stream = ExtResource("4_njwfr")

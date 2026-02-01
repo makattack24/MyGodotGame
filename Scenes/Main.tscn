@@ -133,6 +133,8 @@ texture = ExtResource("1_kln2b")
 [sub_resource type="TileSet" id="TileSet_v1gob"]
 sources/0 = SubResource("TileSetAtlasSource_pbw6q")
 
+[sub_resource type="Environment" id="Environment_4kpch"]
+
 [node name="Main" type="Node2D" unique_id=170662483]
 script = ExtResource("1_rgh2o")
 
@@ -143,6 +145,8 @@ script = ExtResource("2_rgh2o")
 [node name="EnemySpawner" type="Node2D" parent="." unique_id=403715541 node_paths=PackedStringArray("player")]
 script = ExtResource("8_vy5pj")
 enemy_scene = ExtResource("9_bmxlf")
+num_camps = 23
+enemies_per_camp = 16
 player = NodePath("../Player")
 
 [node name="Player" parent="." unique_id=1229123879 instance=ExtResource("1_r150o")]
@@ -159,16 +163,42 @@ visible = false
 script = ExtResource("7_jw32o")
 
 [node name="HBoxContainer" type="HBoxContainer" parent="HUD" unique_id=414544683]
-anchors_preset = 5
-anchor_left = 0.5
-anchor_right = 0.5
-offset_left = -20.0
-offset_right = 20.0
+offset_right = 40.0
 offset_bottom = 40.0
-grow_horizontal = 2
 
 [node name="WoodCount" type="Label" parent="HUD/HBoxContainer" unique_id=1617039893]
 layout_mode = 2
+
+[node name="InventoryBar" type="HBoxContainer" parent="HUD" unique_id=878448130]
+custom_minimum_size = Vector2(0, 70)
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 0
+theme_override_constants/separation = 8
+alignment = 1
+
+[node name="HealthBarContainer" type="VBoxContainer" parent="HUD" unique_id=756453575]
+custom_minimum_size = Vector2(150, 50)
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -43.0
+offset_bottom = 54.0
+grow_horizontal = 0
+
+[node name="HealthBar" type="ProgressBar" parent="HUD/HealthBarContainer" unique_id=1167007291]
+custom_minimum_size = Vector2(0, 24)
+layout_mode = 2
+max_value = 10.0
+value = 10.0
+
+[node name="HealthLabel" type="Label" parent="HUD/HealthBarContainer" unique_id=677978842]
+layout_mode = 2
+text = "10/10"
+horizontal_alignment = 1
 
 [node name="ObjectSpawner" type="Node2D" parent="." unique_id=1272717024 node_paths=PackedStringArray("ground_layer")]
 script = ExtResource("9_vy5pj")
@@ -209,6 +239,9 @@ text = "RESTART"
 [node name="QuitButton" type="Button" parent="GameOver/VBoxContainer" unique_id=1935386545]
 layout_mode = 2
 text = "QUIT"
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=754897741]
+environment = SubResource("Environment_4kpch")
 
 [connection signal="pressed" from="GameOver/VBoxContainer/RestartButton" to="GameOver" method="_on_restart_button_pressed"]
 [connection signal="pressed" from="GameOver/VBoxContainer/QuitButton" to="GameOver" method="_on_quit_button_pressed"]

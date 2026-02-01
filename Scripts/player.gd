@@ -1,5 +1,8 @@
 extends CharacterBody2D
 
+# Signals
+signal health_changed(current_hp, max_hp)
+
 # Movement variables
 @export var speed: float = 130.0  # Speed of the character
 @export var max_health: int = 10  # Maximum health
@@ -13,6 +16,15 @@ var is_dead: bool = false  # Track if player is dead
 
 # Reference to the AttackArea node (hitbox for sword attacks)
 @onready var attack_area: Area2D = $AttackArea
+
+# Weapon sprite reference
+@onready var weapon_sprite: Sprite2D = null  # Will be created dynamically
+
+# Weapon texture
+var axe_texture = preload("res://Assets/WoodAxe.png")
+
+# Sword remover shader material
+var sword_remover_material: ShaderMaterial = null
 
 # Offset for the attack hitbox positions
 @export var attack_offsets: Dictionary = {
@@ -34,6 +46,19 @@ func _ready() -> void:
 	
 	# Initialize health
 	current_health = max_health
+	emit_signal("health_changed", current_health, max_health)
+	
+	# Create weapon sprite
+	weapon_sprite = Sprite2D.new()
+	weapon_sprite.visible = false
+	weapon_sprite.z_index = 10  # Display above character
+	add_child(weapon_sprite)
+	
+	# Load sword remover shader
+	var sword_shader = load("res://Shaders/sword_remover.gdshader")
+	if sword_shader:
+		sword_remover_material = ShaderMaterial.new()
+		sword_remover_material.shader = sword_shader
 	
 	# Initialize input mappings
 	initialize_input()
@@ -105,6 +130,23 @@ func trigger_attack_animation(attack_type: String) -> void:
 		return
 	is_attacking = true
 
+	# Get currently selected item from HUD
+	var hud = get_tree().root.find_child("HUD", true, false)
+	var selected_item = ""
+	if hud and hud.has_method("get_selected_item"):
+		var item_data = hud.get_selected_item()
+		selected_item = item_data["name"]
+	
+	# Check if player is holding axe and show weapon sprite
+	if selected_item == "axe":
+		weapon_sprite.texture = axe_texture
+		weapon_sprite.visible = true
+		# Position weapon based on facing direction
+		update_weapon_position()
+		# Apply sword remover shader to hide the sword in attack animation
+		if sword_remover_material:
+			anim_sprite.material = sword_remover_material
+
 	# Speed up attack animation
 	anim_sprite.speed_scale = 2.0  # 2x speed (adjust this value: 1.5 = 50% faster, 2.0 = twice as fast)
 	
@@ -118,12 +160,38 @@ func trigger_attack_animation(attack_type: String) -> void:
 	attack_area.visible = true
 	attack_area.monitoring = true
 
+func update_weapon_position() -> void:
+	"""Position and rotate weapon sprite based on facing direction"""
+	match facing_direction:
+		"right":
+			weapon_sprite.position = Vector2(20, 0)
+			weapon_sprite.rotation_degrees = -45
+			weapon_sprite.flip_h = false
+		"left":
+			weapon_sprite.position = Vector2(-20, 0)
+			weapon_sprite.rotation_degrees = 45
+			weapon_sprite.flip_h = true
+		"down":
+			weapon_sprite.position = Vector2(0, 20)
+			weapon_sprite.rotation_degrees = 45
+			weapon_sprite.flip_h = false
+		"up":
+			weapon_sprite.position = Vector2(0, -20)
+			weapon_sprite.rotation_degrees = -135
+			weapon_sprite.flip_h = false
+
 func _on_animation_finished() -> void:
 	# Reset attack state after animation finishes
 	is_attacking = false
 	
 	# Reset animation speed back to normal
 	anim_sprite.speed_scale = 1.0
+	
+	# Hide weapon sprite
+	weapon_sprite.visible = false
+	
+	# Remove shader to restore normal appearance
+	anim_sprite.material = null
 
 	# Disable the attack hitbox after the animation completes
 	attack_area.visible = false
@@ -143,6 +211,9 @@ func take_damage(damage: int) -> void:
 	current_health -= damage
 	damage_cooldown = damage_cooldown_time  # Start cooldown
 	print("Player hit! Health: ", current_health, "/", max_health)
+	
+	# Emit health changed signal
+	emit_signal("health_changed", current_health, max_health)
 	
 	# Visual feedback - flash the sprite red
 	if anim_sprite:
@@ -187,14 +258,24 @@ func _on_attack_hit(body: Node) -> void:
 			body.call("_on_hit", 1, knockback_direction)
 
 	elif body.is_in_group("Trees"):
-		# Call the tree's take_damage method
-		print("Hit a tree!")  # <-- Add this line
-		if body.has_method("take_damage"):
-			body.call("take_damage", 1)  # Reduce the tree's health by 1
+		# Check if player has axe equipped
+		var hud = get_tree().root.find_child("HUD", true, false)
+		var has_axe_equipped = false
+		
+		if hud and hud.has_method("get_selected_item"):
+			var item_data = hud.get_selected_item()
+			has_axe_equipped = (item_data["name"] == "axe")
+		
+		# Only damage tree if axe is equipped
+		if has_axe_equipped:
+			print("Hit a tree with axe!")
+			if body.has_method("take_damage"):
+				body.call("take_damage", 1)  # Reduce the tree's health by 1
+			else:
+				print("Tree doesn't have take_damage method!")
+				body.queue_free()
 		else:
-			print("Tree doesn't have take_damage method!")  # Debugging fallback
-			# If no `take_damage` method, just destroy the tree
-			body.queue_free()
+			print("Need an axe to chop trees! Select it from your inventory.")
 
 func initialize_input() -> void:
 	# Adds WASD key mappings if they don't exist

@@ -6,9 +6,20 @@ extends CharacterBody2D
 @export var speed: float = 50.0                # Movement speed of the slime
 @export var player_hit_knockback: float = 150.0  # Knockback when hitting player
 @export var attack_cooldown_time: float = 1.0  # Time between attacks
+@export var aggro_range: float = 200.0         # Distance to detect and chase player
+@export var return_home_range: float = 400.0   # Distance before returning to camp
+
+# Loot settings
+@export var coin_drop_chance: float = 1.0      # Chance to drop coins (0.0 to 1.0)
+@export var min_coins: int = 1                 # Minimum coins to drop
+@export var max_coins: int = 3                 # Maximum coins to drop
 
 # Reference to the player (set this in the Inspector or dynamically during gameplay)
 @export var player: CharacterBody2D                     # Target player node to follow
+
+# Camp behavior
+var camp_position: Vector2 = Vector2.ZERO      # Home position (camp center)
+var is_aggro: bool = false                     # Whether enemy is chasing player
 
 # Attack cooldown tracking
 var attack_cooldown: float = 0.0
@@ -17,6 +28,9 @@ var knockback_timer: float = 0.0  # Timer for knockback from being hit
 # Visual/audio feedback (optional)
 @onready var death_effect: CPUParticles2D = $DeathEffect
 @onready var hit_sound: AudioStreamPlayer2D = $HitSound
+
+# Coin drop scene
+var coin_scene = preload("res://Scenes/coin_item.tscn")
 
 func _physics_process(_delta: float) -> void:
 	# Update attack cooldown
@@ -27,18 +41,38 @@ func _physics_process(_delta: float) -> void:
 	if knockback_timer > 0:
 		knockback_timer -= _delta
 	
-	# Only move toward player if not in cooldown/knockback
+	# Check if player is in range
+	if player != null:
+		var distance_to_player = global_position.distance_to(player.global_position)
+		var distance_to_camp = global_position.distance_to(camp_position)
+		
+		# Determine aggro state
+		if distance_to_player <= aggro_range:
+			is_aggro = true
+		elif distance_to_camp > return_home_range:
+			is_aggro = false  # Too far from camp, return home
+		elif distance_to_player > aggro_range * 1.5:
+			is_aggro = false  # Player left range, stop chasing
+	
+	# Movement logic
 	if player == null:
 		velocity = Vector2.ZERO  # Stop moving if player is missing
 	elif knockback_timer > 0:
 		# During knockback from sword hit, slow down naturally (friction)
 		velocity = velocity.lerp(Vector2.ZERO, _delta * 5.0)
-	elif attack_cooldown <= 0:
-		# Normal chase behavior when cooldown is done
-		velocity = (player.global_position - global_position).normalized() * speed
-	else:
+	elif attack_cooldown > 0:
 		# During attack cooldown, slow down the knockback naturally (friction)
 		velocity = velocity.lerp(Vector2.ZERO, _delta * 3.0)
+	elif is_aggro:
+		# Chase player when aggro
+		velocity = (player.global_position - global_position).normalized() * speed
+	else:
+		# Return to camp when not aggro
+		var distance_to_camp = global_position.distance_to(camp_position)
+		if distance_to_camp > 10.0:  # Only move if far from camp
+			velocity = (camp_position - global_position).normalized() * (speed * 0.5)
+		else:
+			velocity = Vector2.ZERO  # Idle at camp
 	
 	# Move the slime based on the velocity
 	move_and_slide()
@@ -93,6 +127,9 @@ func die() -> void:
 	# Handle death behavior
 	print("Enemy died!")
 	
+	# Drop coins
+	drop_coins()
+	
 	# Play death feedback (animation or effects)
 	if death_effect:
 		death_effect.emitting = true
@@ -100,14 +137,43 @@ func die() -> void:
 	# Remove the enemy from the scene
 	queue_free()
 
+func drop_coins() -> void:
+	"""Drop coins when enemy dies"""
+	# Check if coins should drop based on chance
+	if randf() <= coin_drop_chance:
+		# Determine number of coins to drop
+		var num_coins = randi_range(min_coins, max_coins)
+		
+		# Spawn each coin with slight position variation
+		for i in range(num_coins):
+			var coin = coin_scene.instantiate()
+			
+			# Add random offset so coins don't stack perfectly
+			var offset = Vector2(
+				randf_range(-15, 15),
+				randf_range(-15, 15)
+			)
+			coin.global_position = global_position + offset
+			
+			# Add to parent (deferred to avoid issues)
+			get_parent().add_child.call_deferred(coin)
+
 func set_player_reference(player_ref: Node2D) -> void:
 	# Set the player reference for this enemy
 	player = player_ref
+
+func set_camp_position(camp_pos: Vector2) -> void:
+	"""Set the enemy's camp/home position"""
+	camp_position = camp_pos
 
 func _ready() -> void:
 	# Add enemy to the Enemies group for player attack detection
 	add_to_group("Enemies")
 	print("Enemy added to Enemies group!")
+	
+	# Set camp position to current position if not set
+	if camp_position == Vector2.ZERO:
+		camp_position = global_position
 	
 	# Ensure player reference exists (if assigned dynamically)
 	if player == null:

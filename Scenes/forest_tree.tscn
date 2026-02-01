@@ -6,7 +6,7 @@
 [ext_resource type="AudioStream" uid="uid://kl86c1mvqic6" path="res://Audio/chopping-wood-96709.mp3" id="3_wjmfy"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_rsuno"]
-size = Vector2(26, 95)
+size = Vector2(16, 95)
 
 [sub_resource type="Gradient" id="Gradient_wjmfy"]
 interpolation_mode = 2
@@ -38,7 +38,7 @@ region_rect = Rect2(7, 137, 88, 119)
 [node name="ForestTreeBody" type="StaticBody2D" parent="." unique_id=1864809008]
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="ForestTreeBody" unique_id=1179893065]
-position = Vector2(2, 1)
+position = Vector2(1, 2)
 shape = SubResource("RectangleShape2D_rsuno")
 
 [node name="HitEffect" type="CPUParticles2D" parent="." unique_id=1448811323]
