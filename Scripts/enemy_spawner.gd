@@ -28,6 +28,10 @@ var camp_positions: Array[Vector2] = []
 # Internal timer for continuous spawning
 var _spawn_timer: Timer
 
+# Track player movement for dynamic camp spawning
+var last_camp_spawn_position: Vector2 = Vector2.ZERO
+@export var camp_respawn_distance: float = 400.0  # Distance player must travel before spawning new camps
+
 func _ready() -> void:
 	# Ensure there's a valid enemy scene and player reference
 	assert(enemy_scene != null, "Enemy scene is not assigned!")
@@ -35,7 +39,9 @@ func _ready() -> void:
 	
 	# Choose spawning mode
 	if spawn_mode == 0:  # Camp mode
-		# Generate camp positions
+		# Initialize last spawn position
+		last_camp_spawn_position = player.global_position
+		# Generate initial camp positions
 		generate_camps()
 		# Spawn enemies at each camp
 		spawn_all_camps()
@@ -48,6 +54,17 @@ func _ready() -> void:
 		add_child(_spawn_timer)
 		# Start the spawn timer
 		_spawn_timer.start()
+
+func _process(_delta: float) -> void:
+	# In camp mode, check if player has moved far enough to spawn new camps
+	if spawn_mode == 0 and player:
+		var distance_traveled = player.global_position.distance_to(last_camp_spawn_position)
+		if distance_traveled > camp_respawn_distance:
+			# Update spawn position
+			last_camp_spawn_position = player.global_position
+			# Generate and spawn new camps around new position
+			generate_camps()
+			spawn_all_camps()
 
 func generate_camps() -> void:
 	"""Generate random camp positions spread around the map"""

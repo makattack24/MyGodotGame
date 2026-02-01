@@ -17,6 +17,16 @@ var is_dead: bool = false  # Track if player is dead
 # Reference to the AttackArea node (hitbox for sword attacks)
 @onready var attack_area: Area2D = $AttackArea
 
+# Reference to death sound (add an AudioStreamPlayer node in your scene named "DeathSound")
+@onready var death_sound: AudioStreamPlayer2D = null  # Will be set in _ready if it exists
+
+# Reference to camera for screen shake
+var camera: Camera2D = null
+
+# Screen shake variables
+var shake_amount: float = 0.0
+var shake_decay: float = 5.0
+
 # Weapon sprite reference
 @onready var weapon_sprite: Sprite2D = null  # Will be created dynamically
 
@@ -43,6 +53,8 @@ var facing_direction: String = "down"
 func _ready() -> void:
 	# Add player to the Player group for item detection
 	add_to_group("Player")
+	# Add to persist group for saving/loading
+	add_to_group("persist")
 	
 	# Initialize health
 	current_health = max_health
@@ -59,6 +71,13 @@ func _ready() -> void:
 	if sword_shader:
 		sword_remover_material = ShaderMaterial.new()
 		sword_remover_material.shader = sword_shader
+	
+	# Get death sound if it exists
+	if has_node("DeathSound"):
+		death_sound = $DeathSound
+	
+	# Get camera reference from the scene tree
+	camera = get_viewport().get_camera_2d()
 	
 	# Initialize input mappings
 	initialize_input()
@@ -78,6 +97,16 @@ func _process(_delta: float) -> void:
 	# Update damage cooldown
 	if damage_cooldown > 0:
 		damage_cooldown -= _delta
+	
+	# Apply screen shake
+	if shake_amount > 0 and camera:
+		camera.offset = Vector2(
+			randf_range(-shake_amount, shake_amount),
+			randf_range(-shake_amount, shake_amount)
+		)
+		shake_amount = max(0, shake_amount - shake_decay * _delta)
+		if shake_amount == 0:
+			camera.offset = Vector2.ZERO
 	
 	if is_dead:
 		return  # Don't process input if dead
@@ -230,6 +259,42 @@ func die() -> void:
 	print("Player died! Game Over.")
 	velocity = Vector2.ZERO
 	
+	# Trigger screen shake
+	shake_amount = 10.0
+	
+	# Create dark red flash overlay using CanvasLayer
+	var canvas_layer = CanvasLayer.new()
+	canvas_layer.layer = 100  # Draw on top of everything
+	get_tree().root.add_child(canvas_layer)
+	
+	var flash_overlay = ColorRect.new()
+	flash_overlay.color = Color(0.6, 0.0, 0.0, 0.0)  # Dark red, initially transparent
+	flash_overlay.set_anchors_preset(Control.PRESET_FULL_RECT)  # Fill entire screen
+	flash_overlay.mouse_filter = Control.MOUSE_FILTER_IGNORE  # Don't block input
+	canvas_layer.add_child(flash_overlay)
+	
+	# Animate the flash
+	var tween = create_tween()
+	tween.tween_property(flash_overlay, "color:a", 0.7, 0.15)  # Fade in to 70% opacity
+	tween.tween_property(flash_overlay, "color:a", 0.4, 0.3)  # Fade to 40% opacity
+	tween.tween_property(flash_overlay, "color:a", 0.0, 0.6)  # Fade out slowly
+	
+	# Play death sound
+	if death_sound and death_sound.stream:
+		death_sound.play()
+		# Wait for the sound to finish playing
+		await death_sound.finished
+	else:
+		# Small delay if no sound is configured
+		await get_tree().create_timer(0.5).timeout
+	
+	# Longer delay before showing game over menu (3 seconds)
+	await get_tree().create_timer(3.0).timeout
+	
+	# Clean up the flash overlay and canvas layer
+	if canvas_layer:
+		canvas_layer.queue_free()
+	
 	# Find and show the game over screen
 	var game_over = get_tree().root.find_child("GameOver", true, false)
 	if game_over and game_over.has_method("show_game_over"):
@@ -313,3 +378,22 @@ func initialize_input() -> void:
 		var event_attack2 = InputEventMouseButton.new()
 		event_attack2.button_index = MOUSE_BUTTON_RIGHT
 		input_map.action_add_event("attack2", event_attack2)
+
+# Save player data
+func save() -> Dictionary:
+	return {
+		"position_x": global_position.x,
+		"position_y": global_position.y,
+		"current_health": current_health,
+		"max_health": max_health,
+		"facing_direction": facing_direction
+	}
+
+# Load player data
+func load_data(data: Dictionary) -> void:
+	global_position = Vector2(data.get("position_x", 0), data.get("position_y", 0))
+	current_health = data.get("current_health", max_health)
+	max_health = data.get("max_health", 10)
+	facing_direction = data.get("facing_direction", "down")
+	emit_signal("health_changed", current_health, max_health)
+

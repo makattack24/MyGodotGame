@@ -18,6 +18,7 @@
 [ext_resource type="Texture2D" uid="uid://bgc17wqa1b5fo" path="res://Assets/FreeDownloadedAssets/FREE_Adventurer 2D Pixel Art/Sprites/ATTACK 2/attack2_right.png" id="8_bi64h"]
 [ext_resource type="Texture2D" uid="uid://drlfdtkcemk4f" path="res://Assets/FreeDownloadedAssets/FREE_Adventurer 2D Pixel Art/Sprites/ATTACK 2/attack2_up.png" id="9_2ijsl"]
 [ext_resource type="Texture2D" uid="uid://co2ht6e53ec44" path="res://Assets/FreeDownloadedAssets/FREE_Adventurer 2D Pixel Art/Sprites/RUN/run_up.png" id="9_h4iuc"]
+[ext_resource type="AudioStream" uid="uid://l1g4vnlcp57g" path="res://Audio/male-death-sound-128357.mp3" id="19_fs7ks"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_f1ek2"]
 size = Vector2(8, 28)
@@ -1011,6 +1012,7 @@ size = Vector2(40, 40)
 
 [node name="Player" type="CharacterBody2D" unique_id=1229123879]
 script = ExtResource("1_cvnsp")
+max_health = 1
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=490325349]
 position = Vector2(0, 4)
@@ -1026,3 +1028,6 @@ autoplay = "idle_down"
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="AttackArea" unique_id=1263485978]
 shape = SubResource("RectangleShape2D_qqcod")
+
+[node name="DeathSound" type="AudioStreamPlayer2D" parent="." unique_id=1118947842]
+stream = ExtResource("19_fs7ks")

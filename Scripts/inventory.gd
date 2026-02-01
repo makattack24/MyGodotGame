@@ -15,6 +15,10 @@ var item_textures: Dictionary = {
     "axe": preload("res://Assets/WoodAxe.png")
 }
 
+func _ready() -> void:
+    # Add to persist group for saving/loading
+    add_to_group("persist")
+
 func add_item(item_name: String, amount: int = 1) -> void:
     if inventory.has(item_name):
         inventory[item_name] += amount
@@ -44,3 +48,15 @@ func get_item_texture(item_name: String) -> Texture2D:
 func print_inventory() -> void:
     for item in inventory.keys():
         print(item, ": ", inventory[item])
+
+# Save inventory data
+func save() -> Dictionary:
+    return {
+        "inventory": inventory.duplicate()
+    }
+
+# Load inventory data
+func load_data(data: Dictionary) -> void:
+    if data.has("inventory"):
+        inventory = data["inventory"].duplicate()
+        emit_signal("inventory_updated")

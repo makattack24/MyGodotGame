@@ -37,10 +37,10 @@ func clear_slot() -> void:
 func set_selected(selected: bool) -> void:
 	is_selected = selected
 	if selected:
-		# Highlight selected slot with brighter color and subtle outline effect
-		self.modulate = Color(1.3, 1.3, 1.3)  # Brighter
-		# Add a subtle border effect by adjusting the panel style
-		self.self_modulate = Color(1.2, 1.2, 0.8)  # Yellow tint
+		# Highlight selected slot with much brighter gold/yellow glow
+		self.modulate = Color(1.8, 1.8, 1.2)  # Much brighter with yellow tint
+		# Strong golden border effect
+		self.self_modulate = Color(2.0, 1.8, 0.5)  # Bright gold/yellow
 	else:
 		# Normal appearance
 		self.modulate = Color(1, 1, 1)

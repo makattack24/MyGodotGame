@@ -3,7 +3,7 @@
 [ext_resource type="Script" uid="uid://bv3aq5wyq6n5t" path="res://Scripts/enemy.gd" id="1_1f0kj"]
 [ext_resource type="Texture2D" uid="uid://dev5bpuufirpb" path="res://Assets/red slime.png" id="1_hghv2"]
 [ext_resource type="Shader" uid="uid://cvg5xlcv5wum7" path="res://Shaders/new_shader.gdshader" id="2_287tu"]
-[ext_resource type="AudioStream" uid="uid://kl86c1mvqic6" path="res://Audio/chopping-wood-96709.mp3" id="3_afpow"]
+[ext_resource type="AudioStream" uid="uid://bf45xkwsbyr8r" path="res://Audio/slime-squish-5-218569.mp3" id="4_287tu"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_0830c"]
 shader = ExtResource("2_287tu")
@@ -47,7 +47,7 @@ position = Vector2(0, 2)
 shape = SubResource("CircleShape2D_1f0kj")
 
 [node name="HitSound" type="AudioStreamPlayer2D" parent="." unique_id=1629555301]
-stream = ExtResource("3_afpow")
+stream = ExtResource("4_287tu")
 
 [node name="DeathEffect" type="CPUParticles2D" parent="." unique_id=1621623514]
 emitting = false

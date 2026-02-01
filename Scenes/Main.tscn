@@ -7,6 +7,7 @@
 [ext_resource type="PackedScene" uid="uid://lhtrljjsc78f" path="res://Scenes/forest_tree.tscn" id="4_v1gob"]
 [ext_resource type="PackedScene" uid="uid://m8jkj4116ude" path="res://Scenes/pause_menu.tscn" id="5_pbw6q"]
 [ext_resource type="Script" uid="uid://b7d4q264esmek" path="res://Scripts/hud.gd" id="7_jw32o"]
+[ext_resource type="Script" uid="uid://ds4rmf5syky6q" path="res://Scripts/save_manager.gd" id="8_save"]
 [ext_resource type="Script" uid="uid://bejfhiqmhj4y4" path="res://Scripts/enemy_spawner.gd" id="8_vy5pj"]
 [ext_resource type="PackedScene" uid="uid://csfnht04fmb5" path="res://Scenes/enemy.tscn" id="9_bmxlf"]
 [ext_resource type="Script" uid="uid://bj6l66uirqsrp" path="res://Scripts/object_spawner.gd" id="9_vy5pj"]
@@ -145,8 +146,10 @@ script = ExtResource("2_rgh2o")
 [node name="EnemySpawner" type="Node2D" parent="." unique_id=403715541 node_paths=PackedStringArray("player")]
 script = ExtResource("8_vy5pj")
 enemy_scene = ExtResource("9_bmxlf")
-num_camps = 23
-enemies_per_camp = 16
+num_camps = 12
+enemies_per_camp = 12
+camp_enemy_spread = 100.0
+min_camp_distance = 800.0
 player = NodePath("../Player")
 
 [node name="Player" parent="." unique_id=1229123879 instance=ExtResource("1_r150o")]
@@ -170,14 +173,14 @@ offset_bottom = 40.0
 layout_mode = 2
 
 [node name="InventoryBar" type="HBoxContainer" parent="HUD" unique_id=878448130]
-custom_minimum_size = Vector2(0, 70)
+custom_minimum_size = Vector2(0, 40)
 anchors_preset = 12
 anchor_top = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 0
-theme_override_constants/separation = 8
+theme_override_constants/separation = 4
 alignment = 1
 
 [node name="HealthBarContainer" type="VBoxContainer" parent="HUD" unique_id=756453575]
@@ -206,6 +209,9 @@ tree_scene = ExtResource("4_v1gob")
 tree_spawn_chance = 0.3
 ground_layer = NodePath("../Ground")
 
+[node name="SaveManager" type="Node" parent="." unique_id=1885934722]
+script = ExtResource("8_save")
+
 [node name="GameOver" type="CanvasLayer" parent="." unique_id=579993693]
 process_mode = 3
 script = ExtResource("11_4kpch")
@@ -232,6 +238,10 @@ grow_vertical = 2
 layout_mode = 2
 text = "GAME OVER"
 
+[node name="RespawnButton" type="Button" parent="GameOver/VBoxContainer" unique_id=1221000769]
+layout_mode = 2
+text = "CONTINUE FROM LAST SAVE"
+
 [node name="RestartButton" type="Button" parent="GameOver/VBoxContainer" unique_id=168567926]
 layout_mode = 2
 text = "RESTART"
@@ -243,5 +253,6 @@ text = "QUIT"
 [node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=754897741]
 environment = SubResource("Environment_4kpch")
 
+[connection signal="pressed" from="GameOver/VBoxContainer/RespawnButton" to="GameOver" method="_on_respawn_button_pressed"]
 [connection signal="pressed" from="GameOver/VBoxContainer/RestartButton" to="GameOver" method="_on_restart_button_pressed"]
 [connection signal="pressed" from="GameOver/VBoxContainer/QuitButton" to="GameOver" method="_on_quit_button_pressed"]

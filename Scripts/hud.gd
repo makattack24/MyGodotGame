@@ -4,6 +4,7 @@ var inventory_label: Label
 @onready var inventory_bar: HBoxContainer = $InventoryBar if has_node("InventoryBar") else null
 @onready var health_bar: ProgressBar = $HealthBarContainer/HealthBar if has_node("HealthBarContainer/HealthBar") else null
 @onready var health_label: Label = $HealthBarContainer/HealthLabel if has_node("HealthBarContainer/HealthLabel") else null
+@onready var notification_label: Label = null
 
 # Preload the inventory slot scene
 var inventory_slot_scene = preload("res://Scenes/inventory_slot.tscn")
@@ -16,6 +17,9 @@ var selected_slot_index: int = 0
 
 func _ready() -> void:
 	inventory_label = $HBoxContainer/WoodCount
+	
+	# Setup notification label
+	setup_notification_label()
 	
 	# Create inventory slots (only if InventoryBar exists)
 	if inventory_bar:
@@ -71,21 +75,39 @@ func update_inventory_bar() -> void:
 	if not inventory_bar:
 		return
 		
-	var slot_index = 0
 	var slots = inventory_bar.get_children()
 	
-	# Update slots with items
+	# First, update existing slots with current counts
+	for slot in slots:
+		if slot.item_name != "":
+			var count = Inventory.get_item_count(slot.item_name)
+			if count > 0:
+				# Update the count for existing items
+				slot.set_item(slot.item_name, count, slot.item_texture)
+			else:
+				# Item count is 0, clear the slot
+				slot.clear_slot()
+	
+	# Then, add new items to empty slots
 	for item_name in Inventory.inventory.keys():
 		var count = Inventory.inventory[item_name]
-		if count > 0 and slot_index < slots.size():
-			var texture = Inventory.get_item_texture(item_name)
-			slots[slot_index].set_item(item_name, count, texture)
-			slot_index += 1
-	
-	# Clear remaining slots
-	while slot_index < slots.size():
-		slots[slot_index].clear_slot()
-		slot_index += 1
+		if count <= 0:
+			continue
+			
+		# Check if this item is already in a slot
+		var item_found = false
+		for slot in slots:
+			if slot.item_name == item_name:
+				item_found = true
+				break
+		
+		# If not found, add to first empty slot
+		if not item_found:
+			for slot in slots:
+				if slot.item_name == "":
+					var texture = Inventory.get_item_texture(item_name)
+					slot.set_item(item_name, count, texture)
+					break
 
 func _on_inventory_updated() -> void:
 	update_inventory_display()
@@ -150,3 +172,44 @@ func get_selected_item() -> Dictionary:
 		return {"name": slot.item_name, "count": slot.count}
 	
 	return {"name": "", "count": 0}
+
+func setup_notification_label() -> void:
+	# Create a notification label for save/load messages
+	notification_label = Label.new()
+	notification_label.name = "NotificationLabel"
+	notification_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	notification_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	notification_label.modulate = Color(1, 1, 0, 0)  # Start invisible (yellow text)
+	
+	# Position in center of screen
+	notification_label.anchor_left = 0.5
+	notification_label.anchor_right = 0.5
+	notification_label.anchor_top = 0.3
+	notification_label.anchor_bottom = 0.3
+	notification_label.offset_left = -150
+	notification_label.offset_right = 150
+	notification_label.offset_top = -30
+	notification_label.offset_bottom = 30
+	
+	# Style the label
+	notification_label.add_theme_font_size_override("font_size", 24)
+	
+	add_child(notification_label)
+
+func show_notification(message: String, duration: float = 2.0) -> void:
+	if not notification_label:
+		return
+	
+	notification_label.text = message
+	
+	# Fade in
+	var tween = create_tween()
+	tween.tween_property(notification_label, "modulate:a", 1.0, 0.3)
+	
+	# Wait
+	await get_tree().create_timer(duration).timeout
+	
+	# Fade out
+	if notification_label:  # Check if still exists
+		var fade_tween = create_tween()
+		fade_tween.tween_property(notification_label, "modulate:a", 0.0, 0.5)
