@@ -5,6 +5,7 @@ var inventory_label: Label
 @onready var health_bar: ProgressBar = $HealthBarContainer/HealthBar if has_node("HealthBarContainer/HealthBar") else null
 @onready var health_label: Label = $HealthBarContainer/HealthLabel if has_node("HealthBarContainer/HealthLabel") else null
 @onready var notification_label: Label = null
+@onready var controls_panel: VBoxContainer = null
 
 # Preload the inventory slot scene
 var inventory_slot_scene = preload("res://Scenes/inventory_slot.tscn")
@@ -20,6 +21,9 @@ func _ready() -> void:
 	
 	# Setup notification label
 	setup_notification_label()
+	
+	# Setup controls panel
+	setup_controls_panel()
 	
 	# Create inventory slots (only if InventoryBar exists)
 	if inventory_bar:
@@ -213,3 +217,52 @@ func show_notification(message: String, duration: float = 2.0) -> void:
 	if notification_label:  # Check if still exists
 		var fade_tween = create_tween()
 		fade_tween.tween_property(notification_label, "modulate:a", 0.0, 0.5)
+
+func setup_controls_panel() -> void:
+	# Create a panel to show controls
+	controls_panel = VBoxContainer.new()
+	controls_panel.name = "ControlsPanel"
+	
+	# Position in bottom-right corner
+	controls_panel.anchor_left = 1.0
+	controls_panel.anchor_right = 1.0
+	controls_panel.anchor_top = 1.0
+	controls_panel.anchor_bottom = 1.0
+	controls_panel.offset_left = -200
+	controls_panel.offset_right = -10
+	controls_panel.offset_top = -150
+	controls_panel.offset_bottom = -10
+	
+	add_child(controls_panel)
+	
+	# Add title
+	var title = Label.new()
+	title.text = "CONTROLS"
+	title.add_theme_font_size_override("font_size", 16)
+	title.modulate = Color(1, 1, 0.5)
+	controls_panel.add_child(title)
+	
+	# Add separator
+	var separator = Label.new()
+	separator.text = "─────────────"
+	separator.modulate = Color(0.5, 0.5, 0.5)
+	controls_panel.add_child(separator)
+	
+	# Add control hints
+	add_control_hint("WASD - Move")
+	add_control_hint("Mouse Wheel - Select Item")
+	add_control_hint("B - Toggle Build Mode")
+	add_control_hint("E - Pickup Placed Items")
+	add_control_hint("Left Click - Attack/Place")
+	add_control_hint("Right Click - Cancel Build")
+	add_control_hint("Enter - Interact")
+
+func add_control_hint(text: String) -> void:
+	if not controls_panel:
+		return
+	
+	var label = Label.new()
+	label.text = text
+	label.add_theme_font_size_override("font_size", 12)
+	label.modulate = Color(0.9, 0.9, 0.9)
+	controls_panel.add_child(label)

@@ -5,14 +5,16 @@ signal inventory_updated  # Signal emitted when inventory is updated
 var inventory: Dictionary = {
     "wood": 0,
     "coin": 0,
-    "axe": 1  # Start with 1 axe
+    "axe": 1,  # Start with 1 axe
+    "saw_mill": 400  # Start with 1 saw mill for testing
 }
 
 # Item textures - add your item textures here
 var item_textures: Dictionary = {
     "wood": preload("res://Assets/woodItem.png"),
     "coin": preload("res://Assets/coin.png"),
-    "axe": preload("res://Assets/WoodAxe.png")
+    "axe": preload("res://Assets/WoodAxe.png"),
+    "saw_mill": preload("res://Assets/saw mill machine.png")
 }
 
 func _ready() -> void:

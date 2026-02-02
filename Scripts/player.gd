@@ -50,6 +50,16 @@ var is_attacking: bool = false
 # Current facing direction, defaults to "down"
 var facing_direction: String = "down"
 
+# Placement mode
+var placement_mode: bool = false
+var placement_preview: Node2D = null
+var saw_mill_scene = preload("res://Scenes/saw_mill_machine.tscn")
+var grid_size: int = 16  # Grid size for snapping placed items
+var placement_cooldown: float = 0.0  # Cooldown for continuous placement
+var placement_cooldown_time: float = 0.2  # Time between placements
+var build_mode_label: Label = null  # UI label for build mode indicator
+var placement_radius: float = 100.0  # Maximum distance from player to place items
+
 func _ready() -> void:
 	# Add player to the Player group for item detection
 	add_to_group("Player")
@@ -98,6 +108,10 @@ func _process(_delta: float) -> void:
 	if damage_cooldown > 0:
 		damage_cooldown -= _delta
 	
+	# Update placement cooldown
+	if placement_cooldown > 0:
+		placement_cooldown -= _delta
+	
 	# Apply screen shake
 	if shake_amount > 0 and camera:
 		camera.offset = Vector2(
@@ -118,6 +132,15 @@ func _process(_delta: float) -> void:
 func handle_input() -> void:
 	if is_attacking:
 		return
+	
+	# Check for placement mode toggle (B key)
+	if Input.is_action_just_pressed("build_mode"):
+		toggle_placement_mode()
+	
+	# Handle placement mode (but don't block movement)
+	if placement_mode:
+		handle_placement_mode()
+	
 	velocity = Vector2.ZERO
 	if Input.is_action_pressed("ui_right") or Input.is_action_pressed("move_right"):
 		velocity.x += 1
@@ -140,11 +163,12 @@ func handle_input() -> void:
 	elif velocity.y < 0:
 		facing_direction = "up"
 
-	# Attack actions
-	if Input.is_action_pressed("attack1"):
-		trigger_attack_animation("attack1")
-	elif Input.is_action_pressed("attack2"):
-		trigger_attack_animation("attack2")
+	# Attack actions (only if not in placement mode)
+	if not placement_mode:
+		if Input.is_action_pressed("attack1"):
+			trigger_attack_animation("attack1")
+		elif Input.is_action_pressed("attack2"):
+			trigger_attack_animation("attack2")
 
 func move_and_animate() -> void:
 	# Move the player and animate based on velocity
@@ -379,6 +403,20 @@ func initialize_input() -> void:
 		event_attack2.button_index = MOUSE_BUTTON_RIGHT
 		input_map.action_add_event("attack2", event_attack2)
 
+	# Add B key for build mode
+	if not input_map.has_action("build_mode"):
+		input_map.add_action("build_mode")
+		var event_build = InputEventKey.new()
+		event_build.physical_keycode = KEY_B
+		input_map.action_add_event("build_mode", event_build)
+	
+	# Add E key for pickup/interact
+	if not input_map.has_action("pickup"):
+		input_map.add_action("pickup")
+		var event_pickup = InputEventKey.new()
+		event_pickup.physical_keycode = KEY_E
+		input_map.action_add_event("pickup", event_pickup)
+
 # Save player data
 func save() -> Dictionary:
 	return {
@@ -396,4 +434,187 @@ func load_data(data: Dictionary) -> void:
 	max_health = data.get("max_health", 10)
 	facing_direction = data.get("facing_direction", "down")
 	emit_signal("health_changed", current_health, max_health)
+
+func toggle_placement_mode() -> void:
+	# Check if player has a saw mill selected
+	var hud = get_tree().root.find_child("HUD", true, false)
+	var selected_item = ""
+	if hud and hud.has_method("get_selected_item"):
+		var item_data = hud.get_selected_item()
+		selected_item = item_data["name"]
+	
+	if selected_item == "saw_mill":
+		# Check if player has the item in inventory
+		if Inventory.get_item_count("saw_mill") > 0:
+			placement_mode = !placement_mode
+			if placement_mode:
+				start_placement_mode()
+			else:
+				cancel_placement_mode()
+		else:
+			print("No saw mill machine in inventory!")
+	else:
+		print("Select saw mill machine from inventory first!")
+
+func start_placement_mode() -> void:
+	print("Placement mode activated - Move mouse to place, Hold Left Click to place continuously, Right Click to cancel")
+	# Create preview
+	placement_preview = saw_mill_scene.instantiate()
+	get_parent().add_child(placement_preview)
+	placement_preview.modulate = Color(0.5, 1, 0.5, 0.7)  # Green tint
+	
+	# Disable collisions on the preview
+	disable_preview_collisions(placement_preview)
+	
+	# Add visual feedback to player
+	anim_sprite.modulate = Color(0.7, 1.0, 0.7)  # Slight green tint
+	
+	# Create build mode UI label
+	create_build_mode_label()
+
+func cancel_placement_mode() -> void:
+	placement_mode = false
+	if placement_preview:
+		placement_preview.queue_free()
+		placement_preview = null
+	
+	# Remove visual feedback from player
+	anim_sprite.modulate = Color(1, 1, 1)  # Reset to normal
+	
+	# Remove build mode UI label
+	remove_build_mode_label()
+	
+	print("Placement mode cancelled")
+
+func handle_placement_mode() -> void:
+	# Update preview position to mouse cursor with grid snapping
+	if placement_preview:
+		var mouse_pos = get_global_mouse_position()
+		# Snap to grid
+		var snapped_pos = Vector2(
+			floor(mouse_pos.x / grid_size) * grid_size + grid_size / 2.0,
+			floor(mouse_pos.y / grid_size) * grid_size + grid_size / 2.0
+		)
+		placement_preview.global_position = snapped_pos
+		
+		# Check if within placement radius
+		var distance_from_player = global_position.distance_to(snapped_pos)
+		var within_range = distance_from_player <= placement_radius
+		
+		# Check if position is valid (no other machines there and within range)
+		if within_range and is_position_valid_for_placement(snapped_pos):
+			placement_preview.modulate = Color(0.5, 1, 0.5, 0.7)  # Green = valid
+		else:
+			if not within_range:
+				placement_preview.modulate = Color(1, 1, 0.5, 0.7)  # Yellow = out of range
+			else:
+				placement_preview.modulate = Color(1, 0.5, 0.5, 0.7)  # Red = invalid position
+	
+	# Left click to place (hold down to keep placing)
+	if Input.is_action_pressed("attack1") and placement_cooldown <= 0:
+		place_machine()
+	
+	# Right click to cancel
+	if Input.is_action_just_pressed("attack2"):
+		cancel_placement_mode()
+
+func place_machine() -> void:
+	if placement_preview:
+		# Check if within range
+		var distance_from_player = global_position.distance_to(placement_preview.global_position)
+		if distance_from_player > placement_radius:
+			print("Too far away to place! Get closer.")
+			return
+		
+		# Check if position is valid
+		if not is_position_valid_for_placement(placement_preview.global_position):
+			print("Cannot place here - position occupied!")
+			return
+		
+		# Remove item from inventory
+		if Inventory.remove_item("saw_mill", 1):
+			# Create actual machine
+			var machine = saw_mill_scene.instantiate()
+			get_parent().add_child(machine)
+			machine.global_position = placement_preview.global_position
+			if machine.has_method("place_machine"):
+				machine.place_machine()
+			
+			print("Saw mill machine placed!")
+			
+			# Set cooldown for continuous placement
+			placement_cooldown = placement_cooldown_time
+			
+			# Stay in placement mode - don't exit or remove preview
+		else:
+			print("No more saw mills in inventory!")
+			cancel_placement_mode()
+
+func disable_preview_collisions(node: Node) -> void:
+	# Recursively disable all collision shapes and physics bodies
+	if node is CollisionShape2D or node is CollisionPolygon2D:
+		node.set_deferred("disabled", true)
+	elif node is PhysicsBody2D:
+		node.set_deferred("collision_layer", 0)
+		node.set_deferred("collision_mask", 0)
+	
+	for child in node.get_children():
+		disable_preview_collisions(child)
+
+func is_position_valid_for_placement(pos: Vector2) -> bool:
+	# Check if too close to player
+	if global_position.distance_to(pos) < grid_size * 1.5:
+		return false  # Too close to player, would get stuck
+	
+	# Saw mill is 2x2 grid cells, check all 4 positions it would occupy
+	var offsets = [
+		Vector2(-grid_size / 2.0, -grid_size / 2.0),  # Top-left
+		Vector2(grid_size / 2.0, -grid_size / 2.0),   # Top-right
+		Vector2(-grid_size / 2.0, grid_size / 2.0),   # Bottom-left
+		Vector2(grid_size / 2.0, grid_size / 2.0)     # Bottom-right
+	]
+	
+	# Check each grid cell the saw mill would occupy
+	for offset in offsets:
+		var check_pos = pos + offset
+		
+		# Check if there's already a saw mill occupying this cell
+		var machines = get_tree().get_nodes_in_group("SawMills")
+		for machine in machines:
+			# Skip the preview itself
+			if machine == placement_preview:
+				continue
+			# Check if machine is placed (not a preview)
+			if machine.has_method("place_machine") and machine.is_placed:
+				# Check all 4 cells of the existing machine
+				for existing_offset in offsets:
+					var existing_cell = machine.global_position + existing_offset
+					if existing_cell.distance_to(check_pos) < grid_size * 0.5:
+						return false  # Overlapping with another machine
+		
+		# Check if there's a tree in this cell
+		var trees = get_tree().get_nodes_in_group("Trees")
+		for tree in trees:
+			if tree.global_position.distance_to(check_pos) < grid_size:
+				return false  # Too close to a tree
+	
+	return true
+
+func create_build_mode_label() -> void:
+	# Create a label to show "BUILD MODE" on screen
+	build_mode_label = Label.new()
+	build_mode_label.text = "BUILD MODE"
+	build_mode_label.add_theme_font_size_override("font_size", 24)
+	build_mode_label.modulate = Color(0.5, 1, 0.5)  # Green color
+	
+	# Position at top center of screen
+	build_mode_label.position = Vector2(-50, -250)  # Relative to player
+	build_mode_label.z_index = 100
+	
+	add_child(build_mode_label)
+
+func remove_build_mode_label() -> void:
+	if build_mode_label:
+		build_mode_label.queue_free()
+		build_mode_label = null
 

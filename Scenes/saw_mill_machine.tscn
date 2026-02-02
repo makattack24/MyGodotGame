@@ -1,0 +1,23 @@
+[gd_scene format=3 uid="uid://cns6oxvn3ds0h"]
+
+[ext_resource type="Script" uid="uid://emoe6ibby1pp" path="res://Scripts/saw_mill_machine.gd" id="1_1fqyy"]
+[ext_resource type="Texture2D" uid="uid://boag0bjxmvmkr" path="res://Assets/saw mill machine.png" id="1_vrgg7"]
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_1fqyy"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_1fqyy"]
+size = Vector2(32, 32)
+
+[node name="SawMillMachine" type="Node2D" unique_id=922751811]
+script = ExtResource("1_1fqyy")
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=977930752]
+sprite_frames = SubResource("SpriteFrames_1fqyy")
+
+[node name="SawMillMachineSprite" type="Sprite2D" parent="." unique_id=1321264284]
+texture = ExtResource("1_vrgg7")
+
+[node name="StaticBody2D" type="StaticBody2D" parent="." unique_id=1444125820]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="StaticBody2D" unique_id=211353227]
+shape = SubResource("RectangleShape2D_1fqyy")
