@@ -20,6 +20,9 @@ var is_dead: bool = false  # Track if player is dead
 # Reference to death sound (add an AudioStreamPlayer node in your scene named "DeathSound")
 @onready var death_sound: AudioStreamPlayer2D = null  # Will be set in _ready if it exists
 
+# Reference to damage sound
+@onready var damage_sound: AudioStreamPlayer2D = null  # Will be set in _ready if it exists
+
 # Reference to camera for screen shake
 var camera: Camera2D = null
 
@@ -85,6 +88,10 @@ func _ready() -> void:
 	# Get death sound if it exists
 	if has_node("DeathSound"):
 		death_sound = $DeathSound
+	
+	# Get damage sound if it exists
+	if has_node("DamageSound"):
+		damage_sound = $DamageSound
 	
 	# Get camera reference from the scene tree
 	camera = get_viewport().get_camera_2d()
@@ -264,6 +271,10 @@ func take_damage(damage: int) -> void:
 	current_health -= damage
 	damage_cooldown = damage_cooldown_time  # Start cooldown
 	print("Player hit! Health: ", current_health, "/", max_health)
+	
+	# Play damage sound
+	if damage_sound:
+		damage_sound.play()
 	
 	# Emit health changed signal
 	emit_signal("health_changed", current_health, max_health)

@@ -1,0 +1,107 @@
+[gd_scene format=3 uid="uid://dpwo42n3ovh7q"]
+
+[ext_resource type="Script" path="res://Scripts/npc.gd" id="1_merchant"]
+[ext_resource type="Texture2D" uid="uid://bdr7hmu4qo20i" path="res://Assets/FreeDownloadedAssets/FREE_Adventurer 2D Pixel Art/Sprites/IDLE/idle_down.png" id="2_xxsvc"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_g6unj"]
+atlas = ExtResource("2_xxsvc")
+region = Rect2(0, 0, 96, 80)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_h1ryf"]
+atlas = ExtResource("2_xxsvc")
+region = Rect2(96, 0, 96, 80)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_1ig1v"]
+atlas = ExtResource("2_xxsvc")
+region = Rect2(192, 0, 96, 80)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_6atyd"]
+atlas = ExtResource("2_xxsvc")
+region = Rect2(288, 0, 96, 80)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_2xkex"]
+atlas = ExtResource("2_xxsvc")
+region = Rect2(384, 0, 96, 80)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_8gudg"]
+atlas = ExtResource("2_xxsvc")
+region = Rect2(480, 0, 96, 80)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_qi7up"]
+atlas = ExtResource("2_xxsvc")
+region = Rect2(576, 0, 96, 80)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_a6nw3"]
+atlas = ExtResource("2_xxsvc")
+region = Rect2(672, 0, 96, 80)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_b4syp"]
+animations = [{
+"frames": [],
+"loop": true,
+"name": &"default",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_g6unj")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_h1ryf")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_1ig1v")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_6atyd")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_2xkex")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_8gudg")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_qi7up")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_a6nw3")
+}],
+"loop": true,
+"name": &"idle",
+"speed": 5.0
+}]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_1"]
+radius = 16.0
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_2"]
+radius = 50.0
+
+[node name="NPC" type="CharacterBody2D" unique_id=1698899941]
+collision_layer = 2
+script = ExtResource("1_merchant")
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=276256024]
+scale = Vector2(2, 2)
+sprite_frames = SubResource("SpriteFrames_b4syp")
+animation = &"idle"
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=826435431]
+shape = SubResource("CircleShape2D_1")
+
+[node name="InteractionArea" type="Area2D" parent="." unique_id=309110875]
+collision_layer = 0
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="InteractionArea" unique_id=2100914845]
+shape = SubResource("CircleShape2D_2")
+
+[node name="InteractionLabel" type="Label" parent="." unique_id=510978452]
+offset_left = -40.0
+offset_top = -40.0
+offset_right = 40.0
+offset_bottom = -20.0
+theme_override_colors/font_color = Color(1, 1, 0, 1)
+theme_override_font_sizes/font_size = 12
+text = "Press E to talk"
+horizontal_alignment = 1
