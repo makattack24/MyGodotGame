@@ -1012,7 +1012,7 @@ size = Vector2(40, 40)
 
 [node name="Player" type="CharacterBody2D" unique_id=1229123879]
 script = ExtResource("1_cvnsp")
-max_health = 1
+max_health = 5
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=490325349]
 position = Vector2(0, 4)

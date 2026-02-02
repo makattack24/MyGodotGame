@@ -2,6 +2,7 @@
 
 [ext_resource type="Texture2D" uid="uid://5dwso8wk6esl" path="res://Assets/woodItem.png" id="1_7pgax"]
 [ext_resource type="Script" uid="uid://8pdtjc75jxx6" path="res://Scripts/wood_item.gd" id="1_iaoic"]
+[ext_resource type="AudioStream" uid="uid://b44vcokab1rny" path="res://Audio/wood-falling-on-carpet-326940.mp3" id="3_vh4iw"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_iaoic"]
 size = Vector2(8.25, 8.75)
@@ -16,3 +17,7 @@ texture = ExtResource("1_7pgax")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D" unique_id=999929427]
 shape = SubResource("RectangleShape2D_iaoic")
+
+[node name="WoodPickupSound" type="AudioStreamPlayer2D" parent="." unique_id=1711077227]
+stream = ExtResource("3_vh4iw")
+volume_db = 8.432

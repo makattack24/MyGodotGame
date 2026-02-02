@@ -228,9 +228,9 @@ func setup_controls_panel() -> void:
 	controls_panel.anchor_right = 1.0
 	controls_panel.anchor_top = 1.0
 	controls_panel.anchor_bottom = 1.0
-	controls_panel.offset_left = -200
-	controls_panel.offset_right = -10
-	controls_panel.offset_top = -150
+	controls_panel.offset_left = -195
+	controls_panel.offset_right = -5
+	controls_panel.offset_top = -220
 	controls_panel.offset_bottom = -10
 	
 	add_child(controls_panel)
