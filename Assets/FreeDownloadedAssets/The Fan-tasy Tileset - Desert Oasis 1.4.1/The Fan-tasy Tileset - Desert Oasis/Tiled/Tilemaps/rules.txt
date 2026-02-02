@@ -1,0 +1,2 @@
+Rules\RockSlopes2_Rules.tmx
+Rules\RockSlopes_Sand_Rules.tmx

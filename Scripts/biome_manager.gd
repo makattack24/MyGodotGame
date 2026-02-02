@@ -16,15 +16,22 @@ enum BiomeType {
 	CAVE        # Dark/rocky area
 }
 
+# ==============================
+# TILE SOURCE CONFIGURATION
+# ==============================
+# Each biome can use a different Tile Source in your TileSet
+# When you add a new Tile Source (e.g., desert tiles), update the source_id and ground_tiles below
+
 # Biome definitions with properties
 var biome_data: Dictionary = {
 	BiomeType.STARTER: {
 		"name": "Starter Plains",
-		"ground_tiles": [  # Grass tiles
+		"source_id": 0,  # Tile Source ID in your TileSet (currently grass)
+		"ground_tiles": [  # Atlas coordinates within that source
 			Vector2i(8, 1), Vector2i(8, 2), Vector2i(9, 1), Vector2i(9, 2),
 			Vector2i(10, 1), Vector2i(10, 2), Vector2i(11, 1), Vector2i(11, 2)
 		],
-		"tree_spawn_chance": 0.3,
+		"tree_spawn_chance": 0.08,
 		"min_tree_spacing": 60.0,
 		"enemy_spawn_chance": 0.1,
 		"enemies_per_camp": 2,
@@ -32,22 +39,24 @@ var biome_data: Dictionary = {
 	},
 	BiomeType.FOREST: {
 		"name": "Forest",
+		"source_id": 0,  # Using grass source for now
 		"ground_tiles": [
 			Vector2i(8, 1), Vector2i(9, 1), Vector2i(10, 1), Vector2i(10, 2),
 			Vector2i(11, 1), Vector2i(11, 2)
 		],
-		"tree_spawn_chance": 0.6,
+		"tree_spawn_chance": 0.15,
 		"min_tree_spacing": 45.0,
 		"enemy_spawn_chance": 0.3,
 		"enemies_per_camp": 3,
-		"color_tint": Color(0.9, 1.0, 0.9, 1.0)  # Slight green tint
+		"color_tint": Color(0.9, 1.0, 0.9, 1.0)
 	},
 	BiomeType.DENSE_FOREST: {
 		"name": "Dense Forest",
+		"source_id": 0,  # Using grass source for now
 		"ground_tiles": [
 			Vector2i(8, 1), Vector2i(9, 1), Vector2i(10, 1), Vector2i(11, 1)
 		],
-		"tree_spawn_chance": 0.8,
+		"tree_spawn_chance": 0.25,
 		"min_tree_spacing": 35.0,
 		"enemy_spawn_chance": 0.4,
 		"enemies_per_camp": 4,
@@ -55,58 +64,64 @@ var biome_data: Dictionary = {
 	},
 	BiomeType.SWAMP: {
 		"name": "Swamp",
-		"ground_tiles": [
+		"source_id": 0,  # TODO: Change to 2 (or whatever) when you add swamp Tile Source
+		"ground_tiles": [  # TODO: Update with swamp atlas coordinates
 			Vector2i(10, 3), Vector2i(10, 4), Vector2i(11, 3), Vector2i(11, 4)
 		],
-		"tree_spawn_chance": 0.4,
+		"tree_spawn_chance": 0.12,
 		"min_tree_spacing": 50.0,
 		"enemy_spawn_chance": 0.5,
 		"enemies_per_camp": 4,
-		"color_tint": Color(0.8, 0.9, 0.7, 1.0)  # Murky green
+		"color_tint": Color(0.8, 0.9, 0.7, 1.0)
 	},
 	BiomeType.TAIGA: {
 		"name": "Taiga",
-		"ground_tiles": [
+		"source_id": 0,  # TODO: Change to 3 (or whatever) when you add taiga Tile Source
+		"ground_tiles": [  # TODO: Update with taiga atlas coordinates
 			Vector2i(8, 2), Vector2i(9, 2), Vector2i(10, 2), Vector2i(11, 2)
 		],
-		"tree_spawn_chance": 0.5,
+		"tree_spawn_chance": 0.14,
 		"min_tree_spacing": 55.0,
 		"enemy_spawn_chance": 0.3,
 		"enemies_per_camp": 3,
-		"color_tint": Color(0.9, 0.95, 1.0, 1.0)  # Cool tint
+		"color_tint": Color(0.9, 0.95, 1.0, 1.0)
 	},
 	BiomeType.DESERT: {
 		"name": "Desert",
-		"ground_tiles": [
-			Vector2i(10, 3), Vector2i(10, 4), Vector2i(11, 3), Vector2i(11, 4)
+		"source_id": 1,  # TODO: Change to 1 when you add desert Tile Source
+		"ground_tiles": [  # TODO: Update with desert atlas coordinates from new source
+			Vector2i(5, 64), Vector2i(5, 65), Vector2i(0, 64), Vector2i(1, 64),
+			Vector2i(0, 65), Vector2i(1, 65), Vector2i(2, 65), Vector2i(3, 65)
 		],
-		"tree_spawn_chance": 0.1,
+		"tree_spawn_chance": 0.02,
 		"min_tree_spacing": 80.0,
 		"enemy_spawn_chance": 0.4,
 		"enemies_per_camp": 3,
-		"color_tint": Color(1.0, 0.95, 0.8, 1.0)  # Sandy yellow
+		"color_tint": Color(1.0, 0.95, 0.8, 1.0)
 	},
 	BiomeType.TUNDRA: {
 		"name": "Tundra",
-		"ground_tiles": [
+		"source_id": 0,  # TODO: Change to 4 (or whatever) when you add tundra Tile Source
+		"ground_tiles": [  # TODO: Update with tundra atlas coordinates
 			Vector2i(8, 2), Vector2i(9, 2), Vector2i(10, 2)
 		],
-		"tree_spawn_chance": 0.2,
+		"tree_spawn_chance": 0.05,
 		"min_tree_spacing": 70.0,
 		"enemy_spawn_chance": 0.6,
 		"enemies_per_camp": 5,
-		"color_tint": Color(0.9, 0.9, 1.0, 1.0)  # Cold blue tint
+		"color_tint": Color(0.9, 0.9, 1.0, 1.0)
 	},
 	BiomeType.CAVE: {
 		"name": "Cave Entrance",
-		"ground_tiles": [
+		"source_id": 0,  # TODO: Change to 5 (or whatever) when you add cave Tile Source
+		"ground_tiles": [  # TODO: Update with cave atlas coordinates
 			Vector2i(10, 4), Vector2i(11, 4)
 		],
-		"tree_spawn_chance": 0.05,
+		"tree_spawn_chance": 0.01,
 		"min_tree_spacing": 100.0,
 		"enemy_spawn_chance": 0.7,
 		"enemies_per_camp": 6,
-		"color_tint": Color(0.7, 0.7, 0.8, 1.0)  # Dark tint
+		"color_tint": Color(0.7, 0.7, 0.8, 1.0)
 	}
 }
 
@@ -116,12 +131,12 @@ var biome_data: Dictionary = {
 
 # Distance-based biome rings (distance from spawn point)
 var biome_rings: Array[Dictionary] = [
-	{"min_distance": 0,    "max_distance": 300,  "biomes": [BiomeType.STARTER]},
-	{"min_distance": 300,  "max_distance": 600,  "biomes": [BiomeType.FOREST, BiomeType.STARTER]},
-	{"min_distance": 600,  "max_distance": 1000, "biomes": [BiomeType.FOREST, BiomeType.DENSE_FOREST, BiomeType.TAIGA]},
-	{"min_distance": 1000, "max_distance": 1500, "biomes": [BiomeType.DENSE_FOREST, BiomeType.SWAMP, BiomeType.TAIGA, BiomeType.DESERT]},
-	{"min_distance": 1500, "max_distance": 2500, "biomes": [BiomeType.SWAMP, BiomeType.DESERT, BiomeType.TUNDRA, BiomeType.CAVE]},
-	{"min_distance": 2500, "max_distance": 99999, "biomes": [BiomeType.CAVE, BiomeType.TUNDRA, BiomeType.DESERT]}
+	{"min_distance": 0,    "max_distance": 500,  "biomes": [BiomeType.STARTER]},
+	{"min_distance": 500,  "max_distance": 1000, "biomes": [BiomeType.FOREST, BiomeType.STARTER]},
+	{"min_distance": 1000, "max_distance": 1800, "biomes": [BiomeType.FOREST, BiomeType.DENSE_FOREST]},
+	{"min_distance": 1800, "max_distance": 2800, "biomes": [BiomeType.TAIGA, BiomeType.DESERT]},
+	{"min_distance": 2800, "max_distance": 4000, "biomes": [BiomeType.SWAMP, BiomeType.TUNDRA]},
+	{"min_distance": 4000, "max_distance": 99999, "biomes": [BiomeType.CAVE, BiomeType.TUNDRA]}
 ]
 
 # ==============================
@@ -139,12 +154,13 @@ var spawn_point: Vector2 = Vector2.ZERO
 func _ready() -> void:
 	# Initialize biome noise for smooth transitions
 	biome_noise.seed = 1337
-	biome_noise.frequency = 0.01  # Very low frequency for large biome areas
-	biome_noise.fractal_octaves = 3
+	biome_noise.frequency = 0.0008  # VERY low frequency for large biome regions
+	biome_noise.fractal_octaves = 2  # Fewer octaves = smoother, larger areas
+	biome_noise.noise_type = FastNoiseLite.TYPE_PERLIN
 	
 	# Variation noise for mixing biomes
 	variation_noise.seed = 7331
-	variation_noise.frequency = 0.03
+	variation_noise.frequency = 0.002
 
 func set_spawn_point(pos: Vector2) -> void:
 	spawn_point = pos
@@ -190,6 +206,12 @@ func get_ground_tiles_for_position(world_pos: Vector2) -> Array:
 	var biome_type = get_biome_at_position(world_pos)
 	var data = get_biome_data_for_type(biome_type)
 	return data.get("ground_tiles", [])
+
+func get_source_id_for_position(world_pos: Vector2) -> int:
+	"""Get the Tile Source ID for a position"""
+	var biome_type = get_biome_at_position(world_pos)
+	var data = get_biome_data_for_type(biome_type)
+	return data.get("source_id", 0)
 
 func get_tree_spawn_chance_for_position(world_pos: Vector2) -> float:
 	"""Get tree spawn chance for a position"""

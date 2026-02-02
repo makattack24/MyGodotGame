@@ -7,18 +7,16 @@ extends TileMapLayer
 @export var tile_radius: int = 45          # Radius of tiles around player to generate
 @export var world_seed: int = 1337         # Deterministic seed for noise-based generation
 
-# Atlas source ID for the tileset (make sure this matches your Tileset source ID in the editor)
-const SOURCE_ID: int = 0
-
-# Reference to BiomeManager
-var biome_manager: Node = null
-
-# Fallback ground tiles (if biome manager not available)
+# Default source ID and tiles (fallback if biome manager not available)
+const DEFAULT_SOURCE_ID: int = 0
 const GROUND_TILES: Array[Vector2i] = [
 	Vector2i(8, 1), Vector2i(8, 2), Vector2i(9, 1), Vector2i(9, 2),
 	Vector2i(10, 1), Vector2i(10, 2), Vector2i(10, 3), Vector2i(10, 4),
 	Vector2i(11, 1), Vector2i(11, 2), Vector2i(11, 3), Vector2i(11, 4)
 ]
+
+# Reference to BiomeManager
+var biome_manager: Node = null
 
 # ==============================
 # INTERNAL STATE VARIABLES
@@ -62,12 +60,30 @@ func generate_around(world_pos: Vector2) -> void:
 # ==============================
 
 func _place_tile(pos: Vector2i) -> void:
-	# Pick atlas coordinate deterministically based on tile position
-	var atlas_coord: Vector2i = _choose_tile(pos)
+	# Pick atlas coordinate and source ID based on biome
+	var world_pos = map_to_local(pos)
+	var atlas_coord: Vector2i
+	var source_id: int = DEFAULT_SOURCE_ID
+	
+	# Get biome manager if not already cached
+	if not biome_manager:
+		biome_manager = get_parent().get_node_or_null("BiomeManager")
+	
+	# Get biome-specific tiles and source ID
+	if biome_manager:
+		source_id = biome_manager.get_source_id_for_position(world_pos)
+		var biome_tiles = biome_manager.get_ground_tiles_for_position(world_pos)
+		if not biome_tiles.is_empty():
+			atlas_coord = _choose_tile_from_array(pos, biome_tiles)
+		else:
+			atlas_coord = _choose_tile_from_array(pos, GROUND_TILES)
+	else:
+		atlas_coord = _choose_tile_from_array(pos, GROUND_TILES)
+	
 	set_cell(
 		pos,          # Vector2i tile coordinates
-		SOURCE_ID,    # Source ID of tileset
-		atlas_coord   # Atlas coordinates for tile selection
+		source_id,    # Source ID from biome (can be different per biome!)
+		atlas_coord   # Atlas coordinates within that source
 	)
 
 # ==============================
@@ -89,9 +105,12 @@ func _choose_tile(pos: Vector2i) -> Vector2i:
 		if not biome_tiles.is_empty():
 			available_tiles = biome_tiles
 	
+	return _choose_tile_from_array(pos, available_tiles)
+
+func _choose_tile_from_array(pos: Vector2i, tiles: Array) -> Vector2i:
 	# Determines tile type using noise and tile position
 	var n: float = (noise.get_noise_2d(pos.x, pos.y) + 1.0) * 0.5
-	var index: int = int(floor(n * available_tiles.size()))
-	index = clamp(index, 0, available_tiles.size() - 1)
-	return available_tiles[index]
+	var index: int = int(floor(n * tiles.size()))
+	index = clamp(index, 0, tiles.size() - 1)
+	return tiles[index]
 
