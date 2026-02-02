@@ -80,6 +80,9 @@ func pickup_machine() -> void:
 	
 	print("Picking up saw mill machine!")
 	
+	# Show floating text effect
+	Inventory.show_pickup_text("saw_mill", 1, global_position)
+	
 	# Add item back to inventory
 	Inventory.add_item("saw_mill", 1)
 	

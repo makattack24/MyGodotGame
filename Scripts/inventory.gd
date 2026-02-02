@@ -62,3 +62,32 @@ func load_data(data: Dictionary) -> void:
     if data.has("inventory"):
         inventory = data["inventory"].duplicate()
         emit_signal("inventory_updated")
+
+func show_pickup_text(item_name: String, amount: int, position: Vector2) -> void:
+    """Creates a floating text effect at the given position"""
+    # Get the scene tree
+    var tree = Engine.get_main_loop() as SceneTree
+    if not tree:
+        return
+    
+    # Create a label for the floating pickup text
+    var pickup_label = Label.new()
+    pickup_label.text = "+%d %s" % [amount, item_name]
+    pickup_label.add_theme_font_size_override("font_size", 20)
+    pickup_label.modulate = Color(1, 1, 0.5)  # Yellow color
+    pickup_label.z_index = 100  # Draw on top
+    
+    # Position above the item
+    pickup_label.position = position + Vector2(-20, -30)
+    
+    # Add to scene root
+    tree.root.add_child(pickup_label)
+    
+    # Animate the label (float up and fade out)
+    var tween = pickup_label.create_tween()
+    tween.set_parallel(true)  # Run animations in parallel
+    tween.tween_property(pickup_label, "position:y", pickup_label.position.y - 50, 1.0)
+    tween.tween_property(pickup_label, "modulate:a", 0.0, 1.0)
+    
+    # Delete after animation
+    tween.finished.connect(func(): pickup_label.queue_free())

@@ -35,6 +35,9 @@ func _on_body_entered(body: Node2D) -> void:
 		pickup_item()
 
 func pickup_item() -> void:
+	# Show floating text effect
+	Inventory.show_pickup_text(item_name, pickup_amount, global_position)
+	
 	# Add item to the inventory singleton
 	Inventory.add_item(item_name, pickup_amount)
 	print("Picked up ", pickup_amount, " ", item_name)
