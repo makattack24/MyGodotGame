@@ -6,20 +6,36 @@ var inventory: Dictionary = {
     "wood": 0,
     "coin": 0,
     "axe": 1,  # Start with 1 axe
-    "saw_mill": 400  # Start with 1 saw mill for testing
+    "saw_mill": 400,  # Start with 1 saw mill for testing
+    "wall": 40
 }
 
 # Item textures - add your item textures here
+# For sprite sheet items, use create_atlas_texture() in _ready
 var item_textures: Dictionary = {
     "wood": preload("res://Assets/woodItem.png"),
     "coin": preload("res://Assets/coin.png"),
     "axe": preload("res://Assets/WoodAxe.png"),
     "saw_mill": preload("res://Assets/saw mill machine.png")
+    # wall texture will be added from sprite sheet in _ready
 }
+
+# Helper function to create texture from sprite sheet region
+func create_atlas_texture(sprite_sheet_path: String, region: Rect2) -> AtlasTexture:
+    var atlas = AtlasTexture.new()
+    atlas.atlas = load(sprite_sheet_path)
+    atlas.region = region
+    return atlas
 
 func _ready() -> void:
     # Add to persist group for saving/loading
     add_to_group("persist")
+    
+    # Set up sprite sheet texture for wall (using the same region as wall.tscn)
+    item_textures["wall"] = create_atlas_texture(
+        "res://Assets/FreeDownloadedAssets/fantasy_ [version 2.0]/forest_/forest_ [fencesAndWalls].png",
+        Rect2(19, 92, 10, 17)
+    )
 
 func add_item(item_name: String, amount: int = 1) -> void:
     if inventory.has(item_name):

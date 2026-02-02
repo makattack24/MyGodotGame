@@ -1,0 +1,16 @@
+[gd_scene format=3 uid="uid://cjdn0n7cryo80"]
+
+[ext_resource type="Texture2D" uid="uid://xacg0hn2lxgu" path="res://Assets/FreeDownloadedAssets/fantasy_ [version 2.0]/forest_/forest_ [fencesAndWalls].png" id="1_d155t"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_b57mv"]
+size = Vector2(10, 17)
+
+[node name="Wall" type="StaticBody2D" unique_id=64642063]
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=1323705797]
+texture = ExtResource("1_d155t")
+region_enabled = true
+region_rect = Rect2(19, 92, 10, 17)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1622720685]
+shape = SubResource("RectangleShape2D_b57mv")

@@ -56,7 +56,12 @@ var facing_direction: String = "down"
 # Placement mode
 var placement_mode: bool = false
 var placement_preview: Node2D = null
-var saw_mill_scene = preload("res://Scenes/saw_mill_machine.tscn")
+var current_placeable_item: String = ""  # Currently selected placeable item
+var placeable_scenes: Dictionary = {
+	"saw_mill": preload("res://Scenes/saw_mill_machine.tscn"),
+	"wall": preload("res://Scenes/wall.tscn"),
+	"fence": null  # Will be set when you create fence.tscn
+}
 var grid_size: int = 16  # Grid size for snapping placed items
 var placement_cooldown: float = 0.0  # Cooldown for continuous placement
 var placement_cooldown_time: float = 0.2  # Time between placements
@@ -447,35 +452,41 @@ func load_data(data: Dictionary) -> void:
 	emit_signal("health_changed", current_health, max_health)
 
 func toggle_placement_mode() -> void:
-	# Check if player has a saw mill selected
+	# Get currently selected item
 	var hud = get_tree().root.find_child("HUD", true, false)
 	var selected_item = ""
 	if hud and hud.has_method("get_selected_item"):
 		var item_data = hud.get_selected_item()
 		selected_item = item_data["name"]
 	
-	if selected_item == "saw_mill":
+	# Check if selected item is placeable
+	if placeable_scenes.has(selected_item) and placeable_scenes[selected_item] != null:
 		# Check if player has the item in inventory
-		if Inventory.get_item_count("saw_mill") > 0:
+		if Inventory.get_item_count(selected_item) > 0:
+			current_placeable_item = selected_item
 			placement_mode = !placement_mode
 			if placement_mode:
 				start_placement_mode()
 			else:
 				cancel_placement_mode()
 		else:
-			print("No saw mill machine in inventory!")
+			print("No ", selected_item, " in inventory!")
 	else:
-		print("Select saw mill machine from inventory first!")
+		print("Select a placeable item (saw_mill, wall, fence) from inventory first!")
 
 func start_placement_mode() -> void:
 	print("Placement mode activated - Move mouse to place, Hold Left Click to place continuously, Right Click to cancel")
-	# Create preview
-	placement_preview = saw_mill_scene.instantiate()
-	get_parent().add_child(placement_preview)
-	placement_preview.modulate = Color(0.5, 1, 0.5, 0.7)  # Green tint
-	
-	# Disable collisions on the preview
-	disable_preview_collisions(placement_preview)
+	# Create preview from current placeable item
+	if placeable_scenes.has(current_placeable_item) and placeable_scenes[current_placeable_item] != null:
+		placement_preview = placeable_scenes[current_placeable_item].instantiate()
+		get_parent().add_child(placement_preview)
+		placement_preview.modulate = Color(0.5, 1, 0.5, 0.7)  # Green tint
+		
+		# Disable collisions on the preview
+		disable_preview_collisions(placement_preview)
+	else:
+		print("Error: No scene found for ", current_placeable_item)
+		return
 	
 	# Add visual feedback to player
 	anim_sprite.modulate = Color(0.7, 1.0, 0.7)  # Slight green tint
@@ -543,20 +554,21 @@ func place_machine() -> void:
 			return
 		
 		# Remove item from inventory
-		if Inventory.remove_item("saw_mill", 1):
-			# Create actual machine
-			var machine = saw_mill_scene.instantiate()
-			get_parent().add_child(machine)
-			machine.global_position = placement_preview.global_position
-			if machine.has_method("place_machine"):
-				machine.place_machine()
-			
-			print("Saw mill machine placed!")
-			
-			# Set cooldown for continuous placement
-			placement_cooldown = placement_cooldown_time
-			
-			# Stay in placement mode - don't exit or remove preview
+		if Inventory.remove_item(current_placeable_item, 1):
+			# Create actual object
+			if placeable_scenes.has(current_placeable_item) and placeable_scenes[current_placeable_item] != null:
+				var placed_object = placeable_scenes[current_placeable_item].instantiate()
+				get_parent().add_child(placed_object)
+				placed_object.global_position = placement_preview.global_position
+				if placed_object.has_method("place_machine"):
+					placed_object.place_machine()
+				
+				print(current_placeable_item.capitalize(), " placed!")
+				
+				# Set cooldown for continuous placement
+				placement_cooldown = placement_cooldown_time
+				
+				# Stay in placement mode - don't exit or remove preview
 		else:
 			print("No more saw mills in inventory!")
 			cancel_placement_mode()
