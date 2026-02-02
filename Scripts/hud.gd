@@ -6,9 +6,11 @@ var inventory_label: Label
 @onready var health_label: Label = $HealthBarContainer/HealthLabel if has_node("HealthBarContainer/HealthLabel") else null
 @onready var notification_label: Label = null
 @onready var controls_panel: VBoxContainer = null
+@onready var minimap: Control = null
 
-# Preload the inventory slot scene
+# Preload scenes
 var inventory_slot_scene = preload("res://Scenes/inventory_slot.tscn")
+var minimap_scene = preload("res://Scenes/minimap.tscn")
 
 # Maximum number of inventory slots
 @export var max_inventory_slots: int = 10
@@ -24,6 +26,9 @@ func _ready() -> void:
 	
 	# Setup controls panel
 	setup_controls_panel()
+	
+	# Setup minimap
+	setup_minimap()
 	
 	# Create inventory slots (only if InventoryBar exists)
 	if inventory_bar:
@@ -295,3 +300,16 @@ func _on_toggle_controls() -> void:
 	# Toggle all children except the title container
 	for i in range(1, children.size()):
 		children[i].visible = !is_currently_visible
+
+func setup_minimap() -> void:
+	# Create minimap instance
+	if minimap_scene:
+		minimap = minimap_scene.instantiate()
+		if minimap:
+			add_child(minimap)
+			minimap.z_index = 100  # Make sure it's on top
+			print("Minimap added to HUD successfully")
+		else:
+			print("ERROR: Failed to instantiate minimap!")
+	else:
+		print("ERROR: Minimap scene not loaded!")

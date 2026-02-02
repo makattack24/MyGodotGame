@@ -189,12 +189,15 @@ alignment = 1
 
 [node name="HealthBarContainer" type="VBoxContainer" parent="HUD" unique_id=756453575]
 custom_minimum_size = Vector2(150, 50)
-anchors_preset = 1
-anchor_left = 1.0
-anchor_right = 1.0
-offset_left = -43.0
-offset_bottom = 54.0
-grow_horizontal = 0
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 10.0
+offset_top = -60.0
+offset_right = 160.0
+offset_bottom = -10.0
+grow_horizontal = 1
+grow_vertical = 0
 
 [node name="HealthBar" type="ProgressBar" parent="HUD/HealthBarContainer" unique_id=1167007291]
 custom_minimum_size = Vector2(0, 24)

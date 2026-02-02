@@ -35,6 +35,9 @@ var nearby_player: Node2D = null
 var facing_direction: String = "down"
 
 func _ready() -> void:
+	# Add to NPC group for minimap tracking
+	add_to_group("NPC")
+	
 	# Save spawn position for wandering
 	spawn_position = global_position
 	target_position = spawn_position

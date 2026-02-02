@@ -1,0 +1,43 @@
+[gd_scene format=3 uid="uid://cuqw7rbqfkj3m"]
+
+[ext_resource type="Script" uid="uid://ch7g67cuqhk2x" path="res://Scripts/minimap_simple.gd" id="1_minimap"]
+
+[node name="Minimap" type="Control" unique_id=2129726846]
+layout_mode = 3
+anchors_preset = 0
+offset_right = 150.0
+offset_bottom = 150.0
+mouse_filter = 2
+script = ExtResource("1_minimap")
+
+[node name="Border" type="Panel" parent="." unique_id=70311076]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="Background" type="ColorRect" parent="." unique_id=1709574600]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 2.0
+offset_top = 2.0
+offset_right = -2.0
+offset_bottom = -2.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0, 0, 0, 0.7)
+
+[node name="PlayerMarker" type="ColorRect" parent="." unique_id=935713102]
+layout_mode = 0
+offset_left = 72.0
+offset_top = 72.0
+offset_right = 78.0
+offset_bottom = 78.0
+mouse_filter = 2
+color = Color(0, 1, 0, 1)

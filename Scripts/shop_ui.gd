@@ -135,7 +135,7 @@ func update_coin_display() -> void:
 		var coin_count = Inventory.get_item_count("coin")
 		coin_label.text = "Your Coins: " + str(coin_count)
 
-func show_purchase_feedback(item_name: String, success: bool, button: Button) -> void:
+func show_purchase_feedback(_item_name: String, success: bool, button: Button) -> void:
 	# Visual feedback on the button
 	var original_text = button.text
 	var original_color = button.modulate
