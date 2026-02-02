@@ -90,8 +90,19 @@ var biome_data: Dictionary = {
 		"name": "Desert",
 		"source_id": 1,  # TODO: Change to 1 when you add desert Tile Source
 		"ground_tiles": [  # TODO: Update with desert atlas coordinates from new source
-			Vector2i(5, 64), Vector2i(5, 65), Vector2i(0, 64), Vector2i(1, 64),
-			Vector2i(0, 65), Vector2i(1, 65), Vector2i(2, 65), Vector2i(3, 65)
+			Vector2i(0, 64), 
+			Vector2i(1, 64), 
+			Vector2i(2, 64), 
+			Vector2i(3, 64),
+			Vector2i(4, 64), 
+			Vector2i(5, 64), 
+			Vector2i(0, 65), 
+			Vector2i(1, 65),
+			Vector2i(2, 65),
+			Vector2i(3, 65),
+			Vector2i(4, 65),
+			Vector2i(5, 65),
+
 		],
 		"tree_spawn_chance": 0.02,
 		"min_tree_spacing": 80.0,
