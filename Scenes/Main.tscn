@@ -163,6 +163,7 @@ scale = Vector2(0.063, 0.063)
 visible = false
 
 [node name="HUD" type="CanvasLayer" parent="." unique_id=464400877]
+process_mode = 3
 script = ExtResource("7_jw32o")
 
 [node name="HBoxContainer" type="HBoxContainer" parent="HUD" unique_id=414544683]

@@ -50,6 +50,11 @@ value = 0.0
 tick_count = 7
 ticks_on_borders = true
 
+[node name="ControlsToggle" type="CheckButton" parent="VBoxContainer" unique_id=3333333333]
+layout_mode = 2
+button_pressed = true
+text = "Show Controls"
+
 [node name="Quit" type="Button" parent="VBoxContainer" unique_id=257242049]
 layout_mode = 2
 text = "QUIT"
@@ -57,4 +62,5 @@ text = "QUIT"
 [connection signal="pressed" from="VBoxContainer/Resume" to="." method="_on_resume_pressed"]
 [connection signal="toggled" from="VBoxContainer/MusicToggle" to="." method="_on_music_toggle_toggled"]
 [connection signal="value_changed" from="VBoxContainer/VolumeContainer/VolumeSlider" to="." method="_on_volume_slider_value_changed"]
+[connection signal="toggled" from="VBoxContainer/ControlsToggle" to="." method="_on_controls_toggle_toggled"]
 [connection signal="pressed" from="VBoxContainer/Quit" to="." method="_on_quit_pressed"]

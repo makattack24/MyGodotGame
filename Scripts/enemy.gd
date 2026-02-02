@@ -99,6 +99,9 @@ func _on_hit(damage: int, knockback_direction: Vector2) -> void:
 	# Reduce health based on damage received
 	health -= damage
 	print("Enemy hit! Remaining health: ", health)
+	
+	# Show damage indicator
+	show_damage_text(damage)
 
 	# Apply knockback effect
 	velocity = knockback_direction.normalized() * knockback_strength
@@ -123,6 +126,34 @@ func play_hit_feedback() -> void:
 			if death_effect:
 				death_effect.emitting = false
 		)
+
+func show_damage_text(damage: int) -> void:
+	"""Creates a floating damage text effect"""
+	var tree = Engine.get_main_loop() as SceneTree
+	if not tree:
+		return
+	
+	# Create a label for the floating damage text
+	var damage_label = Label.new()
+	damage_label.text = "-%d" % damage
+	damage_label.add_theme_font_size_override("font_size", 16)
+	damage_label.modulate = Color(0.7, 0.15, 0.15)  # Darker red color
+	damage_label.z_index = 100  # Draw on top
+	
+	# Position above the enemy
+	damage_label.position = global_position + Vector2(-15, -40)
+	
+	# Add to scene root
+	tree.root.add_child(damage_label)
+	
+	# Animate the label (float up and fade out)
+	var tween = damage_label.create_tween()
+	tween.set_parallel(true)  # Run animations in parallel
+	tween.tween_property(damage_label, "position:y", damage_label.position.y - 50, 1.0)
+	tween.tween_property(damage_label, "modulate:a", 0.0, 1.0)
+	
+	# Delete after animation
+	tween.finished.connect(func(): damage_label.queue_free())
 
 func die() -> void:
 	# Handle death behavior
