@@ -22,6 +22,9 @@ extends Node2D
 # Player node reference
 @export var player: Node2D                    # Reference to the player node
 
+# Reference to BiomeManager
+var biome_manager: Node = null
+
 # Store camp positions
 var camp_positions: Array[Vector2] = []
 
@@ -101,7 +104,16 @@ func spawn_all_camps() -> void:
 
 func spawn_camp_at(camp_center: Vector2) -> void:
 	"""Spawn a group of enemies at a specific camp location"""
-	for i in range(enemies_per_camp):
+	# Get biome manager if not already cached
+	if not biome_manager:
+		biome_manager = get_parent().get_node_or_null("BiomeManager")
+	
+	# Get biome-specific enemy count
+	var enemy_count = enemies_per_camp
+	if biome_manager:
+		enemy_count = biome_manager.get_enemies_per_camp_for_position(camp_center)
+	
+	for i in range(enemy_count):
 		# Randomize position within the camp area
 		var offset = Vector2(
 			randf_range(-camp_enemy_spread, camp_enemy_spread),

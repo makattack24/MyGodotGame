@@ -15,6 +15,9 @@ extends Node2D
 # Reference to the ground TileMapLayer
 @export var ground_layer: TileMapLayer
 
+# Reference to BiomeManager
+var biome_manager: Node = null
+
 # ==============================
 # INTERNAL STATE
 # ==============================
@@ -71,12 +74,26 @@ func _try_spawn_tree(tile_pos: Vector2i) -> void:
 	if not tree_scene:
 		return
 	
+	# Get world position
+	var world_pos: Vector2 = ground_layer.map_to_local(tile_pos)
+	
+	# Get biome manager if not already cached
+	if not biome_manager:
+		biome_manager = get_parent().get_node_or_null("BiomeManager")
+	
+	# Get biome-specific spawn chance and spacing
+	var spawn_chance = tree_spawn_chance
+	var min_spacing = min_tree_spacing
+	
+	if biome_manager:
+		spawn_chance = biome_manager.get_tree_spawn_chance_for_position(world_pos)
+		min_spacing = biome_manager.get_min_tree_spacing_for_position(world_pos)
+	
 	# Use noise to determine if tree should spawn
 	var n: float = (noise.get_noise_2d(tile_pos.x + 100, tile_pos.y + 100) + 1.0) * 0.5
 	
-	if n < tree_spawn_chance and _can_spawn_tree_here(tile_pos):
+	if n < spawn_chance and _can_spawn_tree_here(tile_pos, min_spacing):
 		var tree_instance: Node2D = tree_scene.instantiate()
-		var world_pos: Vector2 = ground_layer.map_to_local(tile_pos)
 		tree_instance.position = world_pos
 		
 		# Add to the world (parent of this spawner)
@@ -86,14 +103,17 @@ func _try_spawn_tree(tile_pos: Vector2i) -> void:
 		# Track the tree
 		spawned_trees.append(tree_instance)
 
-func _can_spawn_tree_here(tile_pos: Vector2i) -> bool:
+func _can_spawn_tree_here(tile_pos: Vector2i, spacing: float = 0.0) -> bool:
+	# Use provided spacing or fall back to default
+	var check_spacing = spacing if spacing > 0.0 else min_tree_spacing
+	
 	# Clean up invalid references
 	spawned_trees = spawned_trees.filter(is_instance_valid)
 	
 	# Check spacing from other trees
 	var world_pos: Vector2 = ground_layer.map_to_local(tile_pos)
 	for tree in spawned_trees:
-		if world_pos.distance_to(tree.position) < min_tree_spacing:
+		if world_pos.distance_to(tree.position) < check_spacing:
 			return false
 	
 	return true

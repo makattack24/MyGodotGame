@@ -10,7 +10,10 @@ extends TileMapLayer
 # Atlas source ID for the tileset (make sure this matches your Tileset source ID in the editor)
 const SOURCE_ID: int = 0
 
-# Allowed ground tiles (atlas coordinates)
+# Reference to BiomeManager
+var biome_manager: Node = null
+
+# Fallback ground tiles (if biome manager not available)
 const GROUND_TILES: Array[Vector2i] = [
 	Vector2i(8, 1), Vector2i(8, 2), Vector2i(9, 1), Vector2i(9, 2),
 	Vector2i(10, 1), Vector2i(10, 2), Vector2i(10, 3), Vector2i(10, 4),
@@ -72,9 +75,23 @@ func _place_tile(pos: Vector2i) -> void:
 # ==============================
 
 func _choose_tile(pos: Vector2i) -> Vector2i:
+	# Get world position for this tile
+	var world_pos = map_to_local(pos)
+	
+	# Get biome manager if not already cached
+	if not biome_manager:
+		biome_manager = get_parent().get_node_or_null("BiomeManager")
+	
+	# Get tiles from biome manager
+	var available_tiles: Array = GROUND_TILES
+	if biome_manager:
+		var biome_tiles = biome_manager.get_ground_tiles_for_position(world_pos)
+		if not biome_tiles.is_empty():
+			available_tiles = biome_tiles
+	
 	# Determines tile type using noise and tile position
 	var n: float = (noise.get_noise_2d(pos.x, pos.y) + 1.0) * 0.5
-	var index: int = int(floor(n * GROUND_TILES.size()))
-	index = clamp(index, 0, GROUND_TILES.size() - 1)
-	return GROUND_TILES[index]
+	var index: int = int(floor(n * available_tiles.size()))
+	index = clamp(index, 0, available_tiles.size() - 1)
+	return available_tiles[index]
 

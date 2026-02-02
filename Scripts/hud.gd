@@ -7,6 +7,7 @@ var inventory_label: Label
 @onready var notification_label: Label = null
 @onready var controls_panel: VBoxContainer = null
 @onready var minimap: Control = null
+@onready var biome_label: Label = null
 
 # Preload scenes
 var inventory_slot_scene = preload("res://Scenes/inventory_slot.tscn")
@@ -23,6 +24,9 @@ func _ready() -> void:
 	
 	# Setup notification label
 	setup_notification_label()
+	
+	# Setup biome label
+	setup_biome_label()
 	
 	# Setup controls panel
 	setup_controls_panel()
@@ -204,6 +208,34 @@ func setup_notification_label() -> void:
 	notification_label.add_theme_font_size_override("font_size", 24)
 	
 	add_child(notification_label)
+
+func setup_biome_label() -> void:
+	# Create a label to display current biome
+	biome_label = Label.new()
+	biome_label.name = "BiomeLabel"
+	biome_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT
+	biome_label.vertical_alignment = VERTICAL_ALIGNMENT_TOP
+	
+	# Position in top-left corner
+	biome_label.anchor_left = 0.0
+	biome_label.anchor_right = 0.0
+	biome_label.anchor_top = 0.0
+	biome_label.anchor_bottom = 0.0
+	biome_label.offset_left = 10
+	biome_label.offset_right = 250
+	biome_label.offset_top = 10
+	biome_label.offset_bottom = 50
+	
+	# Style the label
+	biome_label.add_theme_font_size_override("font_size", 18)
+	biome_label.modulate = Color(0.8, 1.0, 0.8, 0.9)
+	biome_label.text = "Biome: Starter Plains"
+	
+	add_child(biome_label)
+
+func update_biome_display(biome_name: String) -> void:
+	if biome_label:
+		biome_label.text = "Biome: " + biome_name
 
 func show_notification(message: String, duration: float = 2.0) -> void:
 	if not notification_label:

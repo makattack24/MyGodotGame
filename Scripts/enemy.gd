@@ -197,10 +197,13 @@ func start_hop() -> void:
 	hop_target_pos = global_position + (hop_direction * hop_distance * distance_multiplier)
 	
 	# Play hop sound occasionally (20% chance to avoid spam)
-	if hop_sound and randf() < 0.2:
-		hop_sound.pitch_scale = randf_range(0.8, 1.2)
-		hop_sound.volume_db = -18
-		hop_sound.play()
+	# Only play if player is close enough to hear it
+	if hop_sound and randf() < 0.2 and player != null:
+		var distance_to_player = global_position.distance_to(player.global_position)
+		if distance_to_player <= aggro_range * 2.0:  # Audible range is 2x aggro range
+			hop_sound.pitch_scale = randf_range(0.8, 1.2)
+			hop_sound.volume_db = -18
+			hop_sound.play()
 
 func apply_separation(desired_direction: Vector2) -> Vector2:
 	"""Avoid crowding with other slimes"""

@@ -170,8 +170,13 @@ process_mode = 3
 script = ExtResource("7_jw32o")
 
 [node name="HBoxContainer" type="HBoxContainer" parent="HUD" unique_id=414544683]
+anchors_preset = 4
+anchor_top = 0.5
+anchor_bottom = 0.5
+offset_top = -20.0
 offset_right = 40.0
-offset_bottom = 40.0
+offset_bottom = 20.0
+grow_vertical = 2
 
 [node name="WoodCount" type="Label" parent="HUD/HBoxContainer" unique_id=1617039893]
 layout_mode = 2
@@ -196,7 +201,6 @@ offset_left = 10.0
 offset_top = -60.0
 offset_right = 160.0
 offset_bottom = -10.0
-grow_horizontal = 1
 grow_vertical = 0
 
 [node name="HealthBar" type="ProgressBar" parent="HUD/HealthBarContainer" unique_id=1167007291]
