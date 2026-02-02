@@ -19,6 +19,7 @@ config/icon="res://icon.svg"
 
 BgMusic="*uid://cbongyooxyspb"
 Inventory="*uid://ch7g67cuqhk2s"
+PlayerSettings="*res://Scripts/player_settings.gd"
 
 [display]
 

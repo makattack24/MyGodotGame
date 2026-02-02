@@ -29,6 +29,7 @@ var camera: Camera2D = null
 # Screen shake variables
 var shake_amount: float = 0.0
 var shake_decay: float = 5.0
+var screen_shake_enabled: bool = true  # Can be toggled in settings
 
 # Weapon sprite reference
 @onready var weapon_sprite: Sprite2D = null  # Will be created dynamically
@@ -52,6 +53,12 @@ var is_attacking: bool = false
 
 # Current facing direction, defaults to "down"
 var facing_direction: String = "down"
+
+# Shadow
+var shadow: Polygon2D = null
+
+# Damage flash overlay
+var damage_flash: ColorRect = null
 
 # Placement mode
 var placement_mode: bool = false
@@ -101,6 +108,12 @@ func _ready() -> void:
 	# Get camera reference from the scene tree
 	camera = get_viewport().get_camera_2d()
 	
+	# Create shadow
+	create_shadow()
+	
+	# Create damage flash overlay
+	create_damage_flash()
+	
 	# Initialize input mappings
 	initialize_input()
 
@@ -125,7 +138,7 @@ func _process(_delta: float) -> void:
 		placement_cooldown -= _delta
 	
 	# Apply screen shake
-	if shake_amount > 0 and camera:
+	if shake_amount > 0 and camera and PlayerSettings.screen_shake_enabled:
 		camera.offset = Vector2(
 			randf_range(-shake_amount, shake_amount),
 			randf_range(-shake_amount, shake_amount)
@@ -133,6 +146,8 @@ func _process(_delta: float) -> void:
 		shake_amount = max(0, shake_amount - shake_decay * _delta)
 		if shake_amount == 0:
 			camera.offset = Vector2.ZERO
+	elif not PlayerSettings.screen_shake_enabled and camera:
+		camera.offset = Vector2.ZERO  # Reset offset if shake is disabled
 	
 	if is_dead:
 		return  # Don't process input if dead
@@ -277,6 +292,9 @@ func take_damage(damage: int) -> void:
 	damage_cooldown = damage_cooldown_time  # Start cooldown
 	print("Player hit! Health: ", current_health, "/", max_health)
 	
+	# Add screen shake on damage
+	shake_amount = 4.0  # Moderate shake amount
+	
 	# Play damage sound
 	if damage_sound:
 		damage_sound.play()
@@ -284,15 +302,43 @@ func take_damage(damage: int) -> void:
 	# Emit health changed signal
 	emit_signal("health_changed", current_health, max_health)
 	
-	# Visual feedback - flash the sprite red
+	# Show damage indicator
+	show_damage_text(damage)
+	
+	# Flash the screen red
+	flash_screen_red()
+	
+	# Visual feedback - flash the sprite white then red multiple times
 	if anim_sprite:
-		anim_sprite.modulate = Color(1, 0.5, 0.5)  # Red tint
-		await get_tree().create_timer(0.2).timeout
+		for i in range(3):
+			anim_sprite.modulate = Color(2.0, 2.0, 2.0)  # Bright white flash
+			await get_tree().create_timer(0.08).timeout
+			anim_sprite.modulate = Color(1.5, 0.3, 0.3)  # Red tint
+			await get_tree().create_timer(0.08).timeout
 		anim_sprite.modulate = Color(1, 1, 1)  # Back to normal
 	
 	# Check if player died
 	if current_health <= 0:
 		die()
+
+func heal(amount: int) -> void:
+	"""Heal the player by the specified amount"""
+	# Don't heal if dead
+	if is_dead:
+		return
+	
+	# Add health but don't exceed max
+	current_health = min(current_health + amount, max_health)
+	print("Player healed! Health: ", current_health, "/", max_health)
+	
+	# Emit health changed signal
+	emit_signal("health_changed", current_health, max_health)
+	
+	# Visual feedback - flash the sprite green
+	if anim_sprite:
+		anim_sprite.modulate = Color(0.5, 2.0, 0.5)  # Green flash
+		await get_tree().create_timer(0.2).timeout
+		anim_sprite.modulate = Color(1, 1, 1)  # Back to normal
 
 func die() -> void:
 	is_dead = true
@@ -381,6 +427,85 @@ func _on_attack_hit(body: Node) -> void:
 				body.queue_free()
 		else:
 			print("Need an axe to chop trees! Select it from your inventory.")
+
+func create_shadow() -> void:
+	"""Create a simple shadow sprite under the player"""
+	shadow = Polygon2D.new()
+	shadow.name = "Shadow"
+	
+	# Create an ellipse shape for the shadow
+	var points = PackedVector2Array()
+	var num_points = 16
+	for i in range(num_points):
+		var angle = (float(i) / num_points) * TAU
+		var x = cos(angle) * 10
+		var y = sin(angle) * 5
+		points.append(Vector2(x, y))
+	
+	shadow.polygon = points
+	shadow.color = Color(0, 0, 0, 0.5)  # Semi-transparent black
+	shadow.position = Vector2(0, 16)  # At the player's feet
+	
+	# Make sure shadow renders below sprite
+	if anim_sprite:
+		add_child(shadow)
+		move_child(shadow, 0)  # Move to first position (renders first)
+	else:
+		add_child(shadow)
+
+func create_damage_flash() -> void:
+	"""Create a full-screen red flash overlay for damage feedback"""
+	# Create a CanvasLayer to ensure it renders on top
+	var canvas_layer = CanvasLayer.new()
+	canvas_layer.layer = 100  # High layer to render on top
+	canvas_layer.name = "DamageFlashLayer"
+	add_child(canvas_layer)
+	
+	# Create the ColorRect for the red flash
+	damage_flash = ColorRect.new()
+	damage_flash.color = Color(1, 0, 0, 0)  # Red with 0 alpha (invisible initially)
+	damage_flash.mouse_filter = Control.MOUSE_FILTER_IGNORE  # Don't block mouse input
+	
+	# Make it cover the entire viewport
+	damage_flash.set_anchors_preset(Control.PRESET_FULL_RECT)
+	
+	canvas_layer.add_child(damage_flash)
+
+func flash_screen_red() -> void:
+	"""Flash the screen with a light red overlay"""
+	if damage_flash:
+		# Quick fade in and out
+		var tween = create_tween()
+		tween.tween_property(damage_flash, "color:a", 0.25, 0.05)  # Fade in to 25% alpha
+		tween.tween_property(damage_flash, "color:a", 0.0, 0.2)   # Fade out
+
+func show_damage_text(damage: int) -> void:
+	"""Creates a floating damage text effect"""
+	var tree = Engine.get_main_loop() as SceneTree
+	if not tree:
+		return
+	
+	# Create a label for the floating damage text
+	var damage_label = Label.new()
+	damage_label.text = "-%d" % damage
+	damage_label.add_theme_font_size_override("font_size", 16)
+	damage_label.modulate = Color(0.7, 0.15, 0.15)  # Darker red color
+	damage_label.z_index = 100  # Draw on top
+	
+	# Position above the player
+	damage_label.position = global_position + Vector2(-15, -40)
+	
+	# Add to scene root
+	tree.root.add_child(damage_label)
+	
+	# Animate the label (float up and fade out)
+	var tween = damage_label.create_tween()
+	tween.set_parallel(true)  # Run animations in parallel
+	tween.tween_property(damage_label, "position:y", damage_label.position.y - 50, 1.0)
+	tween.tween_property(damage_label, "modulate:a", 0.0, 1.0)
+	
+	# Delete after animation
+	tween.finished.connect(func(): damage_label.queue_free())
 
 func initialize_input() -> void:
 	# Adds WASD key mappings if they don't exist

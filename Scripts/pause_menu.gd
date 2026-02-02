@@ -21,6 +21,11 @@ func _ready() -> void:
 		var controls_panel = hud.get_node_or_null("ControlsPanel")
 		if controls_panel:
 			controls_toggle.button_pressed = controls_panel.visible
+	
+	# Update screen shake toggle state
+	var screen_shake_toggle = $VBoxContainer/ScreenShakeToggle
+	if screen_shake_toggle:
+		screen_shake_toggle.button_pressed = PlayerSettings.screen_shake_enabled
 
 func _input(event: InputEvent) -> void:
 	if event.is_action_pressed("ui_cancel"):
@@ -60,3 +65,7 @@ func _on_controls_toggle_toggled(toggled_on: bool) -> void:
 		var controls_panel = hud.get_node_or_null("ControlsPanel")
 		if controls_panel:
 			controls_panel.visible = toggled_on
+
+
+func _on_screen_shake_toggle_toggled(toggled_on: bool) -> void:
+	PlayerSettings.screen_shake_enabled = toggled_on

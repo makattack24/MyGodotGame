@@ -20,6 +20,7 @@ extends CharacterBody2D
 @export var coin_drop_chance: float = 1.0      # Chance to drop coins (0.0 to 1.0)
 @export var min_coins: int = 1                 # Minimum coins to drop
 @export var max_coins: int = 3                 # Maximum coins to drop
+@export var heart_drop_chance: float = 0.15    # Chance to drop a heart (0.0 to 1.0)
 
 # Reference to the player (set this in the Inspector or dynamically during gameplay)
 @export var player: CharacterBody2D                     # Target player node to follow
@@ -50,8 +51,9 @@ var hop_progress: float = 0.0
 # Shadow
 var shadow: Polygon2D = null
 
-# Coin drop scene
+# Loot drop scenes
 var coin_scene = preload("res://Scenes/coin_item.tscn")
+var heart_scene = preload("res://Scenes/heart_item.tscn")
 
 func _physics_process(_delta: float) -> void:
 	# Update attack cooldown
@@ -359,6 +361,9 @@ func die() -> void:
 	# Drop coins
 	drop_coins()
 	
+	# Drop heart (chance based)
+	drop_heart()
+	
 	# Play death feedback (animation or effects)
 	if death_effect:
 		death_effect.emitting = true
@@ -413,6 +418,22 @@ func drop_coins() -> void:
 			
 			# Add to parent (deferred to avoid issues)
 			get_parent().add_child.call_deferred(coin)
+
+func drop_heart() -> void:
+	"""Drop a heart when enemy dies (chance based)"""
+	# Check if heart should drop based on chance
+	if randf() <= heart_drop_chance:
+		var heart = heart_scene.instantiate()
+		
+		# Add slight random offset
+		var offset = Vector2(
+			randf_range(-10, 10),
+			randf_range(-10, 10)
+		)
+		heart.global_position = global_position + offset
+		
+		# Add to parent (deferred to avoid issues)
+		get_parent().add_child.call_deferred(heart)
 
 func set_player_reference(player_ref: Node2D) -> void:
 	# Set the player reference for this enemy
