@@ -28,6 +28,7 @@ var knockback_timer: float = 0.0  # Timer for knockback from being hit
 # Visual/audio feedback (optional)
 @onready var death_effect: CPUParticles2D = $DeathEffect
 @onready var hit_sound: AudioStreamPlayer2D = $HitSound
+@onready var death_sound: AudioStreamPlayer2D = null
 
 # Coin drop scene
 var coin_scene = preload("res://Scenes/coin_item.tscn")
@@ -134,8 +135,24 @@ func die() -> void:
 	if death_effect:
 		death_effect.emitting = true
 	
-	# Remove the enemy from the scene
-	queue_free()
+	# Play death sound and wait for it to finish
+	if death_sound and death_sound.stream:
+		# Reparent death sound to scene root so it doesn't get deleted
+		var scene_root = get_tree().root
+		remove_child(death_sound)
+		scene_root.add_child(death_sound)
+		death_sound.global_position = global_position
+		death_sound.play()
+		
+		# Remove the enemy visuals immediately
+		queue_free()
+		
+		# Wait for sound to finish then delete audio player
+		await death_sound.finished
+		death_sound.queue_free()
+	else:
+		# No death sound, remove immediately
+		queue_free()
 
 func drop_coins() -> void:
 	"""Drop coins when enemy dies"""
@@ -170,6 +187,10 @@ func _ready() -> void:
 	# Add enemy to the Enemies group for player attack detection
 	add_to_group("Enemies")
 	print("Enemy added to Enemies group!")
+	
+	# Get death sound if it exists
+	if has_node("DeathSound"):
+		death_sound = $DeathSound
 	
 	# Set camp position to current position if not set
 	if camp_position == Vector2.ZERO:

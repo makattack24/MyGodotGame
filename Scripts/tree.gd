@@ -44,7 +44,20 @@ func take_damage(damage: int) -> void:
 func destroy_tree() -> void:
 	print("Tree destroyed! Dropping items.")
 	call_deferred("spawn_items")  # Defer spawning to avoid physics query conflicts
-	queue_free()  # Remove the tree from the scene
+	
+	# If hit sound is playing, let it finish independently
+	if hit_sound and hit_sound.playing:
+		# Reparent sound to scene root so it continues playing after tree is removed
+		var scene_root = get_tree().root
+		remove_child(hit_sound)
+		scene_root.add_child(hit_sound)
+		hit_sound.global_position = global_position
+		
+		# Clean up sound after it finishes
+		hit_sound.finished.connect(func(): hit_sound.queue_free())
+	
+	# Remove the tree immediately
+	queue_free()
 
 # Spawn items near the tree
 func spawn_items() -> void:

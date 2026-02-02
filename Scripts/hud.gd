@@ -235,12 +235,25 @@ func setup_controls_panel() -> void:
 	
 	add_child(controls_panel)
 	
+	# Add title container with toggle button
+	var title_container = HBoxContainer.new()
+	controls_panel.add_child(title_container)
+	
 	# Add title
 	var title = Label.new()
 	title.text = "CONTROLS"
 	title.add_theme_font_size_override("font_size", 16)
 	title.modulate = Color(1, 1, 0.5)
-	controls_panel.add_child(title)
+	title.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	title_container.add_child(title)
+	
+	# Add hide/show button
+	var toggle_button = Button.new()
+	toggle_button.text = "X"
+	toggle_button.custom_minimum_size = Vector2(20, 20)
+	toggle_button.add_theme_font_size_override("font_size", 12)
+	toggle_button.pressed.connect(_on_toggle_controls)
+	title_container.add_child(toggle_button)
 	
 	# Add separator
 	var separator = Label.new()
@@ -266,3 +279,19 @@ func add_control_hint(text: String) -> void:
 	label.add_theme_font_size_override("font_size", 12)
 	label.modulate = Color(0.9, 0.9, 0.9)
 	controls_panel.add_child(label)
+
+func _on_toggle_controls() -> void:
+	# Toggle visibility of all controls panel children except the title
+	if not controls_panel:
+		return
+	
+	var children = controls_panel.get_children()
+	var is_currently_visible = true
+	
+	# Check current state (skip first child which is the title container)
+	if children.size() > 1:
+		is_currently_visible = children[1].visible
+	
+	# Toggle all children except the title container
+	for i in range(1, children.size()):
+		children[i].visible = !is_currently_visible

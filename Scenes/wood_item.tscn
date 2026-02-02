@@ -20,4 +20,4 @@ shape = SubResource("RectangleShape2D_iaoic")
 
 [node name="WoodPickupSound" type="AudioStreamPlayer2D" parent="." unique_id=1711077227]
 stream = ExtResource("3_vh4iw")
-volume_db = 8.432
+volume_db = 1.0

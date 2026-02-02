@@ -73,3 +73,5 @@ scale_amount_curve = SubResource("Curve_afpow")
 color = Color(0.6554161, 0.24537528, 0.35566056, 1)
 hue_variation_min = 0.65
 hue_variation_max = 0.75
+
+[node name="DeathSound" type="AudioStreamPlayer2D" parent="." unique_id=639778023]

@@ -29,9 +29,32 @@ alignment = 1
 layout_mode = 2
 text = "RESUME"
 
+[node name="MusicToggle" type="CheckButton" parent="VBoxContainer" unique_id=1234567890]
+layout_mode = 2
+button_pressed = true
+text = "Background Music"
+
+[node name="VolumeContainer" type="HBoxContainer" parent="VBoxContainer" unique_id=9876543210]
+layout_mode = 2
+
+[node name="VolumeLabel" type="Label" parent="VBoxContainer/VolumeContainer" unique_id=1111111111]
+layout_mode = 2
+text = "Volume:"
+
+[node name="VolumeSlider" type="HSlider" parent="VBoxContainer/VolumeContainer" unique_id=2222222222]
+custom_minimum_size = Vector2(150, 0)
+layout_mode = 2
+min_value = -30.0
+max_value = 0.0
+value = 0.0
+tick_count = 7
+ticks_on_borders = true
+
 [node name="Quit" type="Button" parent="VBoxContainer" unique_id=257242049]
 layout_mode = 2
 text = "QUIT"
 
 [connection signal="pressed" from="VBoxContainer/Resume" to="." method="_on_resume_pressed"]
+[connection signal="toggled" from="VBoxContainer/MusicToggle" to="." method="_on_music_toggle_toggled"]
+[connection signal="value_changed" from="VBoxContainer/VolumeContainer/VolumeSlider" to="." method="_on_volume_slider_value_changed"]
 [connection signal="pressed" from="VBoxContainer/Quit" to="." method="_on_quit_pressed"]
