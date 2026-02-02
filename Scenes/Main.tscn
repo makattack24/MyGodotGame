@@ -799,6 +799,9 @@ sources/1 = SubResource("TileSetAtlasSource_h1m7h")
 
 [sub_resource type="Environment" id="Environment_4kpch"]
 
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_health_fill"]
+bg_color = Color(0.8, 0.1, 0.1, 1)
+
 [node name="Main" type="Node2D" unique_id=170662483]
 script = ExtResource("1_rgh2o")
 
@@ -868,10 +871,13 @@ grow_vertical = 0
 [node name="HealthBar" type="ProgressBar" parent="HUD/HealthBarContainer" unique_id=1167007291]
 custom_minimum_size = Vector2(0, 24)
 layout_mode = 2
+theme_override_styles/fill = SubResource("StyleBoxFlat_health_fill")
 max_value = 10.0
 value = 10.0
+show_percentage = true
 
 [node name="HealthLabel" type="Label" parent="HUD/HealthBarContainer" unique_id=677978842]
+visible = false
 layout_mode = 2
 text = "10/10"
 horizontal_alignment = 1
