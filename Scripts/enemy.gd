@@ -43,6 +43,7 @@ var hop_progress: float = 0.0
 # Visual/audio feedback (optional)
 @onready var death_effect: CPUParticles2D = $DeathEffect
 @onready var hit_sound: AudioStreamPlayer2D = $HitSound
+@onready var hop_sound: AudioStreamPlayer2D = null
 @onready var death_sound: AudioStreamPlayer2D = null
 @onready var sprite: Sprite2D = $Sprite2D
 
@@ -196,10 +197,10 @@ func start_hop() -> void:
 	hop_target_pos = global_position + (hop_direction * hop_distance * distance_multiplier)
 	
 	# Play hop sound occasionally (20% chance to avoid spam)
-	if hit_sound and randf() < 0.2:
-		hit_sound.pitch_scale = randf_range(0.8, 1.2)
-		hit_sound.volume_db = -18
-		hit_sound.play()
+	if hop_sound and randf() < 0.2:
+		hop_sound.pitch_scale = randf_range(0.8, 1.2)
+		hop_sound.volume_db = -18
+		hop_sound.play()
 
 func apply_separation(desired_direction: Vector2) -> Vector2:
 	"""Avoid crowding with other slimes"""
@@ -306,8 +307,10 @@ func _on_hit(damage: int, knockback_direction: Vector2) -> void:
 		die()  # Handle death behavior
 
 func play_hit_feedback() -> void:
-	# Play feedback effects when hit (optional)
+	# Play feedback effects when hit
 	if hit_sound:
+		hit_sound.pitch_scale = 1.0
+		hit_sound.volume_db = 0
 		hit_sound.play()
 
 	# Emit particles for visual feedback (brief burst)
@@ -357,11 +360,21 @@ func die() -> void:
 	if death_effect:
 		death_effect.emitting = true
 	
+	# Reparent hit sound to scene root so it finishes playing
+	if hit_sound and hit_sound.playing and hit_sound.get_parent() == self:
+		var scene_root = get_tree().root
+		remove_child(hit_sound)
+		scene_root.add_child(hit_sound)
+		hit_sound.global_position = global_position
+		# Delete hit sound when finished
+		hit_sound.finished.connect(func(): hit_sound.queue_free())
+	
 	# Play death sound and wait for it to finish
 	if death_sound and death_sound.stream:
 		# Reparent death sound to scene root so it doesn't get deleted
 		var scene_root = get_tree().root
-		remove_child(death_sound)
+		if death_sound.get_parent() == self:
+			remove_child(death_sound)
 		scene_root.add_child(death_sound)
 		death_sound.global_position = global_position
 		death_sound.play()
@@ -373,7 +386,8 @@ func die() -> void:
 		await death_sound.finished
 		death_sound.queue_free()
 	else:
-		# No death sound, remove immediately
+		# No death sound, wait a moment for hit sound then remove
+		await get_tree().create_timer(0.3).timeout
 		queue_free()
 
 func drop_coins() -> void:
@@ -413,6 +427,10 @@ func _ready() -> void:
 	# Get death sound if it exists
 	if has_node("DeathSound"):
 		death_sound = $DeathSound
+	
+	# Get hop sound if it exists (optional separate sound)
+	if has_node("HopSound"):
+		hop_sound = $HopSound
 	
 	# Set camp position to current position if not set
 	if camp_position == Vector2.ZERO:

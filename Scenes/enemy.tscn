@@ -3,7 +3,8 @@
 [ext_resource type="Script" uid="uid://bv3aq5wyq6n5t" path="res://Scripts/enemy.gd" id="1_1f0kj"]
 [ext_resource type="Texture2D" uid="uid://dev5bpuufirpb" path="res://Assets/red slime.png" id="1_hghv2"]
 [ext_resource type="Shader" uid="uid://cvg5xlcv5wum7" path="res://Shaders/new_shader.gdshader" id="2_287tu"]
-[ext_resource type="AudioStream" uid="uid://bf45xkwsbyr8r" path="res://Audio/slime-squish-5-218569.mp3" id="4_287tu"]
+[ext_resource type="AudioStream" uid="uid://dc5cy7ttqy7eg" path="res://Audio/goopy-slime-4-219777.mp3" id="4_287tu"]
+[ext_resource type="AudioStream" uid="uid://bf45xkwsbyr8r" path="res://Audio/slime-squish-5-218569.mp3" id="5_0830c"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_0830c"]
 shader = ExtResource("2_287tu")
@@ -75,3 +76,7 @@ hue_variation_min = 0.65
 hue_variation_max = 0.75
 
 [node name="DeathSound" type="AudioStreamPlayer2D" parent="." unique_id=639778023]
+
+[node name="HopSound" type="AudioStreamPlayer2D" parent="." unique_id=255850555]
+stream = ExtResource("5_0830c")
+volume_db = 5.0
