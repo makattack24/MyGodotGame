@@ -885,7 +885,6 @@ horizontal_alignment = 1
 [node name="ObjectSpawner" type="Node2D" parent="." unique_id=1272717024 node_paths=PackedStringArray("ground_layer")]
 script = ExtResource("9_vy5pj")
 tree_scene = ExtResource("4_v1gob")
-tree_spawn_chance = 0.3
 ground_layer = NodePath("../Ground")
 
 [node name="SaveManager" type="Node" parent="." unique_id=1885934722]

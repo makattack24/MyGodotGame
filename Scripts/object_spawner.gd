@@ -72,6 +72,7 @@ func spawn_objects_around(world_pos: Vector2) -> void:
 
 func _try_spawn_tree(tile_pos: Vector2i) -> void:
 	if not tree_scene:
+		print("ObjectSpawner: No tree_scene assigned!")
 		return
 	
 	# Get world position
@@ -80,6 +81,10 @@ func _try_spawn_tree(tile_pos: Vector2i) -> void:
 	# Get biome manager if not already cached
 	if not biome_manager:
 		biome_manager = get_parent().get_node_or_null("BiomeManager")
+		if biome_manager:
+			print("ObjectSpawner: BiomeManager found!")
+		else:
+			print("ObjectSpawner: BiomeManager not found!")
 	
 	# Get biome-specific spawn chance and spacing
 	var spawn_chance = tree_spawn_chance
@@ -98,6 +103,7 @@ func _try_spawn_tree(tile_pos: Vector2i) -> void:
 		
 		# Add to the world (parent of this spawner)
 		get_parent().add_child(tree_instance)
+		print("Tree spawned at ", world_pos, " with spawn_chance ", spawn_chance)
 		tree_instance.add_to_group("Trees")
 		
 		# Track the tree

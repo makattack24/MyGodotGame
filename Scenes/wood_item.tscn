@@ -5,7 +5,7 @@
 [ext_resource type="AudioStream" uid="uid://b44vcokab1rny" path="res://Audio/wood-falling-on-carpet-326940.mp3" id="3_vh4iw"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_iaoic"]
-size = Vector2(8.25, 8.75)
+size = Vector2(18, 16)
 
 [node name="WoodItem" type="Node2D" unique_id=68424016]
 script = ExtResource("1_iaoic")

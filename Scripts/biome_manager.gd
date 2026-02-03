@@ -31,8 +31,8 @@ var biome_data: Dictionary = {
 			Vector2i(8, 1), Vector2i(8, 2), Vector2i(9, 1), Vector2i(9, 2),
 			Vector2i(10, 1), Vector2i(10, 2), Vector2i(11, 1), Vector2i(11, 2)
 		],
-		"tree_spawn_chance": 0.08,
-		"min_tree_spacing": 60.0,
+		"tree_spawn_chance": 0.25,
+		"min_tree_spacing": 40.0,
 		"enemy_spawn_chance": 0.1,
 		"enemies_per_camp": 2,
 		"color_tint": Color(1.0, 1.0, 1.0, 1.0)
@@ -44,8 +44,8 @@ var biome_data: Dictionary = {
 			Vector2i(8, 1), Vector2i(9, 1), Vector2i(10, 1), Vector2i(10, 2),
 			Vector2i(11, 1), Vector2i(11, 2)
 		],
-		"tree_spawn_chance": 0.15,
-		"min_tree_spacing": 45.0,
+		"tree_spawn_chance": 0.35,
+		"min_tree_spacing": 35.0,
 		"enemy_spawn_chance": 0.3,
 		"enemies_per_camp": 3,
 		"color_tint": Color(0.9, 1.0, 0.9, 1.0)
