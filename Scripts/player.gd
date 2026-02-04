@@ -432,6 +432,12 @@ func _on_attack_hit(body: Node) -> void:
 				body.queue_free()
 		else:
 			print("Need an axe to chop trees! Select it from your inventory.")
+	
+	elif body.is_in_group("Bushes"):
+		# Bushes can be destroyed by any attack
+		print("Clearing bush!")
+		if body.has_method("destroy"):
+			body.call("destroy")
 
 func create_shadow() -> void:
 	"""Create a simple shadow sprite under the player"""

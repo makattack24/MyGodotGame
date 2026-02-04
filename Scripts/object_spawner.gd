@@ -90,23 +90,42 @@ func _try_spawn_object(tile_pos: Vector2i) -> void:
 	# Get minimum spacing
 	var min_spacing: float = biome_manager.get_min_object_spacing_for_position(world_pos)
 	
-	# Check spacing
-	if not _can_spawn_object_here(world_pos, min_spacing):
-		return
-	
 	# Choose which object to spawn using weighted random selection
 	var chosen_object = _choose_object_to_spawn(object_list, tile_pos)
 	if not chosen_object:
 		return
 	
-	# Load and instantiate the scene
+	# Check if this is a bush and should spawn in clusters
 	var scene_path: String = chosen_object.get("scene", "")
-	if scene_path.is_empty():
+	var is_bush: bool = scene_path.contains("bush.tscn")
+	
+	# Use bush spacing if it's a bush, otherwise use normal spacing
+	var spacing_to_use: float = min_spacing
+	if is_bush:
+		var biome_data = biome_manager.get_biome_data_for_type(biome_manager.get_biome_at_position(world_pos))
+		spacing_to_use = biome_data.get("bush_spacing", min_spacing)
+	
+	# Check spacing
+	if not _can_spawn_object_here(world_pos, spacing_to_use):
 		return
+	
+	# Spawn the main object
+	_spawn_single_object(chosen_object, world_pos)
+	
+	# If it's a bush with cluster_size, spawn additional bushes nearby
+	if is_bush and chosen_object.has("cluster_size"):
+		var cluster_size: int = chosen_object.get("cluster_size", 1)
+		_spawn_bush_cluster(chosen_object, world_pos, cluster_size - 1, spacing_to_use)
+
+func _spawn_single_object(object_data: Dictionary, world_pos: Vector2) -> Node2D:
+	"""Spawn a single object at the given position"""
+	var scene_path: String = object_data.get("scene", "")
+	if scene_path.is_empty():
+		return null
 	
 	var object_scene: PackedScene = _load_scene(scene_path)
 	if not object_scene:
-		return
+		return null
 	
 	var object_instance: Node2D = object_scene.instantiate()
 	object_instance.position = world_pos
@@ -114,46 +133,69 @@ func _try_spawn_object(tile_pos: Vector2i) -> void:
 	# Add to the world
 	get_parent().add_child(object_instance)
 	object_instance.add_to_group("EnvironmentObjects")
-	print("ObjectSpawner: Spawned ", scene_path, " at ", world_pos)
 	
 	# Track the object
 	spawned_object_nodes.append(object_instance)
+	
+	return object_instance
+
+func _spawn_bush_cluster(object_data: Dictionary, center_pos: Vector2, additional_count: int, spacing: float) -> void:
+	"""Spawn additional bushes around a center position to create a cluster"""
+	var radius_min: float = spacing * 0.8
+	var radius_max: float = spacing * 1.5
+	
+	for i in range(additional_count):
+		var attempts: int = 0
+		var max_attempts: int = 10
+		var spawned: bool = false
+		
+		while attempts < max_attempts and not spawned:
+			# Random angle and radius
+			var angle: float = randf() * TAU
+			var radius: float = randf_range(radius_min, radius_max)
+			
+			# Calculate position
+			var offset: Vector2 = Vector2(cos(angle), sin(angle)) * radius
+			var spawn_pos: Vector2 = center_pos + offset
+			
+			# Check if we can spawn here (with reduced spacing for bushes in cluster)
+			if _can_spawn_object_here(spawn_pos, spacing * 0.7):
+				_spawn_single_object(object_data, spawn_pos)
+				spawned = true
+			
+			attempts += 1
 
 func _choose_object_to_spawn(object_list: Array, tile_pos: Vector2i) -> Dictionary:
 	"""Choose which object to spawn based on spawn chances and weights"""
-	# Use noise to determine if we should spawn anything
+	# Use noise to determine base spawn probability
 	var spawn_noise: float = (noise.get_noise_2d(tile_pos.x + 100, tile_pos.y + 100) + 1.0) * 0.5
 	
-	# Check each object type to see if it should spawn
+	# Check each object independently with its own spawn chance
+	var valid_objects: Array = []
+	var total_weight: float = 0.0
+	
 	for obj_data in object_list:
 		var spawn_chance: float = obj_data.get("spawn_chance", 0.0)
+		
+		# Check if this specific object should be considered for spawning
 		if spawn_noise < spawn_chance:
-			# This object passes the spawn chance check
-			# Now use weighted random to select between multiple objects
-			var total_weight: float = 0.0
-			var valid_objects: Array = []
-			
-			# Collect all objects that would spawn at this noise value
-			for obj in object_list:
-				if spawn_noise < obj.get("spawn_chance", 0.0):
-					valid_objects.append(obj)
-					total_weight += obj.get("weight", 1.0)
-			
-			if valid_objects.is_empty():
-				return {}
-			
-			# Weighted random selection
-			var random_value: float = randf() * total_weight
-			var current_weight: float = 0.0
-			
-			for obj in valid_objects:
-				current_weight += obj.get("weight", 1.0)
-				if random_value <= current_weight:
-					return obj
-			
-			return valid_objects[0]  # Fallback
+			valid_objects.append(obj_data)
+			total_weight += obj_data.get("weight", 1.0)
 	
-	return {}  # Nothing spawns
+	# If no objects passed the spawn check, return nothing
+	if valid_objects.is_empty():
+		return {}
+	
+	# Weighted random selection from valid objects
+	var random_value: float = randf() * total_weight
+	var current_weight: float = 0.0
+	
+	for obj in valid_objects:
+		current_weight += obj.get("weight", 1.0)
+		if random_value <= current_weight:
+			return obj
+	
+	return valid_objects[0]  # Fallback
 
 func _can_spawn_object_here(world_pos: Vector2, min_spacing: float) -> bool:
 	"""Check if we can spawn an object at this position"""

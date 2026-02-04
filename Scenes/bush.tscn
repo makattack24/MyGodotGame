@@ -1,17 +1,24 @@
-[gd_scene format=3 uid="uid://dyn3hpd3884fj"]
+[gd_scene load_steps=3 format=3 uid="uid://dyn3hpd3884fj"]
 
 [ext_resource type="Texture2D" uid="uid://cweeljsofoc46" path="res://Assets/FreeDownloadedAssets/FreeEnvironment/FreePack 2.png" id="1_bush"]
+[ext_resource type="Script" path="res://Scripts/bush.gd" id="2_script"]
 
-[sub_resource type="CircleShape2D" id="CircleShape2D_bush"]
-radius = 16.03122
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_tld8b"]
+size = Vector2(16, 19.5)
 
-[node name="Bush" type="StaticBody2D" unique_id=1015946923]
+[node name="Bush" type="Area2D"]
+monitoring = true
+monitorable = true
+collision_layer = 4
+collision_mask = 1
+script = ExtResource("2_script")
 
-[node name="Sprite2D" type="Sprite2D" parent="." unique_id=578442146]
+[node name="Sprite2D" type="Sprite2D" parent="."]
+scale = Vector2(0.5, 0.5)
 texture = ExtResource("1_bush")
 region_enabled = true
-region_rect = Rect2(262, 216, 50, 40)
+region_rect = Rect2(197, 211, 56, 45)
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=318496274]
-position = Vector2(0, 4)
-shape = SubResource("CircleShape2D_bush")
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(0, 1.25)
+shape = SubResource("RectangleShape2D_tld8b")

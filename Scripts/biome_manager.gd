@@ -33,9 +33,10 @@ var biome_data: Dictionary = {
 		],
 		"objects": [
 			{"scene": "res://Scenes/forest_tree.tscn", "spawn_chance": 0.3, "weight": 0.6},
-			{"scene": "res://Scenes/bush.tscn", "spawn_chance": 0.25, "weight": 0.4}
+			{"scene": "res://Scenes/bush.tscn", "spawn_chance": 0.22, "weight": 0.4, "cluster_size": 4}
 		],
 		"min_object_spacing": 40.0,
+		"bush_spacing": 20.0,
 		"enemy_spawn_chance": 0.1,
 		"enemies_per_camp": 2,
 		"color_tint": Color(1.0, 1.0, 1.0, 1.0)
@@ -59,9 +60,10 @@ var biome_data: Dictionary = {
 		],
 		"objects": [
 			{"scene": "res://Scenes/forest_tree.tscn", "spawn_chance": 0.4, "weight": 0.7},
-			{"scene": "res://Scenes/bush.tscn", "spawn_chance": 0.35, "weight": 0.3}
+			{"scene": "res://Scenes/bush.tscn", "spawn_chance": 0.28, "weight": 0.3, "cluster_size": 4}
 		],
 		"min_object_spacing": 35.0,
+		"bush_spacing": 18.0,
 		"enemy_spawn_chance": 0.3,
 		"enemies_per_camp": 3,
 		"color_tint": Color(0.9, 1.0, 0.9, 1.0)
@@ -75,9 +77,10 @@ var biome_data: Dictionary = {
 		],
 		"objects": [
 			{"scene": "res://Scenes/forest_tree.tscn", "spawn_chance": 0.45, "weight": 0.8},
-			{"scene": "res://Scenes/bush.tscn", "spawn_chance": 0.3, "weight": 0.2}
+			{"scene": "res://Scenes/bush.tscn", "spawn_chance": 0.32, "weight": 0.2, "cluster_size": 5}
 		],
 		"min_object_spacing": 30.0,
+		"bush_spacing": 16.0,
 		"enemy_spawn_chance": 0.4,
 		"enemies_per_camp": 4,
 		"color_tint": Color(0.8, 1.0, 0.8, 1.0)
@@ -91,10 +94,11 @@ var biome_data: Dictionary = {
 		],
 		"objects": [
 			{"scene": "res://Scenes/dead_tree.tscn", "spawn_chance": 0.25, "weight": 0.5},
-			{"scene": "res://Scenes/bush.tscn", "spawn_chance": 0.2, "weight": 0.3},
+			{"scene": "res://Scenes/bush.tscn", "spawn_chance": 0.2, "weight": 0.3, "cluster_size": 3},
 			{"scene": "res://Scenes/rock.tscn", "spawn_chance": 0.18, "weight": 0.2}
 		],
 		"min_object_spacing": 45.0,
+		"bush_spacing": 20.0,
 		"enemy_spawn_chance": 0.5,
 		"enemies_per_camp": 4,
 		"color_tint": Color(0.8, 0.9, 0.7, 1.0)
