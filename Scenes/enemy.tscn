@@ -35,6 +35,14 @@ seamless = true
 _data = [Vector2(0, 0.8651686), 0.0, 0.0, 0, 0, Vector2(0.98936176, 0.11235964), 0.0, 0.0, 0, 0]
 point_count = 2
 
+[sub_resource type="Gradient" id="Gradient_hit"]
+interpolation_mode = 1
+colors = PackedColorArray(1, 1, 1, 1, 1, 0.8, 0.2, 0)
+
+[sub_resource type="Curve" id="Curve_hit"]
+_data = [Vector2(0, 1), 0.0, 0.0, 0, 0, Vector2(1, 0), 0.0, 0.0, 0, 0]
+point_count = 2
+
 [node name="CharacterBody2D" type="CharacterBody2D" unique_id=1868272876]
 script = ExtResource("1_1f0kj")
 
@@ -52,28 +60,47 @@ stream = ExtResource("4_287tu")
 
 [node name="DeathEffect" type="CPUParticles2D" parent="." unique_id=1621623514]
 emitting = false
-amount = 12
-texture = SubResource("NoiseTexture2D_0830c")
-lifetime = 2.0
+amount = 50
+lifetime = 1.0
 one_shot = true
-explosiveness = 0.45
-randomness = 0.45
-lifetime_randomness = 0.08
-direction = Vector2(3, 2)
-spread = 75.0
-gravity = Vector2(0, 0)
-initial_velocity_min = 10.0
-initial_velocity_max = 10.0
-angular_velocity_min = 2.0
-angular_velocity_max = 6.0
-angle_min = 20.0
-angle_max = 45.0
-scale_amount_min = 0.25
-scale_amount_max = 0.75
+explosiveness = 0.9
+randomness = 0.5
+lifetime_randomness = 0.3
+direction = Vector2(0, -1)
+spread = 180.0
+gravity = Vector2(0, 120)
+initial_velocity_min = 100.0
+initial_velocity_max = 180.0
+angular_velocity_min = -300.0
+angular_velocity_max = 300.0
+damping_min = 60.0
+damping_max = 120.0
+scale_amount_min = 2.0
+scale_amount_max = 4.0
 scale_amount_curve = SubResource("Curve_afpow")
-color = Color(0.6554161, 0.24537528, 0.35566056, 1)
-hue_variation_min = 0.65
-hue_variation_max = 0.75
+color = Color(0.9, 0.2, 0.2, 1)
+hue_variation_min = -0.15
+hue_variation_max = 0.15
+
+[node name="HitEffect" type="CPUParticles2D" parent="." unique_id=1621623515]
+emitting = false
+amount = 12
+lifetime = 0.5
+one_shot = true
+explosiveness = 0.95
+randomness = 0.3
+direction = Vector2(0, -1)
+spread = 120.0
+gravity = Vector2(0, 50)
+initial_velocity_min = 60.0
+initial_velocity_max = 120.0
+damping_min = 100.0
+damping_max = 150.0
+scale_amount_min = 1.5
+scale_amount_max = 3.0
+scale_amount_curve = SubResource("Curve_hit")
+color = Color(1, 0.95, 0.4, 1)
+color_ramp = SubResource("Gradient_hit")
 
 [node name="DeathSound" type="AudioStreamPlayer2D" parent="." unique_id=639778023]
 

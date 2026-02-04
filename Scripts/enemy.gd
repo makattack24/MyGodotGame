@@ -43,6 +43,7 @@ var hop_progress: float = 0.0
 
 # Visual/audio feedback (optional)
 @onready var death_effect: CPUParticles2D = $DeathEffect
+@onready var hit_effect: CPUParticles2D = $HitEffect
 @onready var hit_sound: AudioStreamPlayer2D = $HitSound
 @onready var hop_sound: AudioStreamPlayer2D = null
 @onready var death_sound: AudioStreamPlayer2D = null
@@ -318,13 +319,10 @@ func play_hit_feedback() -> void:
 		hit_sound.volume_db = 0
 		hit_sound.play()
 
-	# Emit particles for visual feedback (brief burst)
-	if death_effect:
-		death_effect.emitting = true
-		get_tree().create_timer(0.5).timeout.connect(func(): 
-			if death_effect:
-				death_effect.emitting = false
-		)
+	# Emit hit particles for visual feedback
+	if hit_effect:
+		hit_effect.restart()
+		hit_effect.emitting = true
 
 func show_damage_text(damage: int) -> void:
 	"""Creates a floating damage text effect"""
@@ -364,9 +362,26 @@ func die() -> void:
 	# Drop heart (chance based)
 	drop_heart()
 	
-	# Play death feedback (animation or effects)
-	if death_effect:
+	# Detach and play death particle effect
+	if death_effect and is_instance_valid(death_effect) and death_effect.get_parent() == self:
+		var scene_root = get_tree().root
+		# Store the global position before reparenting
+		var effect_position = death_effect.global_position
+		
+		# Reparent the particle effect to scene root so it doesn't get deleted
+		remove_child(death_effect)
+		scene_root.add_child(death_effect)
+		death_effect.global_position = effect_position
+		
+		# Start emitting particles
 		death_effect.emitting = true
+		
+		# Delete the particle effect after it finishes (lifetime + some buffer)
+		var cleanup_time = death_effect.lifetime + 0.5
+		get_tree().create_timer(cleanup_time).timeout.connect(func(): 
+			if is_instance_valid(death_effect):
+				death_effect.queue_free()
+		)
 	
 	# Reparent hit sound to scene root so it finishes playing
 	if hit_sound and hit_sound.playing and hit_sound.get_parent() == self:

@@ -39,10 +39,20 @@ var biome_data: Dictionary = {
 	},
 	BiomeType.FOREST: {
 		"name": "Forest",
-		"source_id": 0,  # Using grass source for now
+		"source_id": 1,  # Using grass source for now
 		"ground_tiles": [
-			Vector2i(8, 1), Vector2i(9, 1), Vector2i(10, 1), Vector2i(10, 2),
-			Vector2i(11, 1), Vector2i(11, 2)
+			Vector2i(0, 8), 
+			Vector2i(1, 8), 
+			Vector2i(2, 8), 
+			Vector2i(3, 8),
+			Vector2i(4, 8), 
+			Vector2i(5, 8), 
+			Vector2i(0, 9), 
+			Vector2i(1, 9),
+			Vector2i(2, 9),
+			Vector2i(3, 9),
+			Vector2i(4, 9),
+			Vector2i(5, 9),
 		],
 		"tree_spawn_chance": 0.35,
 		"min_tree_spacing": 35.0,
@@ -52,9 +62,10 @@ var biome_data: Dictionary = {
 	},
 	BiomeType.DENSE_FOREST: {
 		"name": "Dense Forest",
-		"source_id": 0,  # Using grass source for now
+		"source_id": 7,  # Using grass source for now
 		"ground_tiles": [
-			Vector2i(8, 1), Vector2i(9, 1), Vector2i(10, 1), Vector2i(11, 1)
+			Vector2i(0, 8), Vector2i(1, 8), Vector2i(2, 8), Vector2i(3, 8), Vector2i(4, 8), Vector2i(5, 8),
+			Vector2i(0, 9), Vector2i(1, 9), Vector2i(2, 9), Vector2i(3, 9), Vector2i(4, 9), Vector2i(5, 9),
 		],
 		"tree_spawn_chance": 0.25,
 		"min_tree_spacing": 35.0,
@@ -64,9 +75,10 @@ var biome_data: Dictionary = {
 	},
 	BiomeType.SWAMP: {
 		"name": "Swamp",
-		"source_id": 0,  # TODO: Change to 2 (or whatever) when you add swamp Tile Source
-		"ground_tiles": [  # TODO: Update with swamp atlas coordinates
-			Vector2i(10, 3), Vector2i(10, 4), Vector2i(11, 3), Vector2i(11, 4)
+		"source_id": 4,  # TODO: Change to 2 (or whatever) when you add swamp Tile Source
+		"ground_tiles": [  # Atlas coordinates within that source
+			Vector2i(8, 1), Vector2i(8, 2), Vector2i(9, 1), Vector2i(9, 2),
+			Vector2i(10, 1), Vector2i(10, 2), Vector2i(11, 1), Vector2i(11, 2)
 		],
 		"tree_spawn_chance": 0.12,
 		"min_tree_spacing": 50.0,
@@ -76,9 +88,10 @@ var biome_data: Dictionary = {
 	},
 	BiomeType.TAIGA: {
 		"name": "Taiga",
-		"source_id": 0,  # TODO: Change to 3 (or whatever) when you add taiga Tile Source
-		"ground_tiles": [  # TODO: Update with taiga atlas coordinates
-			Vector2i(8, 2), Vector2i(9, 2), Vector2i(10, 2), Vector2i(11, 2)
+		"source_id": 3,  # TODO: Change to 3 (or whatever) when you add taiga Tile Source
+		"ground_tiles": [  # Atlas coordinates within that source
+			Vector2i(8, 1), Vector2i(8, 2), Vector2i(9, 1), Vector2i(9, 2),
+			Vector2i(10, 1), Vector2i(10, 2), Vector2i(11, 1), Vector2i(11, 2)
 		],
 		"tree_spawn_chance": 0.14,
 		"min_tree_spacing": 55.0,
@@ -89,7 +102,7 @@ var biome_data: Dictionary = {
 	BiomeType.DESERT: {
 		"name": "Desert",
 		"source_id": 1,  # TODO: Change to 1 when you add desert Tile Source
-		"ground_tiles": [  # TODO: Update with desert atlas coordinates from new source
+		"ground_tiles": [
 			Vector2i(0, 64), 
 			Vector2i(1, 64), 
 			Vector2i(2, 64), 
@@ -112,9 +125,10 @@ var biome_data: Dictionary = {
 	},
 	BiomeType.TUNDRA: {
 		"name": "Tundra",
-		"source_id": 0,  # TODO: Change to 4 (or whatever) when you add tundra Tile Source
-		"ground_tiles": [  # TODO: Update with tundra atlas coordinates
-			Vector2i(8, 2), Vector2i(9, 2), Vector2i(10, 2)
+		"source_id": 2,  # TODO: Change to 4 (or whatever) when you add tundra Tile Source
+		"ground_tiles": [  # Atlas coordinates within that source
+			Vector2i(8, 1), Vector2i(8, 2), Vector2i(9, 1), Vector2i(9, 2),
+			Vector2i(10, 1), Vector2i(10, 2), Vector2i(11, 1), Vector2i(11, 2)
 		],
 		"tree_spawn_chance": 0.05,
 		"min_tree_spacing": 70.0,
@@ -124,9 +138,9 @@ var biome_data: Dictionary = {
 	},
 	BiomeType.CAVE: {
 		"name": "Cave Entrance",
-		"source_id": 0,  # TODO: Change to 5 (or whatever) when you add cave Tile Source
+		"source_id": 6,  # TODO: Change to 5 (or whatever) when you add cave Tile Source
 		"ground_tiles": [  # TODO: Update with cave atlas coordinates
-			Vector2i(10, 4), Vector2i(11, 4)
+			Vector2i(5, 3), Vector2i(6, 1), Vector2i(6, 2), Vector2i(6, 3)
 		],
 		"tree_spawn_chance": 0.01,
 		"min_tree_spacing": 100.0,
