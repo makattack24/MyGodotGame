@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" uid="uid://bv3aq5wyq6n5t" path="res://Scripts/enemy.gd" id="1_1f0kj"]
 [ext_resource type="Texture2D" uid="uid://dev5bpuufirpb" path="res://Assets/red slime.png" id="1_hghv2"]
-[ext_resource type="Shader" uid="uid://cvg5xlcv5wum7" path="res://Shaders/new_shader.gdshader" id="2_287tu"]
+[ext_resource type="Shader" uid="uid://cvg5xlcv5wum7" path="res://Shaders/slimeEnemyGlow.gdshader" id="2_287tu"]
 [ext_resource type="AudioStream" uid="uid://dc5cy7ttqy7eg" path="res://Audio/goopy-slime-4-219777.mp3" id="4_287tu"]
 [ext_resource type="AudioStream" uid="uid://bf45xkwsbyr8r" path="res://Audio/slime-squish-5-218569.mp3" id="5_0830c"]
 

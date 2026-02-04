@@ -169,6 +169,10 @@ func handle_input() -> void:
 	if Input.is_action_just_pressed("build_mode"):
 		toggle_placement_mode()
 	
+	# Handle pickup of placed objects (E key) - works in any mode
+	if Input.is_action_just_pressed("pickup"):
+		try_pickup_nearest_object()
+	
 	# Handle placement mode (but don't block movement)
 	if placement_mode:
 		handle_placement_mode()
@@ -432,6 +436,9 @@ func _on_attack_hit(body: Node) -> void:
 				body.queue_free()
 		else:
 			print("Need an axe to chop trees! Select it from your inventory.")
+			# Show visual feedback
+			show_requirement_text("Need Axe!", body.global_position)
+			flash_screen_orange()
 	
 	elif body.is_in_group("Bushes"):
 		# Bushes can be destroyed by any attack
@@ -517,6 +524,46 @@ func show_damage_text(damage: int) -> void:
 	
 	# Delete after animation
 	tween.finished.connect(func(): damage_label.queue_free())
+
+func show_requirement_text(message: String, target_position: Vector2) -> void:
+	"""Creates a floating requirement text effect (e.g., 'Need Axe!')"""
+	var tree = Engine.get_main_loop() as SceneTree
+	if not tree:
+		return
+	
+	# Create a label for the floating requirement text
+	var req_label = Label.new()
+	req_label.text = message
+	req_label.add_theme_font_size_override("font_size", 18)
+	req_label.modulate = Color(1.0, 0.6, 0.1)  # Orange color
+	req_label.z_index = 100  # Draw on top
+	
+	# Position above the target (tree/object)
+	req_label.position = target_position + Vector2(-30, -40)
+	
+	# Add to scene root
+	tree.root.add_child(req_label)
+	
+	# Animate the label (float up and fade out)
+	var tween = req_label.create_tween()
+	tween.set_parallel(true)  # Run animations in parallel
+	tween.tween_property(req_label, "position:y", req_label.position.y - 60, 1.2)
+	tween.tween_property(req_label, "modulate:a", 0.0, 1.2)
+	
+	# Delete after animation
+	tween.finished.connect(func(): req_label.queue_free())
+
+func flash_screen_orange() -> void:
+	"""Flash the screen with an orange overlay to indicate a requirement/warning"""
+	if damage_flash:
+		# Quick orange flash
+		var original_color = damage_flash.color
+		damage_flash.color = Color(1.0, 0.5, 0.0, 0.0)  # Orange with 0 alpha
+		var tween = create_tween()
+		tween.tween_property(damage_flash, "color:a", 0.2, 0.08)  # Fade in to 20% alpha
+		tween.tween_property(damage_flash, "color:a", 0.0, 0.25)   # Fade out
+		# Reset color back to red after animation
+		tween.finished.connect(func(): damage_flash.color = original_color)
 
 func initialize_input() -> void:
 	# Adds WASD key mappings if they don't exist
@@ -651,6 +698,9 @@ func cancel_placement_mode() -> void:
 	
 	# Remove build mode UI label
 	remove_build_mode_label()
+	
+	# Show exit build mode notification
+	show_requirement_text("Exited Build Mode", global_position)
 	
 	print("Placement mode cancelled")
 
@@ -878,4 +928,31 @@ func remove_build_mode_label() -> void:
 	if build_mode_label:
 		build_mode_label.queue_free()
 		build_mode_label = null
+
+func try_pickup_nearest_object() -> void:
+	"""Find and pickup the closest placeable object within interaction range"""
+	var pickup_range = 60.0  # Maximum distance to pick up objects
+	var closest_object = null
+	var closest_distance = pickup_range
+	
+	# Get all placed objects in the scene
+	var placed_objects = get_tree().get_nodes_in_group("PlacedObjects")
+	
+	# Find the closest one
+	for obj in placed_objects:
+		# Skip if it's not placed yet (preview objects)
+		if obj.has_method("pickup_machine"):
+			if not obj.is_placed:
+				continue
+		
+		var distance = global_position.distance_to(obj.global_position)
+		if distance < closest_distance:
+			closest_distance = distance
+			closest_object = obj
+	
+	# Pickup the closest object if found
+	if closest_object and closest_object.has_method("pickup_machine"):
+		closest_object.pickup_machine()
+	else:
+		print("No placeable objects nearby to pick up")
 

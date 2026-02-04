@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" uid="uid://du76ss0lwa80w" path="res://Scripts/coin_item.gd" id="1_coin"]
 [ext_resource type="Texture2D" uid="uid://br6thrn18capx" path="res://Assets/coin.png" id="2_coin"]
-[ext_resource type="Shader" uid="uid://cvg5xlcv5wum7" path="res://Shaders/new_shader.gdshader" id="2_jfmoh"]
+[ext_resource type="Shader" uid="uid://cvg5xlcv5wum7" path="res://Shaders/slimeEnemyGlow.gdshader" id="2_jfmoh"]
 [ext_resource type="AudioStream" uid="uid://bgf418kln043u" path="res://Audio/drop-coin-384921.mp3" id="4_njwfr"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_njwfr"]
