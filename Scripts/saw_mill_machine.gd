@@ -17,6 +17,8 @@ func _ready() -> void:
 	add_to_group("persist")
 	# Add to SawMills group for placement collision detection
 	add_to_group("SawMills")
+	# Add to PlacedObjects group for general collision detection
+	add_to_group("PlacedObjects")
 	
 	# Create interaction area
 	setup_interaction_area()

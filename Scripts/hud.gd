@@ -143,7 +143,8 @@ func _input(event: InputEvent) -> void:
 	if not inventory_bar:
 		return
 	
-	# Handle scroll wheel input
+	# Handle scroll wheel input for inventory selection
+	# This works in all modes including build mode
 	if event is InputEventMouseButton:
 		var slots = inventory_bar.get_children()
 		if slots.size() == 0:
@@ -155,6 +156,8 @@ func _input(event: InputEvent) -> void:
 			if selected_slot_index < 0:
 				selected_slot_index = slots.size() - 1
 			update_selected_slot()
+			# Accept the event to prevent other systems from processing it
+			get_viewport().set_input_as_handled()
 		
 		elif event.button_index == MOUSE_BUTTON_WHEEL_DOWN and event.pressed:
 			# Scroll down - move to next slot
@@ -162,6 +165,8 @@ func _input(event: InputEvent) -> void:
 			if selected_slot_index >= slots.size():
 				selected_slot_index = 0
 			update_selected_slot()
+			# Accept the event to prevent other systems from processing it
+			get_viewport().set_input_as_handled()
 
 func update_selected_slot() -> void:
 	if not inventory_bar:

@@ -18,6 +18,8 @@ sprite_frames = SubResource("SpriteFrames_1fqyy")
 texture = ExtResource("1_vrgg7")
 
 [node name="StaticBody2D" type="StaticBody2D" parent="." unique_id=1444125820]
+collision_layer = 2
+collision_mask = 3
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="StaticBody2D" unique_id=211353227]
 shape = SubResource("RectangleShape2D_1fqyy")

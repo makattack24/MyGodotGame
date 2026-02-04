@@ -5,7 +5,9 @@
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_b57mv"]
 size = Vector2(10, 17)
 
-[node name="Wall" type="StaticBody2D" unique_id=64642063]
+[node name="Wall" type="StaticBody2D" unique_id=64642063 groups=["PlacedObjects"]]
+collision_layer = 2
+collision_mask = 3
 
 [node name="Sprite2D" type="Sprite2D" parent="." unique_id=1323705797]
 texture = ExtResource("1_d155t")

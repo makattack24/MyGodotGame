@@ -634,6 +634,28 @@ func cancel_placement_mode() -> void:
 	print("Placement mode cancelled")
 
 func handle_placement_mode() -> void:
+	# Check if the selected item has changed while in build mode
+	var hud = get_tree().root.find_child("HUD", true, false)
+	if hud and hud.has_method("get_selected_item"):
+		var item_data = hud.get_selected_item()
+		var selected_item = item_data["name"]
+		
+		# If selected item changed and is placeable, switch to it
+		if selected_item != current_placeable_item:
+			if placeable_scenes.has(selected_item) and placeable_scenes[selected_item] != null:
+				# Check if player has the new item
+				if Inventory.get_item_count(selected_item) > 0:
+					# Switch to new placeable item
+					current_placeable_item = selected_item
+					# Recreate the preview with the new item
+					if placement_preview:
+						placement_preview.queue_free()
+					placement_preview = placeable_scenes[current_placeable_item].instantiate()
+					get_parent().add_child(placement_preview)
+					placement_preview.modulate = Color(0.5, 1, 0.5, 0.7)
+					disable_preview_collisions(placement_preview)
+					print("Switched to placing: ", current_placeable_item)
+	
 	# Update preview position to mouse cursor with grid snapping
 	if placement_preview:
 		var mouse_pos = get_global_mouse_position()
@@ -685,6 +707,10 @@ func place_machine() -> void:
 				var placed_object = placeable_scenes[current_placeable_item].instantiate()
 				get_parent().add_child(placed_object)
 				placed_object.global_position = placement_preview.global_position
+				
+				# Re-enable collisions for the placed object
+				enable_object_collisions(placed_object)
+				
 				if placed_object.has_method("place_machine"):
 					placed_object.place_machine()
 				
@@ -709,42 +735,93 @@ func disable_preview_collisions(node: Node) -> void:
 	for child in node.get_children():
 		disable_preview_collisions(child)
 
+func enable_object_collisions(node: Node) -> void:
+	# Recursively re-enable all collision shapes and physics bodies
+	if node is CollisionShape2D or node is CollisionPolygon2D:
+		node.set_deferred("disabled", false)
+	elif node is PhysicsBody2D:
+		# Restore collision layers (layer 2 for placed objects, mask 3 to collide with layers 1 and 2)
+		node.set_deferred("collision_layer", 2)
+		node.set_deferred("collision_mask", 3)
+	
+	for child in node.get_children():
+		enable_object_collisions(child)
+
 func is_position_valid_for_placement(pos: Vector2) -> bool:
 	# Check if too close to player
 	if global_position.distance_to(pos) < grid_size * 1.5:
 		return false  # Too close to player, would get stuck
 	
-	# Saw mill is 2x2 grid cells, check all 4 positions it would occupy
-	var offsets = [
-		Vector2(-grid_size / 2.0, -grid_size / 2.0),  # Top-left
-		Vector2(grid_size / 2.0, -grid_size / 2.0),   # Top-right
-		Vector2(-grid_size / 2.0, grid_size / 2.0),   # Bottom-left
-		Vector2(grid_size / 2.0, grid_size / 2.0)     # Bottom-right
+	# For larger objects (like saw mill which is 32x32), check multiple positions
+	# Define offsets for a 2x2 grid object (covers 32x32 pixels with 16 pixel grid)
+	var check_positions = [
+		pos,  # Center
+		pos + Vector2(-grid_size / 2.0, -grid_size / 2.0),  # Top-left
+		pos + Vector2(grid_size / 2.0, -grid_size / 2.0),   # Top-right
+		pos + Vector2(-grid_size / 2.0, grid_size / 2.0),   # Bottom-left
+		pos + Vector2(grid_size / 2.0, grid_size / 2.0)     # Bottom-right
 	]
 	
-	# Check each grid cell the saw mill would occupy
-	for offset in offsets:
-		var check_pos = pos + offset
-		
-		# Check if there's already a saw mill occupying this cell
-		var machines = get_tree().get_nodes_in_group("SawMills")
-		for machine in machines:
+	# Check each position
+	for check_pos in check_positions:
+		# Check for overlapping placed objects using distance check
+		var check_radius = grid_size * 0.7  # Check if another object is within same grid cell
+		var placed_objects = get_tree().get_nodes_in_group("PlacedObjects")
+		for obj in placed_objects:
 			# Skip the preview itself
-			if machine == placement_preview:
+			if obj == placement_preview:
 				continue
-			# Check if machine is placed (not a preview)
-			if machine.has_method("place_machine") and machine.is_placed:
-				# Check all 4 cells of the existing machine
-				for existing_offset in offsets:
-					var existing_cell = machine.global_position + existing_offset
-					if existing_cell.distance_to(check_pos) < grid_size * 0.5:
-						return false  # Overlapping with another machine
+			# Only check placed objects (not previews)
+			if obj.has_method("place_machine"):
+				# It's a machine - check if it's actually placed
+				if not obj.is_placed:
+					continue
+			# Check distance to this placed object
+			if obj.global_position.distance_to(check_pos) < check_radius:
+				return false
 		
-		# Check if there's a tree in this cell
+		# Check for trees
 		var trees = get_tree().get_nodes_in_group("Trees")
 		for tree in trees:
-			if tree.global_position.distance_to(check_pos) < grid_size:
-				return false  # Too close to a tree
+			if tree.global_position.distance_to(check_pos) < grid_size * 0.8:
+				return false
+		
+		# Check for enemies
+		var enemies = get_tree().get_nodes_in_group("Enemies")
+		for enemy in enemies:
+			if enemy.global_position.distance_to(check_pos) < grid_size * 0.8:
+				return false
+		
+		# Use physics query as additional check for any static bodies
+		var space_state = get_world_2d().direct_space_state
+		var query = PhysicsPointQueryParameters2D.new()
+		query.position = check_pos
+		query.collide_with_areas = false
+		query.collide_with_bodies = true
+		
+		var results = space_state.intersect_point(query, 32)
+		for result in results:
+			var body = result["collider"]
+			# Skip the player
+			if body == self:
+				continue
+			# Skip if it's part of the preview (child StaticBody2D)
+			if placement_preview and (body == placement_preview or body.get_parent() == placement_preview):
+				continue
+			# If we hit any other physics body, position is invalid
+			if body is StaticBody2D or body is CharacterBody2D or body is RigidBody2D:
+				# Check if it's a placed object by checking its parent
+				var parent = body.get_parent()
+				if parent and parent.is_in_group("PlacedObjects"):
+					return false
+				# Or if the body itself is a placed object (like Wall)
+				if body.is_in_group("PlacedObjects"):
+					return false
+				# Check if it's a tree or its parent is a tree
+				if parent and parent.is_in_group("Trees"):
+					return false
+				if body.is_in_group("Trees"):
+					return false
 	
 	return true
 
