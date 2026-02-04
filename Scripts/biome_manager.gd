@@ -208,8 +208,8 @@ var spawn_point: Vector2 = Vector2.ZERO
 func _ready() -> void:
 	# Initialize biome noise for smooth transitions
 	biome_noise.seed = 1337
-	biome_noise.frequency = 0.0008  # VERY low frequency for large biome regions
-	biome_noise.fractal_octaves = 2  # Fewer octaves = smoother, larger areas
+	biome_noise.frequency = 0.001  # Lower frequency for larger, more distinct biomes
+	biome_noise.fractal_octaves = 1  # Single octave for sharper transitions
 	biome_noise.noise_type = FastNoiseLite.TYPE_PERLIN
 	
 	# Variation noise for mixing biomes

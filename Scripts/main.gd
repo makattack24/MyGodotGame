@@ -21,6 +21,10 @@ func _ready() -> void:
 		biome_manager.set_spawn_point(player.global_position)
 		last_biome_check_position = player.global_position
 	
+	# Set spawn position in ground to prevent chasms near start
+	if player and ground:
+		ground.set_spawn_position(player.global_position)
+	
 	# Get HUD reference
 	hud = get_node_or_null("HUD")
 	

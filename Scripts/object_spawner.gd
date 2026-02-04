@@ -199,6 +199,11 @@ func _choose_object_to_spawn(object_list: Array, tile_pos: Vector2i) -> Dictiona
 
 func _can_spawn_object_here(world_pos: Vector2, min_spacing: float) -> bool:
 	"""Check if we can spawn an object at this position"""
+	# Check if position is in a chasm
+	if ground_layer and ground_layer.has_method("is_position_in_chasm"):
+		if ground_layer.is_position_in_chasm(world_pos):
+			return false
+	
 	# Clean up invalid references
 	spawned_object_nodes = spawned_object_nodes.filter(is_instance_valid)
 	
