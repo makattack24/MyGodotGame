@@ -1417,10 +1417,44 @@ anchors_preset = 12
 anchor_top = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
+offset_top = -50.0
 grow_horizontal = 2
 grow_vertical = 0
 theme_override_constants/separation = 4
 alignment = 1
+
+[node name="EquippedItemDisplay" type="PanelContainer" parent="HUD" unique_id=878448131]
+custom_minimum_size = Vector2(120, 80)
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -130.0
+offset_top = -140.0
+offset_right = -10.0
+offset_bottom = -60.0
+grow_horizontal = 0
+grow_vertical = 0
+
+[node name="VBoxContainer" type="VBoxContainer" parent="HUD/EquippedItemDisplay" unique_id=878448132]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="HUD/EquippedItemDisplay/VBoxContainer" unique_id=878448133]
+layout_mode = 2
+text = "Equipped:"
+horizontal_alignment = 1
+
+[node name="ItemIcon" type="TextureRect" parent="HUD/EquippedItemDisplay/VBoxContainer" unique_id=878448134]
+custom_minimum_size = Vector2(32, 32)
+layout_mode = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="ItemName" type="Label" parent="HUD/EquippedItemDisplay/VBoxContainer" unique_id=878448135]
+layout_mode = 2
+text = "None"
+horizontal_alignment = 1
 
 [node name="HealthBarContainer" type="VBoxContainer" parent="HUD" unique_id=756453575]
 custom_minimum_size = Vector2(150, 50)
@@ -1448,7 +1482,6 @@ horizontal_alignment = 1
 
 [node name="ObjectSpawner" type="Node2D" parent="." unique_id=1272717024 node_paths=PackedStringArray("ground_layer")]
 script = ExtResource("9_vy5pj")
-tree_scene = ExtResource("4_v1gob")
 ground_layer = NodePath("../Ground")
 
 [node name="SaveManager" type="Node" parent="." unique_id=1885934722]

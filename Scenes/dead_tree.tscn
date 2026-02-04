@@ -1,0 +1,17 @@
+[gd_scene format=3 uid="uid://dv3u7swuytlmw"]
+
+[ext_resource type="Texture2D" uid="uid://cweeljsofoc46" path="res://Assets/FreeDownloadedAssets/FreeEnvironment/FreePack 2.png" id="1_dead_tree"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_0ylms"]
+size = Vector2(9, 102)
+
+[node name="DeadTree" type="StaticBody2D" unique_id=366507597]
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=471381038]
+texture = ExtResource("1_dead_tree")
+region_enabled = true
+region_rect = Rect2(294, 276, 59, 108)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1943230163]
+position = Vector2(-3.5, 3)
+shape = SubResource("RectangleShape2D_0ylms")

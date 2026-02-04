@@ -31,8 +31,11 @@ var biome_data: Dictionary = {
 			Vector2i(8, 1), Vector2i(8, 2), Vector2i(9, 1), Vector2i(9, 2),
 			Vector2i(10, 1), Vector2i(10, 2), Vector2i(11, 1), Vector2i(11, 2)
 		],
-		"tree_spawn_chance": 0.25,
-		"min_tree_spacing": 40.0,
+		"objects": [
+			{"scene": "res://Scenes/forest_tree.tscn", "spawn_chance": 0.3, "weight": 0.6},
+			{"scene": "res://Scenes/bush.tscn", "spawn_chance": 0.25, "weight": 0.4}
+		],
+		"min_object_spacing": 40.0,
 		"enemy_spawn_chance": 0.1,
 		"enemies_per_camp": 2,
 		"color_tint": Color(1.0, 1.0, 1.0, 1.0)
@@ -54,8 +57,11 @@ var biome_data: Dictionary = {
 			Vector2i(4, 9),
 			Vector2i(5, 9),
 		],
-		"tree_spawn_chance": 0.35,
-		"min_tree_spacing": 35.0,
+		"objects": [
+			{"scene": "res://Scenes/forest_tree.tscn", "spawn_chance": 0.4, "weight": 0.7},
+			{"scene": "res://Scenes/bush.tscn", "spawn_chance": 0.35, "weight": 0.3}
+		],
+		"min_object_spacing": 35.0,
 		"enemy_spawn_chance": 0.3,
 		"enemies_per_camp": 3,
 		"color_tint": Color(0.9, 1.0, 0.9, 1.0)
@@ -67,8 +73,11 @@ var biome_data: Dictionary = {
 			Vector2i(0, 8), Vector2i(1, 8), Vector2i(2, 8), Vector2i(3, 8), Vector2i(4, 8), Vector2i(5, 8),
 			Vector2i(0, 9), Vector2i(1, 9), Vector2i(2, 9), Vector2i(3, 9), Vector2i(4, 9), Vector2i(5, 9),
 		],
-		"tree_spawn_chance": 0.25,
-		"min_tree_spacing": 35.0,
+		"objects": [
+			{"scene": "res://Scenes/forest_tree.tscn", "spawn_chance": 0.45, "weight": 0.8},
+			{"scene": "res://Scenes/bush.tscn", "spawn_chance": 0.3, "weight": 0.2}
+		],
+		"min_object_spacing": 30.0,
 		"enemy_spawn_chance": 0.4,
 		"enemies_per_camp": 4,
 		"color_tint": Color(0.8, 1.0, 0.8, 1.0)
@@ -80,8 +89,12 @@ var biome_data: Dictionary = {
 			Vector2i(8, 1), Vector2i(8, 2), Vector2i(9, 1), Vector2i(9, 2),
 			Vector2i(10, 1), Vector2i(10, 2), Vector2i(11, 1), Vector2i(11, 2)
 		],
-		"tree_spawn_chance": 0.12,
-		"min_tree_spacing": 50.0,
+		"objects": [
+			{"scene": "res://Scenes/dead_tree.tscn", "spawn_chance": 0.25, "weight": 0.5},
+			{"scene": "res://Scenes/bush.tscn", "spawn_chance": 0.2, "weight": 0.3},
+			{"scene": "res://Scenes/rock.tscn", "spawn_chance": 0.18, "weight": 0.2}
+		],
+		"min_object_spacing": 45.0,
 		"enemy_spawn_chance": 0.5,
 		"enemies_per_camp": 4,
 		"color_tint": Color(0.8, 0.9, 0.7, 1.0)
@@ -93,8 +106,11 @@ var biome_data: Dictionary = {
 			Vector2i(8, 1), Vector2i(8, 2), Vector2i(9, 1), Vector2i(9, 2),
 			Vector2i(10, 1), Vector2i(10, 2), Vector2i(11, 1), Vector2i(11, 2)
 		],
-		"tree_spawn_chance": 0.14,
-		"min_tree_spacing": 55.0,
+		"objects": [
+			{"scene": "res://Scenes/forest_tree.tscn", "spawn_chance": 0.3, "weight": 0.7},
+			{"scene": "res://Scenes/rock.tscn", "spawn_chance": 0.25, "weight": 0.3}
+		],
+		"min_object_spacing": 45.0,
 		"enemy_spawn_chance": 0.3,
 		"enemies_per_camp": 3,
 		"color_tint": Color(0.9, 0.95, 1.0, 1.0)
@@ -117,8 +133,12 @@ var biome_data: Dictionary = {
 			Vector2i(5, 65),
 
 		],
-		"tree_spawn_chance": 0.02,
-		"min_tree_spacing": 80.0,
+		"objects": [
+			{"scene": "res://Scenes/cactus.tscn", "spawn_chance": 0.25, "weight": 0.6},
+			{"scene": "res://Scenes/rock.tscn", "spawn_chance": 0.2, "weight": 0.3},
+			{"scene": "res://Scenes/dead_tree.tscn", "spawn_chance": 0.1, "weight": 0.1}
+		],
+		"min_object_spacing": 50.0,
 		"enemy_spawn_chance": 0.4,
 		"enemies_per_camp": 3,
 		"color_tint": Color(1.0, 0.95, 0.8, 1.0)
@@ -130,8 +150,11 @@ var biome_data: Dictionary = {
 			Vector2i(8, 1), Vector2i(8, 2), Vector2i(9, 1), Vector2i(9, 2),
 			Vector2i(10, 1), Vector2i(10, 2), Vector2i(11, 1), Vector2i(11, 2)
 		],
-		"tree_spawn_chance": 0.05,
-		"min_tree_spacing": 70.0,
+		"objects": [
+			{"scene": "res://Scenes/rock.tscn", "spawn_chance": 0.25, "weight": 0.7},
+			{"scene": "res://Scenes/dead_tree.tscn", "spawn_chance": 0.15, "weight": 0.3}
+		],
+		"min_object_spacing": 60.0,
 		"enemy_spawn_chance": 0.6,
 		"enemies_per_camp": 5,
 		"color_tint": Color(0.9, 0.9, 1.0, 1.0)
@@ -142,8 +165,10 @@ var biome_data: Dictionary = {
 		"ground_tiles": [  # TODO: Update with cave atlas coordinates
 			Vector2i(5, 3), Vector2i(6, 1), Vector2i(6, 2), Vector2i(6, 3)
 		],
-		"tree_spawn_chance": 0.01,
-		"min_tree_spacing": 100.0,
+		"objects": [
+			{"scene": "res://Scenes/rock.tscn", "spawn_chance": 0.3, "weight": 1.0}
+		],
+		"min_object_spacing": 60.0,
 		"enemy_spawn_chance": 0.7,
 		"enemies_per_camp": 6,
 		"color_tint": Color(0.7, 0.7, 0.8, 1.0)
@@ -237,6 +262,18 @@ func get_source_id_for_position(world_pos: Vector2) -> int:
 	var biome_type = get_biome_at_position(world_pos)
 	var data = get_biome_data_for_type(biome_type)
 	return data.get("source_id", 0)
+
+func get_objects_for_position(world_pos: Vector2) -> Array:
+	"""Get object spawn data for a position"""
+	var biome_type = get_biome_at_position(world_pos)
+	var data = get_biome_data_for_type(biome_type)
+	return data.get("objects", [])
+
+func get_min_object_spacing_for_position(world_pos: Vector2) -> float:
+	"""Get minimum object spacing for a position"""
+	var biome_type = get_biome_at_position(world_pos)
+	var data = get_biome_data_for_type(biome_type)
+	return data.get("min_object_spacing", 50.0)
 
 func get_tree_spawn_chance_for_position(world_pos: Vector2) -> float:
 	"""Get tree spawn chance for a position"""

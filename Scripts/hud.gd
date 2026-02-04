@@ -8,6 +8,8 @@ var inventory_label: Label
 @onready var controls_panel: VBoxContainer = null
 @onready var minimap: Control = null
 @onready var biome_label: Label = null
+@onready var equipped_icon: TextureRect = null
+@onready var equipped_name: Label = null
 
 # Preload scenes
 var inventory_slot_scene = preload("res://Scenes/inventory_slot.tscn")
@@ -33,6 +35,12 @@ func _ready() -> void:
 	
 	# Setup minimap
 	setup_minimap()
+	
+	# Get equipped item display references
+	if has_node("EquippedItemDisplay/VBoxContainer/ItemIcon"):
+		equipped_icon = $EquippedItemDisplay/VBoxContainer/ItemIcon
+	if has_node("EquippedItemDisplay/VBoxContainer/ItemName"):
+		equipped_name = $EquippedItemDisplay/VBoxContainer/ItemName
 	
 	# Create inventory slots (only if InventoryBar exists)
 	if inventory_bar:
@@ -121,6 +129,9 @@ func update_inventory_bar() -> void:
 					var texture = Inventory.get_item_texture(item_name)
 					slot.set_item(item_name, count, texture)
 					break
+	
+	# Update equipped item display
+	update_equipped_display()
 
 func _on_inventory_updated() -> void:
 	update_inventory_display()
@@ -178,6 +189,9 @@ func update_selected_slot() -> void:
 			slots[i].set_selected(true)
 		else:
 			slots[i].set_selected(false)
+	
+	# Update equipped item display
+	update_equipped_display()
 
 func get_selected_item() -> Dictionary:
 	"""Returns the currently selected item {name: String, count: int}"""
@@ -190,6 +204,22 @@ func get_selected_item() -> Dictionary:
 		return {"name": slot.item_name, "count": slot.count}
 	
 	return {"name": "", "count": 0}
+
+func update_equipped_display() -> void:
+	"""Update the equipped item display with currently selected item"""
+	if not equipped_icon or not equipped_name:
+		return
+	
+	var selected_item = get_selected_item()
+	if selected_item["name"] != "" and selected_item["count"] > 0:
+		# Show the equipped item
+		var texture = Inventory.get_item_texture(selected_item["name"])
+		equipped_icon.texture = texture
+		equipped_name.text = selected_item["name"].capitalize()
+	else:
+		# No item equipped
+		equipped_icon.texture = null
+		equipped_name.text = "None"
 
 func setup_notification_label() -> void:
 	# Create a notification label for save/load messages

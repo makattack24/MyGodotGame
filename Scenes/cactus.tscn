@@ -1,0 +1,17 @@
+[gd_scene format=3 uid="uid://bsexqef2omuym"]
+
+[ext_resource type="Texture2D" uid="uid://cweeljsofoc46" path="res://Assets/FreeDownloadedAssets/FreeEnvironment/FreePack 2.png" id="1_cactus"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_cactus"]
+size = Vector2(20, 121)
+
+[node name="Cactus" type="StaticBody2D" unique_id=122612592]
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=1904943047]
+texture = ExtResource("1_cactus")
+region_enabled = true
+region_rect = Rect2(78, 8, 35, 120)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=466854653]
+position = Vector2(1, -0.5)
+shape = SubResource("RectangleShape2D_cactus")

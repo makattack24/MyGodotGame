@@ -81,6 +81,11 @@ func _ready() -> void:
 	# Add to persist group for saving/loading
 	add_to_group("persist")
 	
+	# Set collision layers for player
+	# Player is on layer 1, and collides with layers 1 and 2 (to collide with placed objects)
+	collision_layer = 1
+	collision_mask = 3  # Binary 11 = checks layers 1 and 2
+	
 	# Initialize health
 	current_health = max_health
 	emit_signal("health_changed", current_health, max_health)
@@ -577,41 +582,51 @@ func load_data(data: Dictionary) -> void:
 	emit_signal("health_changed", current_health, max_health)
 
 func toggle_placement_mode() -> void:
-	# Get currently selected item
-	var hud = get_tree().root.find_child("HUD", true, false)
-	var selected_item = ""
-	if hud and hud.has_method("get_selected_item"):
-		var item_data = hud.get_selected_item()
-		selected_item = item_data["name"]
+	# Toggle placement mode on/off
+	placement_mode = !placement_mode
 	
-	# Check if selected item is placeable
-	if placeable_scenes.has(selected_item) and placeable_scenes[selected_item] != null:
-		# Check if player has the item in inventory
-		if Inventory.get_item_count(selected_item) > 0:
+	if placement_mode:
+		# Entering build mode
+		# Get currently selected item
+		var hud = get_tree().root.find_child("HUD", true, false)
+		var selected_item = ""
+		if hud and hud.has_method("get_selected_item"):
+			var item_data = hud.get_selected_item()
+			selected_item = item_data["name"]
+		
+		# Check if selected item is placeable and available
+		if placeable_scenes.has(selected_item) and placeable_scenes[selected_item] != null and Inventory.get_item_count(selected_item) > 0:
 			current_placeable_item = selected_item
-			placement_mode = !placement_mode
-			if placement_mode:
-				start_placement_mode()
-			else:
-				cancel_placement_mode()
 		else:
-			print("No ", selected_item, " in inventory!")
+			# No placeable item selected, try to find first available placeable item
+			var found_placeable = false
+			for item_name in placeable_scenes.keys():
+				if placeable_scenes[item_name] != null and Inventory.get_item_count(item_name) > 0:
+					current_placeable_item = item_name
+					found_placeable = true
+					print("Auto-selected ", item_name, " for placement")
+					break
+			
+			if not found_placeable:
+				print("Build mode: No placeable items available! Collect saw_mill, wall, or fence items first.")
+				print("You can still switch to a placeable item using mouse wheel.")
+				current_placeable_item = ""  # No item to place yet
+		
+		start_placement_mode()
 	else:
-		print("Select a placeable item (saw_mill, wall, fence) from inventory first!")
+		cancel_placement_mode()
 
 func start_placement_mode() -> void:
-	print("Placement mode activated - Move mouse to place, Hold Left Click to place continuously, Right Click to cancel")
-	# Create preview from current placeable item
-	if placeable_scenes.has(current_placeable_item) and placeable_scenes[current_placeable_item] != null:
+	print("Build mode activated - Move mouse to place, Hold Left Click to place continuously, Right Click to cancel")
+	
+	# Create preview from current placeable item (if available)
+	if current_placeable_item != "" and placeable_scenes.has(current_placeable_item) and placeable_scenes[current_placeable_item] != null:
 		placement_preview = placeable_scenes[current_placeable_item].instantiate()
 		get_parent().add_child(placement_preview)
 		placement_preview.modulate = Color(0.5, 1, 0.5, 0.7)  # Green tint
 		
 		# Disable collisions on the preview
 		disable_preview_collisions(placement_preview)
-	else:
-		print("Error: No scene found for ", current_placeable_item)
-		return
 	
 	# Add visual feedback to player
 	anim_sprite.modulate = Color(0.7, 1.0, 0.7)  # Slight green tint
@@ -657,6 +672,21 @@ func handle_placement_mode() -> void:
 					print("Switched to placing: ", current_placeable_item)
 	
 	# Update preview position to mouse cursor with grid snapping
+				else:
+					# Selected item is placeable but not available
+					if placement_preview:
+						placement_preview.queue_free()
+						placement_preview = null
+					current_placeable_item = ""
+					print("No ", selected_item, " available to place!")
+			else:
+				# Selected item is not placeable - clear preview
+				if placement_preview:
+					placement_preview.queue_free()
+					placement_preview = null
+				current_placeable_item = ""
+	
+	# Update preview position to mouse cursor with grid snapping
 	if placement_preview:
 		var mouse_pos = get_global_mouse_position()
 		# Snap to grid
@@ -679,8 +709,8 @@ func handle_placement_mode() -> void:
 			else:
 				placement_preview.modulate = Color(1, 0.5, 0.5, 0.7)  # Red = invalid position
 	
-	# Left click to place (hold down to keep placing)
-	if Input.is_action_pressed("attack1") and placement_cooldown <= 0:
+	# Left click to place (hold down to keep placing) - only if we have an item to place
+	if current_placeable_item != "" and Input.is_action_pressed("attack1") and placement_cooldown <= 0:
 		place_machine()
 	
 	# Right click to cancel
