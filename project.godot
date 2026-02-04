@@ -32,6 +32,7 @@ window/stretch/mode="canvas_items"
 
 Enemies=""
 Trees=""
+player=""
 
 [physics]
 

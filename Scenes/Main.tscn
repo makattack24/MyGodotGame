@@ -6,7 +6,6 @@
 [ext_resource type="Script" uid="uid://dhe277carbq2o" path="res://Scripts/ground.gd" id="2_rgh2o"]
 [ext_resource type="Texture2D" uid="uid://c52xqwpku0dlg" path="res://Assets/FreeDownloadedAssets/The Fan-tasy Tileset - Desert Oasis 1.4.1/The Fan-tasy Tileset - Desert Oasis/Art/Ground Tileset/Tileset_Ground.png" id="3_1p5hy"]
 [ext_resource type="Texture2D" uid="uid://d3qskh080mcwo" path="res://Assets/FreeDownloadedAssets/fantasy_ [version 2.0]/tundra_/tundra_.png" id="4_2w5on"]
-[ext_resource type="PackedScene" uid="uid://lhtrljjsc78f" path="res://Scenes/forest_tree.tscn" id="4_v1gob"]
 [ext_resource type="Texture2D" uid="uid://cu3molbok4pao" path="res://Assets/FreeDownloadedAssets/fantasy_ [version 2.0]/taiga_/taiga_.png" id="5_346fj"]
 [ext_resource type="PackedScene" uid="uid://m8jkj4116ude" path="res://Scenes/pause_menu.tscn" id="5_pbw6q"]
 [ext_resource type="Texture2D" uid="uid://bsv3mh4kiinx4" path="res://Assets/FreeDownloadedAssets/fantasy_ [version 2.0]/swamp_/swamp_.png" id="6_0sclb"]

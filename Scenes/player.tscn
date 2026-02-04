@@ -1011,7 +1011,7 @@ animations = [{
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_qqcod"]
 size = Vector2(40, 40)
 
-[node name="Player" type="CharacterBody2D" unique_id=1229123879]
+[node name="Player" type="CharacterBody2D" unique_id=1229123879 groups=["player"]]
 script = ExtResource("1_cvnsp")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=490325349]
@@ -1026,7 +1026,6 @@ autoplay = "idle_down"
 
 [node name="AttackArea" type="Area2D" parent="." unique_id=1642067877]
 collision_layer = 0
-collision_mask = 1
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="AttackArea" unique_id=1263485978]
 shape = SubResource("RectangleShape2D_qqcod")
