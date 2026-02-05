@@ -1374,17 +1374,6 @@ script = ExtResource("1_rgh2o")
 tile_set = SubResource("TileSet_v1gob")
 script = ExtResource("2_rgh2o")
 
-[node name="NPCSpawner" parent="." unique_id=1117088020 instance=ExtResource("13_frkhe")]
-
-[node name="EnemySpawner" type="Node2D" parent="." unique_id=403715541 node_paths=PackedStringArray("player")]
-script = ExtResource("8_vy5pj")
-enemy_scene = ExtResource("9_bmxlf")
-num_camps = 12
-enemies_per_camp = 12
-camp_enemy_spread = 100.0
-min_camp_distance = 800.0
-player = NodePath("../Player")
-
 [node name="Player" parent="." unique_id=1229123879 instance=ExtResource("1_r150o")]
 z_index = 1
 script = ExtResource("14_0sclb")
@@ -1392,6 +1381,20 @@ script = ExtResource("14_0sclb")
 [node name="Camera2D" type="Camera2D" parent="Player" unique_id=369522924]
 position = Vector2(0, 2)
 scale = Vector2(0.063, 0.063)
+
+[node name="ObjectSpawner" type="Node2D" parent="." unique_id=1272717024 node_paths=PackedStringArray("ground_layer")]
+script = ExtResource("9_vy5pj")
+ground_layer = NodePath("../Ground")
+
+[node name="DayNightOverlay" type="CanvasLayer" parent="." unique_id=134390289]
+
+[node name="DayNightOverlayRect" type="ColorRect" parent="DayNightOverlay" unique_id=2083473919]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.003921569)
 
 [node name="PauseMenu" parent="." unique_id=1755396194 instance=ExtResource("5_pbw6q")]
 visible = false
@@ -1481,13 +1484,6 @@ layout_mode = 2
 text = "10/10"
 horizontal_alignment = 1
 
-[node name="ObjectSpawner" type="Node2D" parent="." unique_id=1272717024 node_paths=PackedStringArray("ground_layer")]
-script = ExtResource("9_vy5pj")
-ground_layer = NodePath("../Ground")
-
-[node name="SaveManager" type="Node" parent="." unique_id=1885934722]
-script = ExtResource("8_save")
-
 [node name="GameOver" type="CanvasLayer" parent="." unique_id=579993693]
 process_mode = 3
 script = ExtResource("11_4kpch")
@@ -1528,6 +1524,20 @@ text = "QUIT"
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=754897741]
 environment = SubResource("Environment_4kpch")
+
+[node name="SaveManager" type="Node" parent="." unique_id=1885934722]
+script = ExtResource("8_save")
+
+[node name="EnemySpawner" type="Node2D" parent="." unique_id=403715541 node_paths=PackedStringArray("player")]
+script = ExtResource("8_vy5pj")
+enemy_scene = ExtResource("9_bmxlf")
+num_camps = 12
+enemies_per_camp = 12
+camp_enemy_spread = 100.0
+min_camp_distance = 800.0
+player = NodePath("../Player")
+
+[node name="NPCSpawner" parent="." unique_id=1117088020 instance=ExtResource("13_frkhe")]
 
 [connection signal="pressed" from="GameOver/VBoxContainer/RespawnButton" to="GameOver" method="_on_respawn_button_pressed"]
 [connection signal="pressed" from="GameOver/VBoxContainer/RestartButton" to="GameOver" method="_on_restart_button_pressed"]

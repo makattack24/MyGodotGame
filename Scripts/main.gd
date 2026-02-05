@@ -10,6 +10,9 @@ extends Node2D
 var last_biome_check_position: Vector2 = Vector2.ZERO
 var biome_check_distance: float = 50.0  # Check biome every 50 units of movement
 
+# Day/Night Cycle
+var day_night_cycle: Node = null
+
 func _ready() -> void:
 	# Create and add BiomeManager
 	biome_manager = load("res://Scripts/biome_manager.gd").new()
@@ -32,6 +35,16 @@ func _ready() -> void:
 	# Try to load saved game on start
 	if save_manager and save_manager.has_save():
 		print("Save file found. Press L to load or continue with new game.")
+
+	# --- DAY/NIGHT CYCLE SETUP ---
+	var overlay_rect = get_node_or_null("DayNightOverlay/DayNightOverlayRect")
+	if overlay_rect:
+		var DayNightCycle = load("res://Scripts/day_night_cycle.gd")
+		day_night_cycle = DayNightCycle.new()
+		add_child(day_night_cycle)
+		day_night_cycle.overlay_path = overlay_rect.get_path()
+	else:
+		push_warning("DayNightOverlayRect node not found! Day/night cycle will not be visible.")
 
 func _process(_delta: float) -> void:
 	ground.generate_around(player.global_position)
