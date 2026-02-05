@@ -18,6 +18,7 @@
 [ext_resource type="Script" uid="uid://bj6l66uirqsrp" path="res://Scripts/object_spawner.gd" id="9_vy5pj"]
 [ext_resource type="Script" uid="uid://douacjntnpvln" path="res://Scripts/game_over.gd" id="11_4kpch"]
 [ext_resource type="PackedScene" path="res://Scenes/npc_spawner.tscn" id="13_frkhe"]
+[ext_resource type="Script" uid="uid://e7c3d4m8oogw" path="res://Scripts/player_refactored.gd" id="14_0sclb"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_pbw6q"]
 texture = ExtResource("1_kln2b")
@@ -1386,6 +1387,7 @@ player = NodePath("../Player")
 
 [node name="Player" parent="." unique_id=1229123879 instance=ExtResource("1_r150o")]
 z_index = 1
+script = ExtResource("14_0sclb")
 
 [node name="Camera2D" type="Camera2D" parent="Player" unique_id=369522924]
 position = Vector2(0, 2)
