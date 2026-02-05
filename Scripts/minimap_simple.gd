@@ -20,6 +20,8 @@ var player: Node2D = null
 # Object markers
 var npc_markers: Array = []
 var enemy_markers: Array = []
+# Time display
+@onready var time_label: Label = $TimeLabel
 
 func _ready() -> void:
 	# Find player
@@ -75,6 +77,24 @@ func _process(_delta: float) -> void:
 	
 	# Update markers for NPCs and enemies
 	update_object_markers()
+	
+	# Update time display with AM/PM
+	if time_label:
+		var day_night = get_tree().get_first_node_in_group("DayNightCycle")
+		if day_night and "time_of_day" in day_night:
+			var t = day_night.time_of_day
+			var total_minutes = float(t) * 24.0 * 60.0
+			var hour = int(total_minutes / 60.0)
+			var minute = int(total_minutes) % 60
+			var ampm = "AM"
+			var display_hour = hour
+			if hour == 0:
+				display_hour = 12
+			elif hour >= 12:
+				ampm = "PM"
+				if hour > 12:
+					display_hour = hour - 12
+			time_label.text = "Time: %02d:%02d %s" % [display_hour, minute, ampm]
 
 func update_object_markers() -> void:
 	# Clear old markers

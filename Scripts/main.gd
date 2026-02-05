@@ -43,6 +43,7 @@ func _ready() -> void:
 		day_night_cycle = DayNightCycle.new()
 		add_child(day_night_cycle)
 		day_night_cycle.overlay_path = overlay_rect.get_path()
+		day_night_cycle.add_to_group("DayNightCycle")
 	else:
 		push_warning("DayNightOverlayRect node not found! Day/night cycle will not be visible.")
 

@@ -2,7 +2,7 @@
 extends Node
 
 @export var overlay_path: NodePath = NodePath("DayNightOverlay/DayNightOverlayRect")
-@export var day_length: float = 300.0 # seconds for a full day cycle
+@export var day_length: float = 900.0 # seconds for a full day cycle
 @export var night_color: Color = Color(0, 0, 0.2, 0.5) # dark blue, semi-transparent
 @export var dusk_color: Color = Color(0.2, 0.1, 0.2, 0.3) # purple-ish, less transparent
 @export var dawn_color: Color = Color(0.8, 0.6, 0.3, 0.2) # orange, faint

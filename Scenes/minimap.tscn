@@ -41,3 +41,12 @@ offset_right = 78.0
 offset_bottom = 78.0
 mouse_filter = 2
 color = Color(0, 1, 0, 1)
+
+[node name="TimeLabel" type="Label" parent="." unique_id=1234567890]
+layout_mode = 0
+offset_top = 155.0
+offset_right = 150.0
+offset_bottom = 178.0
+text = "Time: 00:00"
+horizontal_alignment = 2
+vertical_alignment = 1
