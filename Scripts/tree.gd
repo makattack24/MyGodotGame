@@ -18,6 +18,12 @@ var hit_cooldown_timer: float = 0.0           # Tracks cooldown timing
 
 # Process being hit
 func take_damage(damage: int) -> void:
+	# Always play hit effect and sound for feedback
+	if hit_effect:
+		hit_effect.restart()
+	if hit_sound:
+		hit_sound.play()
+
 	# Only process damage if cooldown timer is 0
 	if health > 0 and hit_cooldown_timer <= 0.0:
 		health -= damage
@@ -25,13 +31,6 @@ func take_damage(damage: int) -> void:
 
 		# Trigger cooldown timer
 		hit_cooldown_timer = hit_cooldown
-
-		# Trigger hit effects
-		if hit_effect:
-			hit_effect.emitting = true
-
-		if hit_sound:
-			hit_sound.play()
 
 		# Visual feedback of damage (e.g., shaking tree)
 		apply_damage_feedback()
