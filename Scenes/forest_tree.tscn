@@ -8,20 +8,6 @@
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_rsuno"]
 size = Vector2(16, 95)
 
-[sub_resource type="Gradient" id="Gradient_wjmfy"]
-interpolation_mode = 2
-interpolation_color_space = 1
-offsets = PackedFloat32Array(0, 0, 0.9879518)
-colors = PackedColorArray(0.42514628, 0.29988495, 0.058825575, 1, 0.5296258, 0.3193123, 0, 1, 0.44052416, 0.32672453, 0.10331517, 1)
-
-[sub_resource type="FastNoiseLite" id="FastNoiseLite_2yptp"]
-
-[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_6dfie"]
-width = 2
-height = 2
-noise = SubResource("FastNoiseLite_2yptp")
-color_ramp = SubResource("Gradient_wjmfy")
-
 [sub_resource type="Curve" id="Curve_2yptp"]
 _data = [Vector2(0, 1), 0.0, 0.0, 0, 0, Vector2(0.5, 0.7191012), 0.0, 0.0, 0, 0, Vector2(1, 0.19101131), 0.0, 0.0, 0, 0]
 point_count = 3
@@ -51,8 +37,7 @@ explosiveness = 0.8
 randomness = 0.35
 lifetime_randomness = 0.25
 emission_shape = 3
-emission_sphere_radius = 8.0
-particle_flag_rotate_y = true
+emission_rect_extents = Vector2(1, 1)
 direction = Vector2(0, -1)
 spread = 50.0
 gravity = Vector2(0, 300)
@@ -62,11 +47,10 @@ angular_velocity_min = -360.0
 angular_velocity_max = 360.0
 damping_min = 50.0
 damping_max = 100.0
-color = Color(0.65, 0.45, 0.25, 1)
 scale_amount_min = 2.5
 scale_amount_max = 4.5
 scale_amount_curve = SubResource("Curve_2yptp")
+color = Color(0.65, 0.45, 0.25, 1)
 
 [node name="HitSound" type="AudioStreamPlayer2D" parent="." unique_id=1844005204]
 stream = ExtResource("3_wjmfy")
-pitch_scale = 1.3
