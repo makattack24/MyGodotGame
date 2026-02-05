@@ -1,0 +1,21 @@
+[gd_resource type="Resource" script_class="EnemyData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://Scripts/Enemies/enemy_data.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+enemy_name = "Bat"
+max_health = 2
+knockback_strength = 200.0
+attack_damage = 1
+attack_cooldown = 0.8
+move_speed = 150.0
+aggro_range = 250.0
+return_home_range = 450.0
+coin_drop_chance = 0.7
+min_coins = 1
+max_coins = 2
+heart_drop_chance = 0.1
+sprite_scale = Vector2(1, 1)
+hit_color = Color(1, 0.5, 0.5, 1)
+glow_enabled = false

@@ -15,6 +15,7 @@ func _ready() -> void:
 	biome_manager = load("res://Scripts/biome_manager.gd").new()
 	biome_manager.name = "BiomeManager"
 	add_child(biome_manager)
+	biome_manager.add_to_group("BiomeManager")
 	
 	# Set spawn point to player's initial position
 	if player and biome_manager:

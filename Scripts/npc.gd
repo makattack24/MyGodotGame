@@ -13,9 +13,17 @@ extends CharacterBody2D
 	"saw_mill": 100
 }
 
-# State machine
 enum State { IDLE, WANDERING }
 var current_state: State = State.IDLE
+
+# Attack logic
+@export var attack_cooldown_time: float = 0.8
+var attack_cooldown: float = 0.0
+@onready var attack_area: Area2D = $AttackArea
+var is_attacking: bool = false
+
+# Color tint for NPCs
+@export var npc_tint: Color = Color(0.7, 1.0, 1.0, 1.0) # Cyan tint by default
 
 # Movement
 var spawn_position: Vector2
@@ -59,6 +67,16 @@ func _ready() -> void:
 	if animated_sprite and animated_sprite.sprite_frames.has_animation("idle_down"):
 		animated_sprite.play("idle_down")
 
+	# Tint the NPC sprite for visual distinction
+	if animated_sprite:
+		animated_sprite.modulate = npc_tint
+
+	# Connect attack area
+	if attack_area:
+		attack_area.body_entered.connect(_on_attack_area_body_entered)
+		attack_area.monitoring = true
+		attack_area.visible = false
+
 func _process(delta: float) -> void:
 	# Show/hide interaction prompt
 	if interaction_label:
@@ -76,6 +94,29 @@ func _process(delta: float) -> void:
 	# Check for player interaction
 	if player_in_range and Input.is_action_just_pressed("pickup"):
 		open_shop()
+
+	# Attack cooldown
+	if attack_cooldown > 0:
+		attack_cooldown -= delta
+func _on_attack_area_body_entered(body: Node) -> void:
+	# Attack enemies that enter the area
+	if body.is_in_group("Enemies") and attack_cooldown <= 0 and not is_attacking:
+		attack_enemy(body)
+
+func attack_enemy(enemy: Node) -> void:
+	is_attacking = true
+	attack_cooldown = attack_cooldown_time
+	# Play attack animation if available
+	var anim_name = "attack1_" + facing_direction
+	if animated_sprite and animated_sprite.sprite_frames.has_animation(anim_name):
+		animated_sprite.play(anim_name)
+	# Deal damage to enemy
+	if enemy.has_method("_on_hit"):
+		var knockback_dir = (enemy.global_position - global_position).normalized()
+		enemy.call("_on_hit", 1, knockback_dir)
+	# Reset attack state after short delay
+	await get_tree().create_timer(0.3).timeout
+	is_attacking = false
 
 func handle_idle_state(delta: float) -> void:
 	velocity = Vector2.ZERO

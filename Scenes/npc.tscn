@@ -1,37 +1,37 @@
 [gd_scene format=3 uid="uid://dpwo42n3ovh7q"]
 
-[ext_resource type="Script" path="res://Scripts/npc.gd" id="1_merchant"]
+[ext_resource type="Script" uid="uid://ch7g67cuqhk2t" path="res://Scripts/npc.gd" id="1_merchant"]
 [ext_resource type="Texture2D" uid="uid://bdr7hmu4qo20i" path="res://Assets/FreeDownloadedAssets/FREE_Adventurer 2D Pixel Art/Sprites/IDLE/idle_down.png" id="2_xxsvc"]
 
-[sub_resource type="AtlasTexture" id="AtlasTexture_g6unj"]
+[sub_resource type="AtlasTexture" id="AtlasTexture_xxsvc"]
 atlas = ExtResource("2_xxsvc")
 region = Rect2(0, 0, 96, 80)
 
-[sub_resource type="AtlasTexture" id="AtlasTexture_h1ryf"]
+[sub_resource type="AtlasTexture" id="AtlasTexture_g6unj"]
 atlas = ExtResource("2_xxsvc")
 region = Rect2(96, 0, 96, 80)
 
-[sub_resource type="AtlasTexture" id="AtlasTexture_1ig1v"]
+[sub_resource type="AtlasTexture" id="AtlasTexture_h1ryf"]
 atlas = ExtResource("2_xxsvc")
 region = Rect2(192, 0, 96, 80)
 
-[sub_resource type="AtlasTexture" id="AtlasTexture_6atyd"]
+[sub_resource type="AtlasTexture" id="AtlasTexture_1ig1v"]
 atlas = ExtResource("2_xxsvc")
 region = Rect2(288, 0, 96, 80)
 
-[sub_resource type="AtlasTexture" id="AtlasTexture_2xkex"]
+[sub_resource type="AtlasTexture" id="AtlasTexture_6atyd"]
 atlas = ExtResource("2_xxsvc")
 region = Rect2(384, 0, 96, 80)
 
-[sub_resource type="AtlasTexture" id="AtlasTexture_8gudg"]
+[sub_resource type="AtlasTexture" id="AtlasTexture_2xkex"]
 atlas = ExtResource("2_xxsvc")
 region = Rect2(480, 0, 96, 80)
 
-[sub_resource type="AtlasTexture" id="AtlasTexture_qi7up"]
+[sub_resource type="AtlasTexture" id="AtlasTexture_8gudg"]
 atlas = ExtResource("2_xxsvc")
 region = Rect2(576, 0, 96, 80)
 
-[sub_resource type="AtlasTexture" id="AtlasTexture_a6nw3"]
+[sub_resource type="AtlasTexture" id="AtlasTexture_qi7up"]
 atlas = ExtResource("2_xxsvc")
 region = Rect2(672, 0, 96, 80)
 
@@ -43,6 +43,9 @@ animations = [{
 "speed": 5.0
 }, {
 "frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_xxsvc")
+}, {
 "duration": 1.0,
 "texture": SubResource("AtlasTexture_g6unj")
 }, {
@@ -63,13 +66,10 @@ animations = [{
 }, {
 "duration": 1.0,
 "texture": SubResource("AtlasTexture_qi7up")
-}, {
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_a6nw3")
 }],
 "loop": true,
-"name": &"idle",
-"speed": 5.0
+"name": &"idle_down",
+"speed": 12.0
 }]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_1"]
@@ -78,14 +78,19 @@ radius = 16.0
 [sub_resource type="CircleShape2D" id="CircleShape2D_2"]
 radius = 50.0
 
+[sub_resource type="CircleShape2D" id="CircleShape2D_xxsvc"]
+radius = 39.012817
+
 [node name="NPC" type="CharacterBody2D" unique_id=1698899941]
 collision_layer = 2
 script = ExtResource("1_merchant")
+npc_tint = Color(0.45490196, 0.95686275, 0.9647059, 1)
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=276256024]
 scale = Vector2(2, 2)
 sprite_frames = SubResource("SpriteFrames_b4syp")
-animation = &"idle"
+animation = &"idle_down"
+autoplay = "idle_down"
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=826435431]
 shape = SubResource("CircleShape2D_1")
@@ -105,3 +110,9 @@ theme_override_colors/font_color = Color(1, 1, 0, 1)
 theme_override_font_sizes/font_size = 12
 text = "Press E to talk"
 horizontal_alignment = 1
+
+[node name="AttackArea" type="Area2D" parent="." unique_id=1224785511]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="AttackArea" unique_id=263320304]
+position = Vector2(1, 49)
+shape = SubResource("CircleShape2D_xxsvc")

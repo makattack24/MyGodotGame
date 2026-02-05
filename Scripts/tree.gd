@@ -45,18 +45,24 @@ func destroy_tree() -> void:
 	print("Tree destroyed! Dropping items.")
 	call_deferred("spawn_items")  # Defer spawning to avoid physics query conflicts
 	
-	# If hit sound is playing, let it finish independently
+	var scene_root = get_tree().root
+	
+	# Reparent hit sound to continue playing independently
 	if hit_sound and hit_sound.playing:
-		# Reparent sound to scene root so it continues playing after tree is removed
-		var scene_root = get_tree().root
 		remove_child(hit_sound)
 		scene_root.add_child(hit_sound)
 		hit_sound.global_position = global_position
-		
-		# Clean up sound after it finishes
 		hit_sound.finished.connect(func(): hit_sound.queue_free())
 	
-	# Remove the tree immediately
+	# Reparent particles to continue playing independently
+	if hit_effect and hit_effect.emitting:
+		remove_child(hit_effect)
+		scene_root.add_child(hit_effect)
+		hit_effect.global_position = global_position
+		# Clean up particles after they finish
+		get_tree().create_timer(hit_effect.lifetime).timeout.connect(func(): hit_effect.queue_free())
+	
+	# Remove the tree immediately - effects continue independently
 	queue_free()
 
 # Spawn items near the tree

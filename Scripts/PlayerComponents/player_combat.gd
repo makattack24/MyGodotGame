@@ -16,6 +16,8 @@ var sword_remover_material: ShaderMaterial = null
 
 # Attack state
 var is_attacking: bool = false
+var attack_cooldown: float = 0.0
+@export var attack_cooldown_time: float = 0.55
 @export var attack_offsets: Dictionary = {
 	"up": Vector2(0, -16),
 	"down": Vector2(0, 16),
@@ -29,6 +31,10 @@ func _ready() -> void:
 	if sword_shader:
 		sword_remover_material = ShaderMaterial.new()
 		sword_remover_material.shader = sword_shader
+
+func _process(delta: float) -> void:
+	if attack_cooldown > 0:
+		attack_cooldown -= delta
 
 func initialize(p_player: CharacterBody2D, p_anim_sprite: AnimatedSprite2D, p_attack_area: Area2D) -> void:
 	"""Initialize component with references to player nodes"""
@@ -57,9 +63,10 @@ func initialize(p_player: CharacterBody2D, p_anim_sprite: AnimatedSprite2D, p_at
 
 func trigger_attack(attack_type: String, facing_direction: String) -> void:
 	"""Trigger an attack animation"""
-	if is_attacking:
+	if is_attacking or attack_cooldown > 0:
 		return
 	is_attacking = true
+	attack_cooldown = attack_cooldown_time
 
 	# Get currently selected item from HUD
 	var selected_item = _get_selected_item_name()

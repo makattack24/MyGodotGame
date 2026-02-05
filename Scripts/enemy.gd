@@ -261,7 +261,7 @@ func create_shadow() -> void:
 	else:
 		add_child(shadow)
 	
-	print("Shadow created for enemy")
+	#print("Shadow created for enemy")
 
 func finish_hop() -> void:
 	hop_state = HopState.RESTING
@@ -286,7 +286,7 @@ func finish_hop() -> void:
 func _on_hit(damage: int, knockback_direction: Vector2) -> void:
 	# Reduce health based on damage received
 	health -= damage
-	print("Enemy hit! Remaining health: ", health)
+	#print("Enemy hit! Remaining health: ", health)
 	
 	# Show damage indicator
 	show_damage_text(damage)
@@ -354,7 +354,7 @@ func show_damage_text(damage: int) -> void:
 
 func die() -> void:
 	# Handle death behavior
-	print("Enemy died!")
+	#print("Enemy died!")
 	
 	# Drop coins
 	drop_coins()
@@ -461,7 +461,7 @@ func set_camp_position(camp_pos: Vector2) -> void:
 func _ready() -> void:
 	# Add enemy to the Enemies group for player attack detection
 	add_to_group("Enemies")
-	print("Enemy added to Enemies group!")
+	#print("Enemy added to Enemies group!")
 	
 	# Get death sound if it exists
 	if has_node("DeathSound"):

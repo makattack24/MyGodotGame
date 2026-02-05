@@ -37,6 +37,8 @@ var npc_types = [
 
 # Tracking
 var spawned_npcs: Array = []
+# Track which biome has an NPC
+var biome_npc_map: Dictionary = {}
 var spawn_timer: float = 0.0
 var player_ref: Node2D = null
 
@@ -73,35 +75,79 @@ func spawn_initial_npcs() -> void:
 		spawn_npc()
 
 func check_and_spawn_npcs() -> void:
-	# Spawn NPCs if we're below the maximum
-	while spawned_npcs.size() < max_npcs:
+	# Only try to spawn if there are biomes without an NPC
+	var biome_manager = get_tree().get_first_node_in_group("BiomeManager")
+	if not biome_manager:
+		return
+
+
+	# Get all biome types from biome_manager safely
+	var all_biomes = []
+	if "BiomeType" in biome_manager:
+		var bt = biome_manager.BiomeType
+		for k in bt:
+			all_biomes.append(bt[k])
+	elif biome_npc_map.size() > 0:
+		all_biomes = biome_npc_map.keys()
+
+	var uncovered_biomes = []
+	for b in all_biomes:
+		if not biome_npc_map.has(b):
+			uncovered_biomes.append(b)
+
+	# If all biomes have an NPC, do not attempt to spawn
+	if uncovered_biomes.is_empty():
+		return
+
+	# Otherwise, try to spawn up to the number of uncovered biomes
+	var attempts = min(uncovered_biomes.size(), max_npcs - spawned_npcs.size())
+	for i in range(attempts):
 		spawn_npc()
 
 func spawn_npc() -> void:
 	if not player_ref or not npc_scene:
 		return
-	
-	# Get random spawn position around player
-	var spawn_pos = get_random_spawn_position()
-	
+
+	var biome_manager = get_tree().get_first_node_in_group("BiomeManager")
+	if not biome_manager:
+		print("No BiomeManager found for NPC spawning!")
+		return
+
+	var max_attempts = 10
+	var attempt = 0
+	var found = false
+	var spawn_pos = Vector2.ZERO
+	var biome_type = null
+
+	while attempt < max_attempts and not found:
+		spawn_pos = get_random_spawn_position()
+		biome_type = biome_manager.get_biome_at_position(spawn_pos)
+		# Only spawn if this biome doesn't have an NPC yet
+		if not biome_npc_map.has(biome_type):
+			# Check distance to all existing NPCs
+			var too_close = false
+			for npc in spawned_npcs:
+				if npc.global_position.distance_to(spawn_pos) < 200:
+					too_close = true
+					break
+			if not too_close:
+				found = true
+		attempt += 1
+
+	if not found:
+		print("Could not find valid biome/position for NPC after ", max_attempts, " attempts.")
+		return
+
 	# Instance NPC
 	var npc = npc_scene.instantiate()
-	
-	# Set random NPC type
-	var npc_type = npc_types[randi() % npc_types.size()]
-	npc.npc_name = npc_type["name"]
-	npc.shop_items = npc_type["items"]
-	
-	# Set position
+	var npc_type_data = npc_types[randi() % npc_types.size()]
+	npc.npc_name = npc_type_data["name"]
+	npc.shop_items = npc_type_data["items"]
 	npc.global_position = spawn_pos
-	
-	# Add to scene
 	get_parent().add_child(npc)
-	
-	# Track spawned NPC
 	spawned_npcs.append(npc)
-	
-	print("Spawned NPC: ", npc.npc_name, " at position ", spawn_pos)
+	biome_npc_map[biome_type] = npc
+	print("Spawned NPC: ", npc.npc_name, " at position ", spawn_pos, " in biome ", biome_type)
 
 func get_random_spawn_position() -> Vector2:
 	if not player_ref:
@@ -119,3 +165,4 @@ func despawn_all_npcs() -> void:
 		if is_instance_valid(npc):
 			npc.queue_free()
 	spawned_npcs.clear()
+	biome_npc_map.clear()

@@ -1,0 +1,21 @@
+[gd_resource type="Resource" script_class="EnemyData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://Scripts/Enemies/enemy_data.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+enemy_name = "Green Slime"
+max_health = 3
+knockback_strength = 300.0
+attack_damage = 1
+attack_cooldown = 1.0
+move_speed = 120.0
+aggro_range = 200.0
+return_home_range = 400.0
+coin_drop_chance = 1.0
+min_coins = 1
+max_coins = 3
+heart_drop_chance = 0.15
+sprite_scale = Vector2(0.65, 0.65)
+hit_color = Color(1, 0.3, 0.3, 1)
+glow_enabled = true
