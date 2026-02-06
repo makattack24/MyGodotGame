@@ -1,15 +1,14 @@
 extends CanvasLayer
 
 var inventory_label: Label
-@onready var inventory_bar: HBoxContainer = $InventoryBar if has_node("InventoryBar") else null
+@onready var inventory_bar: HBoxContainer = null
 @onready var health_bar: ProgressBar = $HealthBarContainer/HealthBar if has_node("HealthBarContainer/HealthBar") else null
-@onready var health_label: Label = $HealthBarContainer/HealthLabel if has_node("HealthBarContainer/HealthLabel") else null
 @onready var notification_label: Label = null
 @onready var controls_panel: VBoxContainer = null
 @onready var minimap: Control = null
 @onready var biome_label: Label = null
-@onready var equipped_icon: TextureRect = null
-@onready var equipped_name: Label = null
+var equipped_icon: TextureRect = null
+var equipped_name: Label = null
 
 # Preload scenes
 var inventory_slot_scene = preload("res://Scenes/inventory_slot.tscn")
@@ -22,8 +21,8 @@ var minimap_scene = preload("res://Scenes/minimap.tscn")
 var selected_slot_index: int = 0
 
 func _ready() -> void:
-	inventory_label = $HBoxContainer/WoodCount
-	
+	inventory_label = find_child("ItemCountList", true, false)
+	inventory_bar = find_child("InventoryBar", true, false)
 	# Setup notification label
 	setup_notification_label()
 	
@@ -36,11 +35,9 @@ func _ready() -> void:
 	# Setup minimap
 	setup_minimap()
 	
-	# Get equipped item display references
-	if has_node("EquippedItemDisplay/VBoxContainer/ItemIcon"):
-		equipped_icon = $EquippedItemDisplay/VBoxContainer/ItemIcon
-	if has_node("EquippedItemDisplay/VBoxContainer/ItemName"):
-		equipped_name = $EquippedItemDisplay/VBoxContainer/ItemName
+	# Assign equipped item display references after scene is fully instanced
+	equipped_icon = find_child("ItemIcon", true, false)
+	equipped_name = find_child("ItemName", true, false)
 	
 	# Create inventory slots (only if InventoryBar exists)
 	if inventory_bar:
@@ -58,10 +55,9 @@ func _ready() -> void:
 	if player:
 		player.connect("health_changed", Callable(self, "_on_player_health_changed"))
 		# Initialize health display
-		if health_bar and health_label:
+		if health_bar:
 			health_bar.max_value = player.max_health
 			health_bar.value = player.current_health
-			health_label.text = "%d / %d" % [player.current_health, player.max_health]
 	else:
 		print("Warning: Player not found for health bar connection")
 
@@ -136,19 +132,14 @@ func update_inventory_bar() -> void:
 func _on_inventory_updated() -> void:
 	update_inventory_display()
 
-func _on_player_health_changed(current_hp: int, max_hp: int) -> void:
-	print("Health changed: ", current_hp, " / ", max_hp)  # Debug
+func _on_player_health_changed(current_hp: int, max_hp: int) -> void: 
+	#print("Health changed: ", current_hp, " / ", max_hp)
 	
 	if health_bar:
 		health_bar.max_value = max_hp
 		health_bar.value = current_hp
 	else:
 		print("Warning: health_bar is null")
-	
-	if health_label:
-		health_label.text = "%d / %d" % [current_hp, max_hp]
-	else:
-		print("Warning: health_label is null")
 
 func _input(event: InputEvent) -> void:
 	if not inventory_bar:

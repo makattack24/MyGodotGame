@@ -94,7 +94,7 @@ func _process(_delta: float) -> void:
 				ampm = "PM"
 				if hour > 12:
 					display_hour = hour - 12
-			time_label.text = "Time: %02d:%02d %s" % [display_hour, minute, ampm]
+			time_label.text = "%02d:%02d %s" % [display_hour, minute, ampm]
 
 func update_object_markers() -> void:
 	# Clear old markers
