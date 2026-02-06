@@ -1,0 +1,6 @@
+[gd_resource type="Theme" format=3 uid="uid://dowhemn1wc03a"]
+
+[ext_resource type="FontFile" uid="uid://bm886pq73uilj" path="res://Assets/FreeDownloadedAssets/toxigenesis/toxigenesis bd.otf" id="1_hxewf"]
+
+[resource]
+default_font = ExtResource("1_hxewf")

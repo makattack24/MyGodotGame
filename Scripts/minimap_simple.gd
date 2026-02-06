@@ -1,7 +1,7 @@
 extends Control
 
 # Minimap settings
-@export var map_size: Vector2 = Vector2(150, 150)
+@export var map_size: Vector2 = Vector2(125, 125)
 @export var background_color: Color = Color(0, 0, 0, 0.7)
 @export var border_color: Color = Color(0.3, 0.3, 0.3, 1)
 @export var player_color: Color = Color.GREEN
@@ -56,17 +56,6 @@ func _input(event: InputEvent) -> void:
 		toggle_minimap()
 
 func update_minimap_position() -> void:
-	# Use anchors for top-right positioning
-	anchor_left = 1.0  # Right side
-	anchor_top = 0.0   # Top
-	anchor_right = 1.0
-	anchor_bottom = 0.0
-	
-	# Offset from the anchors
-	offset_left = -map_size.x - 20  # 20 pixels from right edge
-	offset_top = 20                  # 20 pixels from top
-	offset_right = -20
-	offset_bottom = map_size.y + 20
 	
 	print("Minimap anchored to top-right")
 

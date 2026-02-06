@@ -34,6 +34,10 @@ Enemies=""
 Trees=""
 player=""
 
+[gui]
+
+theme/custom_font="uid://bm886pq73uilj"
+
 [physics]
 
 3d/physics_engine="Jolt Physics"
