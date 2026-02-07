@@ -20,6 +20,7 @@ config/icon="res://icon.svg"
 BgMusic="*uid://cbongyooxyspb"
 Inventory="*uid://ch7g67cuqhk2s"
 PlayerSettings="*res://Scripts/player_settings.gd"
+FadeTransition="*uid://bl28n14t0fcq5"
 
 [display]
 
