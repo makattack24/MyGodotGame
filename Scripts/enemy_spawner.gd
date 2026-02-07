@@ -65,6 +65,8 @@ func _process(_delta: float) -> void:
 		if distance_traveled > camp_respawn_distance:
 			# Update spawn position
 			last_camp_spawn_position = player.global_position
+			# Clean up old camp positions that are far away
+			_prune_distant_camps(player.global_position)
 			# Generate and spawn new camps around new position
 			generate_camps()
 			spawn_all_camps()
@@ -157,3 +159,13 @@ func _spawn_enemy_continuous() -> void:
 
 	# Add the enemy instance to the scene (deferred to avoid parent busy error)
 	get_parent().add_child.call_deferred(enemy_instance)
+
+func _prune_distant_camps(center: Vector2) -> void:
+	"""Remove camp positions that are far from the player"""
+	var max_dist: float = camp_spawn_radius * 2.5
+	var max_dist_sq: float = max_dist * max_dist
+	var kept_camps: Array[Vector2] = []
+	for camp_pos in camp_positions:
+		if camp_pos.distance_squared_to(center) <= max_dist_sq:
+			kept_camps.append(camp_pos)
+	camp_positions = kept_camps

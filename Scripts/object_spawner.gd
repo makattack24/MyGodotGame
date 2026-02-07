@@ -6,6 +6,7 @@ extends Node2D
 
 @export var world_seed: int = 1337         # Same seed as ground for consistency
 @export var spawn_radius: int = 45         # How far around player to spawn objects
+@export var cleanup_distance: float = 1200.0  # Free objects beyond this distance from player
 
 # Reference to the ground TileMapLayer
 @export var ground_layer: TileMapLayer
@@ -204,15 +205,46 @@ func _can_spawn_object_here(world_pos: Vector2, min_spacing: float) -> bool:
 		if ground_layer.is_position_in_chasm(world_pos):
 			return false
 	
-	# Clean up invalid references
-	spawned_object_nodes = spawned_object_nodes.filter(is_instance_valid)
-	
-	# Check spacing from other objects
+	# Check spacing from nearby objects only (using squared distance to avoid sqrt)
+	var spacing_sq: float = min_spacing * min_spacing
 	for obj in spawned_object_nodes:
-		if world_pos.distance_to(obj.position) < min_spacing:
+		if not is_instance_valid(obj):
+			continue
+		if world_pos.distance_squared_to(obj.position) < spacing_sq:
 			return false
 	
 	return true
+
+# ==============================
+# CLEANUP (CALLED PERIODICALLY)
+# ==============================
+
+func cleanup_distant_objects(world_pos: Vector2) -> void:
+	"""Free distant environment objects and prune tracking data"""
+	var max_dist_sq: float = cleanup_distance * cleanup_distance
+	
+	# Clean up distant object nodes from scene tree
+	var kept_nodes: Array[Node2D] = []
+	for obj in spawned_object_nodes:
+		if not is_instance_valid(obj):
+			continue
+		if obj.global_position.distance_squared_to(world_pos) > max_dist_sq:
+			obj.queue_free()
+		else:
+			kept_nodes.append(obj)
+	spawned_object_nodes = kept_nodes
+	
+	# Prune the spawned_objects dictionary for distant tiles so they can respawn
+	if not ground_layer:
+		return
+	var center_tile: Vector2i = ground_layer.local_to_map(world_pos)
+	var cleanup_tile_radius: int = spawn_radius + 15
+	var tiles_to_remove: Array = []
+	for tile_pos in spawned_objects:
+		if abs(tile_pos.x - center_tile.x) > cleanup_tile_radius or abs(tile_pos.y - center_tile.y) > cleanup_tile_radius:
+			tiles_to_remove.append(tile_pos)
+	for tile_pos in tiles_to_remove:
+		spawned_objects.erase(tile_pos)
 
 func _load_scene(scene_path: String) -> PackedScene:
 	"""Load a scene from path, with caching"""

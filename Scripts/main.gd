@@ -10,6 +10,15 @@ extends Node2D
 var last_biome_check_position: Vector2 = Vector2.ZERO
 var biome_check_distance: float = 50.0  # Check biome every 50 units of movement
 
+# Generation throttling - only regenerate when player moves at least 1 tile
+var last_generation_position: Vector2 = Vector2(INF, INF)
+var generation_threshold: float = 16.0  # Pixels before regenerating (~1 tile)
+
+# Periodic cleanup of distant content
+var cleanup_timer: float = 0.0
+var cleanup_interval: float = 2.0  # Seconds between cleanup passes
+var enemy_cleanup_distance: float = 2000.0  # Free enemies beyond this distance
+
 # Day/Night Cycle
 var day_night_cycle: Node = null
 
@@ -49,18 +58,44 @@ func _ready() -> void:
 		push_warning("DayNightOverlayRect node not found! Day/night cycle will not be visible.")
 		
 
-func _process(_delta: float) -> void:
-	ground.generate_around(player.global_position)
-	object_spawner.spawn_objects_around(player.global_position)
+func _process(delta: float) -> void:
+	var player_pos: Vector2 = player.global_position
+	
+	# Only generate terrain/objects when player has moved enough (saves massive CPU)
+	if player_pos.distance_squared_to(last_generation_position) > generation_threshold * generation_threshold:
+		last_generation_position = player_pos
+		ground.generate_around(player_pos)
+		object_spawner.spawn_objects_around(player_pos)
+	
+	# Periodic cleanup of distant content to prevent unbounded growth
+	cleanup_timer += delta
+	if cleanup_timer >= cleanup_interval:
+		cleanup_timer = 0.0
+		_cleanup_distant_content(player_pos)
 	
 	# Update biome display when player moves significantly
 	if player and biome_manager and hud:
-		var distance_moved = player.global_position.distance_to(last_biome_check_position)
+		var distance_moved = player_pos.distance_to(last_biome_check_position)
 		if distance_moved > biome_check_distance:
-			last_biome_check_position = player.global_position
-			var current_biome = biome_manager.get_biome_name_for_position(player.global_position)
+			last_biome_check_position = player_pos
+			var current_biome = biome_manager.get_biome_name_for_position(player_pos)
 			if hud.has_method("update_biome_display"):
 				hud.update_biome_display(current_biome)
+
+func _cleanup_distant_content(center: Vector2) -> void:
+	# Clean up ground tiles and cached data far from the player
+	if ground and ground.has_method("cleanup_distant_tiles"):
+		ground.cleanup_distant_tiles(center)
+	
+	# Clean up environment objects (trees, bushes, rocks) far from the player
+	if object_spawner and object_spawner.has_method("cleanup_distant_objects"):
+		object_spawner.cleanup_distant_objects(center)
+	
+	# Clean up enemies far from the player
+	var max_dist_sq: float = enemy_cleanup_distance * enemy_cleanup_distance
+	for enemy in get_tree().get_nodes_in_group("Enemies"):
+		if is_instance_valid(enemy) and enemy.global_position.distance_squared_to(center) > max_dist_sq:
+			enemy.queue_free()
 
 func _input(event: InputEvent) -> void:
 	# Manual save with F5

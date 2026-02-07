@@ -5,6 +5,7 @@ extends TileMapLayer
 # ==============================
 
 @export var tile_radius: int = 45          # Radius of tiles around player to generate
+@export var cleanup_radius: int = 60       # Tiles beyond this distance get cleaned up
 @export var world_seed: int = 1337         # Deterministic seed for noise-based generation
 @export var variation_strength: float = 0.8  # How much variation (0.0 = uniform, 1.0 = max variety)
 @export var cluster_size: float = 3.0       # Size of tile clusters (lower = smaller patches)
@@ -114,8 +115,14 @@ func generate_around(world_pos: Vector2) -> void:
 		for y in range(center_tile.y - tile_radius, center_tile.y + tile_radius):
 			var tile_pos: Vector2i = Vector2i(x, y)
 
-			# CRITICAL: Skip confirmed chasms first - never touch these
+			# If this is a confirmed chasm, re-place it if it was cleaned up
 			if confirmed_chasm_tiles.has(tile_pos):
+				if not generated_tiles.has(tile_pos):
+					# Re-place the chasm tile directly (already validated)
+					var chasm_tile_noise = abs(noise.get_noise_2d(tile_pos.x + 8888, tile_pos.y + 8888))
+					var chasm_tile_index = int(chasm_tile_noise * CHASM_TILES.size()) % CHASM_TILES.size()
+					set_cell(tile_pos, DEFAULT_SOURCE_ID, CHASM_TILES[chasm_tile_index], 0)
+					generated_tiles[tile_pos] = true
 				continue
 			
 			# Skip tiles that have already been generated
@@ -479,4 +486,31 @@ func _replace_chasm_with_ground(pos: Vector2i) -> void:
 	
 	# CRITICAL: Mark as generated so it won't be touched again
 	generated_tiles[pos] = true
+
+# ==============================
+# CLEANUP (CALLED PERIODICALLY)
+# ==============================
+
+func cleanup_distant_tiles(world_pos: Vector2) -> void:
+	"""Remove tiles and cached data far from the player to prevent unbounded growth"""
+	var center_tile: Vector2i = local_to_map(world_pos)
+	
+	# Collect distant generated_tiles keys for removal
+	var tiles_to_remove: Array = []
+	for tile_pos in generated_tiles:
+		if abs(tile_pos.x - center_tile.x) > cleanup_radius or abs(tile_pos.y - center_tile.y) > cleanup_radius:
+			tiles_to_remove.append(tile_pos)
+	
+	# Erase cells and tracking data
+	for tile_pos in tiles_to_remove:
+		erase_cell(tile_pos)
+		generated_tiles.erase(tile_pos)
+	
+	# Prune biome cache
+	var cache_to_remove: Array = []
+	for pos in biome_cache:
+		if abs(pos.x - center_tile.x) > cleanup_radius or abs(pos.y - center_tile.y) > cleanup_radius:
+			cache_to_remove.append(pos)
+	for pos in cache_to_remove:
+		biome_cache.erase(pos)
 
