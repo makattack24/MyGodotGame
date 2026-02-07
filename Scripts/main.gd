@@ -14,14 +14,6 @@ var biome_check_distance: float = 50.0  # Check biome every 50 units of movement
 var day_night_cycle: Node = null
 
 func _ready() -> void:
-	FadeTransition.fade_in()
-
-func _play_fade_in():
-	$FadeTransition/FadeEffectAnimationPlayer.play("FadeIn")
-
-func _on_fade_animation_finished(anim_name):
-	if anim_name == "FadeIn":
-		$FadeTransition.hide()
 	
 	# Create and add BiomeManager
 	biome_manager = load("res://Scripts/biome_manager.gd").new()
@@ -55,6 +47,7 @@ func _on_fade_animation_finished(anim_name):
 		day_night_cycle.add_to_group("DayNightCycle")
 	else:
 		push_warning("DayNightOverlayRect node not found! Day/night cycle will not be visible.")
+		
 
 func _process(_delta: float) -> void:
 	ground.generate_around(player.global_position)
