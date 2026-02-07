@@ -300,12 +300,14 @@ func setup_controls_panel() -> void:
 	controls_panel.anchor_right = 1.0
 	controls_panel.anchor_top = 1.0
 	controls_panel.anchor_bottom = 1.0
-	controls_panel.offset_left = -300 # minimum width, adjust as needed
-	controls_panel.offset_right = 15 # padding from right edge
-	controls_panel.offset_top = -200 # minimum height, adjust as needed
-	controls_panel.offset_bottom = 15 # padding from bottom edge
-	controls_panel.set_custom_minimum_size(Vector2(300, 200)) # minimum size for panel
-	controls_panel.set_custom_minimum_size(Vector2(220, 120)) # minimum size for panel
+	controls_panel.grow_horizontal = Control.GROW_DIRECTION_BEGIN
+	controls_panel.grow_vertical = Control.GROW_DIRECTION_BEGIN
+	controls_panel.offset_left = -160
+	controls_panel.offset_right = -6
+	controls_panel.offset_top = -6
+	controls_panel.offset_bottom = -6
+	controls_panel.set_custom_minimum_size(Vector2(150, 0))
+	controls_panel.add_theme_constant_override("separation", 1)
 	
 	add_child(controls_panel)
 	
@@ -315,8 +317,8 @@ func setup_controls_panel() -> void:
 	
 	# Add title
 	var title = Label.new()
-	title.text = "CONTROLS"
-	title.add_theme_font_size_override("font_size", 16)
+	title.text = "Controls"
+	title.add_theme_font_size_override("font_size", 11)
 	title.modulate = Color(1, 1, 0.5)
 	title.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	title_container.add_child(title)
@@ -324,24 +326,18 @@ func setup_controls_panel() -> void:
 	# Add hide/show button
 	var toggle_button = Button.new()
 	toggle_button.text = "X"
-	toggle_button.custom_minimum_size = Vector2(20, 20)
-	toggle_button.add_theme_font_size_override("font_size", 12)
+	toggle_button.custom_minimum_size = Vector2(16, 16)
+	toggle_button.add_theme_font_size_override("font_size", 9)
 	toggle_button.pressed.connect(_on_toggle_controls)
 	title_container.add_child(toggle_button)
 	
-	# Add separator
-	var separator = Label.new()
-	separator.text = "─────────────"
-	separator.modulate = Color(0.5, 0.5, 0.5)
-	controls_panel.add_child(separator)
-	
 	# Add control hints
 	add_control_hint("WASD - Move")
-	add_control_hint("Mouse Wheel - Select Item")
-	add_control_hint("B - Toggle Build Mode")
-	add_control_hint("E - Pickup Placed Items")
-	add_control_hint("Left Click - Attack/Place")
-	add_control_hint("Right Click - Cancel Build")
+	add_control_hint("Scroll - Select Item")
+	add_control_hint("B - Build Mode")
+	add_control_hint("E - Pickup")
+	add_control_hint("LMB - Attack/Place")
+	add_control_hint("RMB - Cancel")
 	add_control_hint("Enter - Interact")
 
 func add_control_hint(text: String) -> void:
@@ -350,8 +346,8 @@ func add_control_hint(text: String) -> void:
 	
 	var label = Label.new()
 	label.text = text
-	label.add_theme_font_size_override("font_size", 12)
-	label.modulate = Color(0.9, 0.9, 0.9)
+	label.add_theme_font_size_override("font_size", 9)
+	label.modulate = Color(0.8, 0.8, 0.8)
 	controls_panel.add_child(label)
 
 func _on_toggle_controls() -> void:
