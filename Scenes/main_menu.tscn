@@ -1,0 +1,44 @@
+[gd_scene format=3 uid="uid://bbptxt8d8o4pu"]
+
+[ext_resource type="Script" uid="uid://b17nygg0vkkiy" path="res://Scripts/main_menu.gd" id="1_28flt"]
+[ext_resource type="Texture2D" uid="uid://bmmvvdyshnjli" path="res://Assets/FreeDownloadedAssets/mtn.png" id="2_48xlc"]
+
+[node name="CanvasLayer" type="CanvasLayer" unique_id=1158348340]
+script = ExtResource("1_28flt")
+
+[node name="TextureRect" type="TextureRect" parent="." unique_id=256085926]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("2_48xlc")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="." unique_id=520215819]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -20.0
+offset_top = -20.0
+offset_right = 20.0
+offset_bottom = 20.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Start" type="Button" parent="VBoxContainer" unique_id=891303499]
+layout_mode = 2
+text = "START"
+
+[node name="Options" type="Button" parent="VBoxContainer" unique_id=184896714]
+layout_mode = 2
+text = "OPTIONS"
+
+[node name="Quit" type="Button" parent="VBoxContainer" unique_id=1247049544]
+layout_mode = 2
+text = "QUIT"
+
+[connection signal="pressed" from="VBoxContainer/Start" to="." method="_on_start_pressed"]
+[connection signal="pressed" from="VBoxContainer/Options" to="." method="_on_options_pressed"]
+[connection signal="pressed" from="VBoxContainer/Quit" to="." method="_on_quit_pressed"]
