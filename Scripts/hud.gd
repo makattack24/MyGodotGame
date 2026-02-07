@@ -300,10 +300,12 @@ func setup_controls_panel() -> void:
 	controls_panel.anchor_right = 1.0
 	controls_panel.anchor_top = 1.0
 	controls_panel.anchor_bottom = 1.0
-	controls_panel.offset_left = -195
-	controls_panel.offset_right = -5
-	controls_panel.offset_top = -220
-	controls_panel.offset_bottom = -10
+	controls_panel.offset_left = -300 # minimum width, adjust as needed
+	controls_panel.offset_right = 15 # padding from right edge
+	controls_panel.offset_top = -200 # minimum height, adjust as needed
+	controls_panel.offset_bottom = 15 # padding from bottom edge
+	controls_panel.set_custom_minimum_size(Vector2(300, 200)) # minimum size for panel
+	controls_panel.set_custom_minimum_size(Vector2(220, 120)) # minimum size for panel
 	
 	add_child(controls_panel)
 	
