@@ -20,6 +20,7 @@
 [ext_resource type="Texture2D" uid="uid://co2ht6e53ec44" path="res://Assets/FreeDownloadedAssets/FREE_Adventurer 2D Pixel Art/Sprites/RUN/run_up.png" id="9_h4iuc"]
 [ext_resource type="AudioStream" uid="uid://l1g4vnlcp57g" path="res://Audio/male-death-sound-128357.mp3" id="19_fs7ks"]
 [ext_resource type="AudioStream" uid="uid://txrb0u17wqsy" path="res://Audio/damage-blowhole-402072.mp3" id="20_l6n3p"]
+[ext_resource type="AudioStream" uid="uid://dqvw6cep31w0r" path="res://Audio/GRASS - Run 6.wav" id="21_olqyp"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_f1ek2"]
 size = Vector2(8, 28)
@@ -1036,3 +1037,7 @@ stream = ExtResource("19_fs7ks")
 [node name="DamageSound" type="AudioStreamPlayer2D" parent="." unique_id=1009449437]
 stream = ExtResource("20_l6n3p")
 volume_db = 1.0
+
+[node name="RunSound" type="AudioStreamPlayer2D" parent="." unique_id=2006793826]
+stream = ExtResource("21_olqyp")
+volume_db = 8.0

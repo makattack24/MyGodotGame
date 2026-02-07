@@ -2,12 +2,13 @@ extends CanvasLayer
 
 
 func _ready():
-	pass  # Replace with function body.
+	FadeTransition.fade_in()
 
 
 
-func _on_start_pressed() -> void:
-	get_tree().change_scene_to_file("res://Scenes/Main.tscn")
+func _on_start_pressed():
+	print("Start Button Pressed")
+	FadeTransition.fade_to_scene("res://Scenes/Main.tscn")
 
 
 func _on_options_pressed() -> void:

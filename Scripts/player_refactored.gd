@@ -19,6 +19,7 @@ var facing_direction: String = "down"
 @onready var attack_area: Area2D = $AttackArea
 @onready var death_sound: AudioStreamPlayer2D = null
 @onready var damage_sound: AudioStreamPlayer2D = null
+@onready var run_sound: AudioStreamPlayer2D = $RunSound
 
 # Components
 var combat: PlayerCombat
@@ -100,13 +101,18 @@ func handle_input() -> void:
 
 func move_and_animate() -> void:
 	move_and_slide()
-	
 	# Use lambda for animation selection
 	var get_anim_name = func() -> String:
 		var prefix = "run_" if velocity != Vector2.ZERO else "idle_"
 		return prefix + facing_direction
-	
 	anim_sprite.play(get_anim_name.call())
+	# Run sound logic
+	if velocity != Vector2.ZERO:
+		if run_sound and not run_sound.playing:
+			run_sound.play()
+	else:
+		if run_sound and run_sound.playing:
+			run_sound.stop()
 
 func take_damage(damage: int) -> void:
 	if damage_cooldown > 0 or is_dead:

@@ -23,6 +23,8 @@ var is_dead: bool = false  # Track if player is dead
 # Reference to damage sound
 @onready var damage_sound: AudioStreamPlayer2D = null  # Will be set in _ready if it exists
 
+@onready var run_sound: AudioStreamPlayer2D = $RunSound
+
 # Reference to camera for screen shake
 var camera: Camera2D = null
 
@@ -110,6 +112,9 @@ func _ready() -> void:
 	if has_node("DamageSound"):
 		damage_sound = $DamageSound
 	
+	if has_node("RunSound"):
+		run_sound = $RunSound
+	
 	# Get camera reference from the scene tree
 	camera = get_viewport().get_camera_2d()
 	
@@ -132,6 +137,8 @@ func _ready() -> void:
 		attack_area.visible = false    # Disable visibility initially
 	else:
 		print("Error: AttackArea node not found!")
+	if run_sound:
+		run_sound.attenuation = 0
 
 func _process(_delta: float) -> void:
 	# Update damage cooldown
@@ -160,6 +167,8 @@ func _process(_delta: float) -> void:
 	handle_input()
 	if not is_attacking:
 		move_and_animate()
+	if run_sound:
+		run_sound.position = position
 
 func handle_input() -> void:
 	if is_attacking:
@@ -207,12 +216,20 @@ func handle_input() -> void:
 			trigger_attack_animation("attack2")
 
 func move_and_animate() -> void:
+	print("move_and_animate called with velocity: ", velocity)
 	# Move the player and animate based on velocity
 	move_and_slide()
 	if velocity != Vector2.ZERO:
 		anim_sprite.play("run_" + facing_direction)
+		# Play running sound
+		if not run_sound.playing:
+			print("Run sound triggered!")
+			run_sound.play()
 	else:
 		anim_sprite.play("idle_" + facing_direction)
+		if run_sound.playing:
+			print("Run sound stopped!")
+			run_sound.stop()
 
 func trigger_attack_animation(attack_type: String) -> void:
 	if is_attacking:
