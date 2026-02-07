@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://b1puctjmixase"]
 
-[ext_resource type="Script" uid="uid://houdtxxgxc2i" path="res://Scripts/player.gd" id="1_cvnsp"]
+[ext_resource type="Script" uid="uid://e7c3d4m8oogw" path="res://Scripts/player_refactored.gd" id="1_olqyp"]
 [ext_resource type="Texture2D" uid="uid://bdr7hmu4qo20i" path="res://Assets/FreeDownloadedAssets/FREE_Adventurer 2D Pixel Art/Sprites/IDLE/idle_down.png" id="1_v0iea"]
 [ext_resource type="Shader" uid="uid://dvhoq6lpm7a86" path="res://Shaders/sword_remover.gdshader" id="2_igrcy"]
 [ext_resource type="Texture2D" uid="uid://c7i2tug5pbulj" path="res://Assets/FreeDownloadedAssets/FREE_Adventurer 2D Pixel Art/Sprites/ATTACK 1/attack1_down.png" id="2_qqcod"]
@@ -1013,7 +1013,7 @@ animations = [{
 size = Vector2(40, 40)
 
 [node name="Player" type="CharacterBody2D" unique_id=1229123879 groups=["player"]]
-script = ExtResource("1_cvnsp")
+script = ExtResource("1_olqyp")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=490325349]
 position = Vector2(0, 4)
