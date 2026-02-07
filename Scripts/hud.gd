@@ -51,6 +51,9 @@ func _ready() -> void:
 	Inventory.connect("inventory_updated", Callable(self, "_on_inventory_updated"))
 	
 	# Connect to player's health signal
+	connect_player_health_signal()
+
+func connect_player_health_signal() -> void:
 	var player = get_tree().root.find_child("Player", true, false)
 	if player:
 		player.connect("health_changed", Callable(self, "_on_player_health_changed"))
@@ -59,7 +62,8 @@ func _ready() -> void:
 			health_bar.max_value = player.max_health
 			health_bar.value = player.current_health
 	else:
-		print("Warning: Player not found for health bar connection")
+		print("Warning: Player not found for health bar connection, will retry.")
+		call_deferred("connect_player_health_signal")
 
 func create_inventory_slots() -> void:
 	if not inventory_bar:
@@ -133,13 +137,18 @@ func _on_inventory_updated() -> void:
 	update_inventory_display()
 
 func _on_player_health_changed(current_hp: int, max_hp: int) -> void: 
-	#print("Health changed: ", current_hp, " / ", max_hp)
-	
-	if health_bar:
-		health_bar.max_value = max_hp
-		health_bar.value = current_hp
-	else:
-		print("Warning: health_bar is null")
+	print("HUD received health_changed signal: ", current_hp, "/", max_hp)
+	var bar = health_bar
+	if bar == null:
+		bar = find_child("HealthBar", true, false)
+		if bar:
+			print("HUD found health_bar node by name.")
+		else:
+			print("Warning: health_bar is still null after find_child.")
+	if bar:
+		print("HUD updating health_bar: value=", current_hp, " max_value=", max_hp)
+		bar.max_value = max_hp
+		bar.value = current_hp
 
 func _input(event: InputEvent) -> void:
 	if not inventory_bar:

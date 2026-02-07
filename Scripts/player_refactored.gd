@@ -130,14 +130,16 @@ func take_damage(damage: int) -> void:
 	
 	current_health -= damage
 	damage_cooldown = damage_cooldown_time
-	
+
+	print("Player take_damage called: current_health=", current_health, " max_health=", max_health)
 	vfx.add_screen_shake(4.0)
-	
+
 	if damage_sound:
 		damage_sound.play()
-	
+
 	emit_signal("health_changed", current_health, max_health)
-	
+	print("Player emitted health_changed signal: ", current_health, "/", max_health)
+
 	vfx.show_damage_text(damage, global_position)
 	vfx.flash_screen_red()
 	vfx.show_damage_effect(anim_sprite)
