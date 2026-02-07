@@ -20,6 +20,11 @@ var facing_direction: String = "down"
 @onready var death_sound: AudioStreamPlayer2D = null
 @onready var damage_sound: AudioStreamPlayer2D = null
 @onready var run_sound: AudioStreamPlayer2D = $RunSound
+@onready var running_particles = $RunningParticles
+
+# Footstep sound variables
+var footstep_timer: float = 0.0
+@export var footstep_interval: float = 0.45 # seconds between steps
 
 # Components
 var combat: PlayerCombat
@@ -36,16 +41,28 @@ func _ready() -> void:
 func _process(delta: float) -> void:
 	if damage_cooldown > 0:
 		damage_cooldown -= delta
-	
+
 	vfx.process(delta)
 	building.process(delta)
-	
+
 	if is_dead:
 		return
-	
+
 	handle_input()
 	if not combat.is_attacking:
 		move_and_animate()
+
+	# Footstep sound logic (top-down, no is_on_floor)
+	if velocity != Vector2.ZERO:
+		running_particles.emitting = true
+		footstep_timer -= delta
+		if footstep_timer <= 0.0:
+			if run_sound:
+				run_sound.play()
+			footstep_timer = footstep_interval
+	else:
+		running_particles.emitting = false
+		footstep_timer = 0.0
 
 func handle_input() -> void:
 	if combat.is_attacking:
@@ -106,13 +123,6 @@ func move_and_animate() -> void:
 		var prefix = "run_" if velocity != Vector2.ZERO else "idle_"
 		return prefix + facing_direction
 	anim_sprite.play(get_anim_name.call())
-	# Run sound logic
-	if velocity != Vector2.ZERO:
-		if run_sound and not run_sound.playing:
-			run_sound.play()
-	else:
-		if run_sound and run_sound.playing:
-			run_sound.stop()
 
 func take_damage(damage: int) -> void:
 	if damage_cooldown > 0 or is_dead:
