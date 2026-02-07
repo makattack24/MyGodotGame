@@ -154,6 +154,11 @@ func _input(event: InputEvent) -> void:
 	if not inventory_bar:
 		return
 	
+	# Don't handle scroll in debug mode (debug camera uses it for zoom)
+	var debug_mgr = get_tree().root.find_child("DebugManager", true, false)
+	if debug_mgr and debug_mgr.get("debug_enabled"):
+		return
+	
 	# Handle scroll wheel input for inventory selection
 	# This works in all modes including build mode
 	if event is InputEventMouseButton:

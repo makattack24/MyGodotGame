@@ -7,6 +7,9 @@ extends Node2D
 @onready var biome_manager: Node = null
 @onready var hud: CanvasLayer = null
 
+# Debug manager
+var debug_manager: Node = null
+
 var last_biome_check_position: Vector2 = Vector2.ZERO
 var biome_check_distance: float = 50.0  # Check biome every 50 units of movement
 
@@ -42,6 +45,13 @@ func _ready() -> void:
 	# Get HUD reference
 	hud = get_node_or_null("HUD")
 	
+	# Setup debug manager
+	debug_manager = load("res://Scripts/debug_manager.gd").new()
+	debug_manager.name = "DebugManager"
+	add_child(debug_manager)
+	debug_manager.setup(self, player, ground, object_spawner)
+	debug_manager.debug_mode_changed.connect(_on_debug_mode_changed)
+	
 	# Try to load saved game on start
 	if save_manager and save_manager.has_save():
 		print("Save file found. Press L to load or continue with new game.")
@@ -59,26 +69,40 @@ func _ready() -> void:
 		
 
 func _process(delta: float) -> void:
-	var player_pos: Vector2 = player.global_position
+	# When debug fly camera is active, generate around that instead of player
+	var gen_pos: Vector2
+	if debug_manager and debug_manager.debug_enabled:
+		gen_pos = debug_manager.debug_camera.global_position
+	else:
+		gen_pos = player.global_position
 	
-	# Only generate terrain/objects when player has moved enough (saves massive CPU)
-	if player_pos.distance_squared_to(last_generation_position) > generation_threshold * generation_threshold:
-		last_generation_position = player_pos
-		ground.generate_around(player_pos)
-		object_spawner.spawn_objects_around(player_pos)
+	# Only generate terrain/objects when generation position has moved enough
+	# Use a larger threshold in debug mode since the camera moves much faster
+	var threshold: float = generation_threshold
+	if debug_manager and debug_manager.debug_enabled:
+		threshold = generation_threshold * 3.0
+	if gen_pos.distance_squared_to(last_generation_position) > threshold * threshold:
+		last_generation_position = gen_pos
+		var is_debug: bool = debug_manager and debug_manager.debug_enabled
+		ground.generate_around(gen_pos, is_debug)
+		# Skip object spawning in debug mode to avoid perf hit from instantiating scenes
+		if not is_debug:
+			object_spawner.spawn_objects_around(gen_pos)
 	
 	# Periodic cleanup of distant content to prevent unbounded growth
+	# Skip cleanup in debug mode — we want tiles to persist as we fly
+	var is_debug_active: bool = debug_manager and debug_manager.debug_enabled
 	cleanup_timer += delta
-	if cleanup_timer >= cleanup_interval:
+	if cleanup_timer >= cleanup_interval and not is_debug_active:
 		cleanup_timer = 0.0
-		_cleanup_distant_content(player_pos)
+		_cleanup_distant_content(gen_pos)
 	
 	# Update biome display when player moves significantly
 	if player and biome_manager and hud:
-		var distance_moved = player_pos.distance_to(last_biome_check_position)
+		var distance_moved = player.global_position.distance_to(last_biome_check_position)
 		if distance_moved > biome_check_distance:
-			last_biome_check_position = player_pos
-			var current_biome = biome_manager.get_biome_name_for_position(player_pos)
+			last_biome_check_position = player.global_position
+			var current_biome = biome_manager.get_biome_name_for_position(player.global_position)
 			if hud.has_method("update_biome_display"):
 				hud.update_biome_display(current_biome)
 
@@ -116,3 +140,22 @@ func _input(event: InputEvent) -> void:
 				else:
 					hud.show_notification("NO SAVE FILE FOUND", 2.0)
 			print("Game loaded!")
+
+func _on_debug_mode_changed(enabled: bool) -> void:
+	# Disable/enable player processing during debug fly mode
+	if player:
+		player.set_process_input(!enabled)
+		player.set_process_unhandled_input(!enabled)
+		player.set_process(!enabled)
+		player.set_physics_process(!enabled)
+		if not enabled:
+			# Stop player movement when exiting debug
+			if "velocity" in player:
+				player.velocity = Vector2.ZERO
+	
+	# Show notification
+	if hud and hud.has_method("show_notification"):
+		if enabled:
+			hud.show_notification("DEBUG MODE ON (F3)", 1.5)
+		else:
+			hud.show_notification("DEBUG MODE OFF", 1.5)

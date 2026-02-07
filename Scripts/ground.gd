@@ -5,6 +5,7 @@ extends TileMapLayer
 # ==============================
 
 @export var tile_radius: int = 45          # Radius of tiles around player to generate
+@export var debug_tile_radius: int = 80    # Larger radius used during debug fly camera
 @export var cleanup_radius: int = 60       # Tiles beyond this distance get cleaned up
 @export var world_seed: int = 1337         # Deterministic seed for noise-based generation
 @export var variation_strength: float = 0.8  # How much variation (0.0 = uniform, 1.0 = max variety)
@@ -99,7 +100,7 @@ func set_spawn_position(spawn_pos: Vector2) -> void:
 # GENERATION (MAIN ENTRY POINT)
 # ==============================
 
-func generate_around(world_pos: Vector2) -> void:
+func generate_around(world_pos: Vector2, use_debug_radius: bool = false) -> void:
 	# Main generation loop to handle terrain around player
 	
 	# Auto-detect spawn position on first generation
@@ -107,12 +108,13 @@ func generate_around(world_pos: Vector2) -> void:
 		player_spawn_position = world_pos
 		spawn_position_set = true
 	
+	var radius: int = debug_tile_radius if use_debug_radius else tile_radius
 	var center_tile: Vector2i = local_to_map(world_pos)
 	var new_tiles: Array = []
 
 	# PASS 1: Generate all ground tiles and track new ones
-	for x in range(center_tile.x - tile_radius, center_tile.x + tile_radius):
-		for y in range(center_tile.y - tile_radius, center_tile.y + tile_radius):
+	for x in range(center_tile.x - radius, center_tile.x + radius):
+		for y in range(center_tile.y - radius, center_tile.y + radius):
 			var tile_pos: Vector2i = Vector2i(x, y)
 
 			# If this is a confirmed chasm, re-place it if it was cleaned up
