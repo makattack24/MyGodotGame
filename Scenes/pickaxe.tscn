@@ -1,0 +1,10 @@
+[gd_scene format=3 uid="uid://beylxhbr04g7w"]
+
+[ext_resource type="Texture2D" uid="uid://c3ht7ubbwsixn" path="res://Assets/pickaxe.png" id="1_0n2mx"]
+[ext_resource type="Script" uid="uid://dety4hx3a1pyl" path="res://Scripts/pickaxe.gd" id="1_pxram"]
+
+[node name="Pickaxe" type="Node2D" unique_id=442737666]
+script = ExtResource("1_pxram")
+
+[node name="StonePickaxeSprite" type="Sprite2D" parent="." unique_id=1941167608]
+texture = ExtResource("1_0n2mx")

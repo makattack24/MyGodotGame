@@ -49,6 +49,7 @@ func refresh_stats() -> void:
 		["Deaths", str(GameStats.deaths)],
 		["", ""],  # separator
 		["Trees Chopped", str(GameStats.trees_chopped)],
+		["Rocks Mined", str(GameStats.rocks_mined)],
 		["Bushes Destroyed", str(GameStats.bushes_destroyed)],
 		["", ""],  # separator
 		["Items Collected", str(GameStats.items_collected)],

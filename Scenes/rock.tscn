@@ -1,11 +1,20 @@
 [gd_scene format=3 uid="uid://f52wmh6wbrfx"]
 
 [ext_resource type="Texture2D" uid="uid://cweeljsofoc46" path="res://Assets/FreeDownloadedAssets/FreeEnvironment/FreePack 2.png" id="1_rock"]
+[ext_resource type="PackedScene" uid="uid://npun6utb7mql" path="res://Scenes/rock_dropped_from_mining.tscn" id="2_1rhfe"]
+[ext_resource type="Script" uid="uid://br6c5nsy3hre5" path="res://Scripts/rock.gd" id="2_rock_script"]
+[ext_resource type="AudioStream" uid="uid://kl86c1mvqic6" path="res://Audio/chopping-wood-96709.mp3" id="3_hit_sound"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_lgx4v"]
 size = Vector2(98, 65)
 
+[sub_resource type="Curve" id="Curve_rock_scale"]
+_data = [Vector2(0, 1), 0.0, 0.0, 0, 0, Vector2(1, 0), 0.0, 0.0, 0, 0]
+point_count = 2
+
 [node name="Rock" type="StaticBody2D" unique_id=660722639]
+script = ExtResource("2_rock_script")
+item_scene = ExtResource("2_1rhfe")
 
 [node name="Sprite2D" type="Sprite2D" parent="." unique_id=1049033758]
 texture = ExtResource("1_rock")
@@ -15,3 +24,30 @@ region_rect = Rect2(400, 171, 101, 69)
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1524148640]
 position = Vector2(0, 1.5)
 shape = SubResource("RectangleShape2D_lgx4v")
+
+[node name="HitEffect" type="CPUParticles2D" parent="." unique_id=1822839782]
+emitting = false
+amount = 20
+lifetime = 0.6
+one_shot = true
+explosiveness = 0.8
+randomness = 0.35
+lifetime_randomness = 0.25
+emission_shape = 3
+emission_rect_extents = Vector2(1, 1)
+direction = Vector2(0, -1)
+spread = 60.0
+gravity = Vector2(0, 350)
+initial_velocity_min = 60.0
+initial_velocity_max = 130.0
+angular_velocity_min = -360.0
+angular_velocity_max = 360.0
+damping_min = 50.0
+damping_max = 100.0
+scale_amount_min = 2.0
+scale_amount_max = 4.0
+scale_amount_curve = SubResource("Curve_rock_scale")
+color = Color(0.55, 0.55, 0.55, 1)
+
+[node name="HitSound" type="AudioStreamPlayer2D" parent="." unique_id=390807464]
+stream = ExtResource("3_hit_sound")

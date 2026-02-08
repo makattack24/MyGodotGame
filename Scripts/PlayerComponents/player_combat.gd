@@ -12,6 +12,7 @@ var damage_sound: AudioStreamPlayer2D
 
 # Weapon data
 var axe_texture = preload("res://Assets/WoodAxe.png")
+var pickaxe_texture = preload("res://Assets/pickaxe.png")
 var sword_remover_material: ShaderMaterial = null
 
 # Attack state
@@ -71,9 +72,15 @@ func trigger_attack(attack_type: String, facing_direction: String) -> void:
 	# Get currently selected item from HUD
 	var selected_item = _get_selected_item_name()
 	
-	# Check if player is holding axe and show weapon sprite
+	# Check if player is holding axe or pickaxe and show weapon sprite
 	if selected_item == "axe":
 		weapon_sprite.texture = axe_texture
+		weapon_sprite.visible = true
+		update_weapon_position(facing_direction)
+		if sword_remover_material:
+			anim_sprite.material = sword_remover_material
+	elif selected_item == "pickaxe":
+		weapon_sprite.texture = pickaxe_texture
 		weapon_sprite.visible = true
 		update_weapon_position(facing_direction)
 		if sword_remover_material:
@@ -127,7 +134,7 @@ func _on_animation_finished() -> void:
 func _on_attack_hit(body: Node) -> void:
 	"""Handle collision when attack hits something"""
 	# Walk up the node hierarchy to find the root entity
-	while body and not body.is_in_group("Trees") and not body.is_in_group("Enemies") and body.get_parent() != null:
+	while body and not body.is_in_group("Trees") and not body.is_in_group("Enemies") and not body.is_in_group("Rocks") and body.get_parent() != null:
 		body = body.get_parent()
 
 	if not is_attacking:
@@ -137,6 +144,8 @@ func _on_attack_hit(body: Node) -> void:
 		_handle_enemy_hit(body)
 	elif body.is_in_group("Trees"):
 		_handle_tree_hit(body)
+	elif body.is_in_group("Rocks"):
+		_handle_rock_hit(body)
 	elif body.is_in_group("Bushes"):
 		_handle_bush_hit(body)
 
@@ -164,6 +173,22 @@ func _handle_tree_hit(tree: Node) -> void:
 		var vfx = player.get_node_or_null("PlayerVFX")
 		if vfx:
 			vfx.show_requirement_text("Need Axe!", tree.global_position)
+			vfx.flash_screen_orange()
+
+func _handle_rock_hit(rock: Node) -> void:
+	"""Handle hitting a rock (requires pickaxe)"""
+	var has_pickaxe_equipped = _get_selected_item_name() == "pickaxe"
+	
+	if has_pickaxe_equipped:
+		if rock.has_method("take_damage"):
+			rock.call("take_damage", 1)
+		else:
+			rock.queue_free()
+	else:
+		# Use player's VFX component to show requirement
+		var vfx = player.get_node_or_null("PlayerVFX")
+		if vfx:
+			vfx.show_requirement_text("Need Pickaxe!", rock.global_position)
 			vfx.flash_screen_orange()
 
 func _handle_bush_hit(bush: Node) -> void:

@@ -6,6 +6,8 @@ var inventory: Dictionary = {
     "wood": 0,
     "coin": 0,
     "axe": 1,  # Start with 1 axe
+    "pickaxe": 1,  # Start with 1 pickaxe
+    "rock": 0,
     "saw_mill": 400,  # Start with 1 saw mill for testing
     "wall": 40,
     "campfire": 10,
@@ -18,6 +20,8 @@ var item_textures: Dictionary = {
     "wood": preload("res://Assets/woodItem.png"),
     "coin": preload("res://Assets/coin.png"),
     "axe": preload("res://Assets/WoodAxe.png"),
+    "pickaxe": preload("res://Assets/pickaxe.png"),
+    "rock": preload("res://Assets/rock.png"),
     "saw_mill": preload("res://Assets/saw mill machine.png"),
     "campfire": preload("res://Assets/campfire.png"),
     "sleeping_bag": preload("res://Assets/sleepingbag.png")

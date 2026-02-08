@@ -13,6 +13,7 @@ var deaths: int = 0
 
 # Resource stats
 var trees_chopped: int = 0
+var rocks_mined: int = 0
 var bushes_destroyed: int = 0
 var items_collected: int = 0
 var coins_collected: int = 0
@@ -73,6 +74,9 @@ func record_player_death() -> void:
 func record_tree_chopped() -> void:
 	trees_chopped += 1
 
+func record_rock_mined() -> void:
+	rocks_mined += 1
+
 func record_bush_destroyed() -> void:
 	bushes_destroyed += 1
 
@@ -119,6 +123,7 @@ func save() -> Dictionary:
 		"damage_taken": damage_taken,
 		"deaths": deaths,
 		"trees_chopped": trees_chopped,
+		"rocks_mined": rocks_mined,
 		"bushes_destroyed": bushes_destroyed,
 		"items_collected": items_collected,
 		"coins_collected": coins_collected,
@@ -136,6 +141,7 @@ func load_data(data: Dictionary) -> void:
 	damage_taken = data.get("damage_taken", 0)
 	deaths = data.get("deaths", 0)
 	trees_chopped = data.get("trees_chopped", 0)
+	rocks_mined = data.get("rocks_mined", 0)
 	bushes_destroyed = data.get("bushes_destroyed", 0)
 	items_collected = data.get("items_collected", 0)
 	coins_collected = data.get("coins_collected", 0)
@@ -152,6 +158,7 @@ func reset() -> void:
 	damage_taken = 0
 	deaths = 0
 	trees_chopped = 0
+	rocks_mined = 0
 	bushes_destroyed = 0
 	items_collected = 0
 	coins_collected = 0
