@@ -150,6 +150,13 @@ func _create_options_panel() -> void:
 	time_label.add_theme_font_size_override("font_size", 9)
 	time_label.modulate = Color(0.7, 0.7, 0.7)
 	options_panel.add_child(time_label)
+	
+	# Weather controls
+	var weather_label = Label.new()
+	weather_label.text = "Weather: 6=Clear 7=Rain 8=Storm\n  9=Snow 0=Fog -=Sand +=Cloudy\n  P = cycle next"
+	weather_label.add_theme_font_size_override("font_size", 9)
+	weather_label.modulate = Color(0.7, 0.7, 0.7)
+	options_panel.add_child(weather_label)
 
 func _add_toggle(text: String, key: String, default_val: bool) -> void:
 	var cb = CheckBox.new()
@@ -270,6 +277,22 @@ func _input(event: InputEvent) -> void:
 				_set_time_of_day(0.5, "Noon")
 			KEY_PERIOD:
 				_set_time_of_day(0.75, "Dusk")
+			KEY_6:
+				_set_weather_debug(0)  # Clear
+			KEY_7:
+				_set_weather_debug(2)  # Rain
+			KEY_8:
+				_set_weather_debug(4)  # Thunderstorm
+			KEY_9:
+				_set_weather_debug(5)  # Snow
+			KEY_0:
+				_set_weather_debug(6)  # Fog
+			KEY_MINUS:
+				_set_weather_debug(7)  # Sandstorm
+			KEY_EQUAL:
+				_set_weather_debug(1)  # Cloudy
+			KEY_P:
+				_cycle_weather_debug()
 		get_viewport().set_input_as_handled()
 	
 	# Zoom with mouse wheel
@@ -359,6 +382,12 @@ func _update_info_label() -> void:
 		var minutes = int(fmod(t * 24.0 * 60.0, 60.0))
 		var period_name = _get_time_period_name(t)
 		text += "Time: %02d:%02d (%s) [%.2f]\n" % [hours, minutes, period_name, t]
+	
+	# Weather
+	var ws = _get_weather_system()
+	if ws:
+		text += "Weather: %s %s\n" % [ws.get_weather_icon(), ws.get_weather_name()]
+		text += "Day: %s - Day %d\n" % [ws.get_day_name(), ws.get_day_count()]
 	
 	info_label.text = text
 
@@ -459,3 +488,34 @@ func get_generation_position() -> Vector2:
 	if debug_enabled:
 		return debug_camera.global_position
 	return Vector2.ZERO  # Caller should use player pos
+
+# ==============================
+# WEATHER DEBUG
+# ==============================
+
+var _weather_system_cache: Node = null
+
+func _get_weather_system() -> Node:
+	if _weather_system_cache and is_instance_valid(_weather_system_cache):
+		return _weather_system_cache
+	var nodes = get_tree().get_nodes_in_group("WeatherSystem")
+	if nodes.size() > 0:
+		_weather_system_cache = nodes[0]
+	return _weather_system_cache
+
+func _set_weather_debug(weather_enum: int) -> void:
+	var ws = _get_weather_system()
+	if ws and ws.has_method("set_weather"):
+		ws.set_weather(weather_enum)
+		print("[DEBUG] Weather set to: %s" % ws.get_weather_name())
+	else:
+		print("[DEBUG] Weather system not found!")
+
+func _cycle_weather_debug() -> void:
+	var ws = _get_weather_system()
+	if ws:
+		var next = (ws.current_weather + 1) % ws.Weather.size()
+		ws.set_weather(next)
+		print("[DEBUG] Weather cycled to: %s" % ws.get_weather_name())
+	else:
+		print("[DEBUG] Weather system not found!")

@@ -10,6 +10,11 @@ var inventory_label: Label
 var equipped_icon: TextureRect = null
 var equipped_name: Label = null
 
+# Weather display
+var weather_label: Label = null
+var weather_icon_label: Label = null
+var weather_container: HBoxContainer = null
+
 # Preload scenes
 var inventory_slot_scene = preload("res://Scenes/inventory_slot.tscn")
 var minimap_scene = preload("res://Scenes/minimap.tscn")
@@ -34,6 +39,9 @@ func _ready() -> void:
 	
 	# Setup minimap
 	setup_minimap()
+	
+	# Setup weather display
+	setup_weather_display()
 	
 	# Assign equipped item display references after scene is fully instanced
 	equipped_icon = find_child("ItemIcon", true, false)
@@ -233,6 +241,42 @@ func update_equipped_display() -> void:
 		# No item equipped
 		equipped_icon.texture = null
 		equipped_name.text = "None"
+
+func setup_weather_display() -> void:
+	# Create a container for the weather info (below the biome label)
+	weather_container = HBoxContainer.new()
+	weather_container.name = "WeatherContainer"
+	weather_container.anchor_left = 0.0
+	weather_container.anchor_right = 0.0
+	weather_container.anchor_top = 0.0
+	weather_container.anchor_bottom = 0.0
+	weather_container.offset_left = 10
+	weather_container.offset_right = 250
+	weather_container.offset_top = 32
+	weather_container.offset_bottom = 56
+	weather_container.add_theme_constant_override("separation", 4)
+	add_child(weather_container)
+	
+	# Weather icon
+	weather_icon_label = Label.new()
+	weather_icon_label.name = "WeatherIcon"
+	weather_icon_label.add_theme_font_size_override("font_size", 16)
+	weather_icon_label.text = "☀"
+	weather_container.add_child(weather_icon_label)
+	
+	# Weather name
+	weather_label = Label.new()
+	weather_label.name = "WeatherLabel"
+	weather_label.add_theme_font_size_override("font_size", 14)
+	weather_label.modulate = Color(0.85, 0.9, 1.0, 0.9)
+	weather_label.text = "Clear"
+	weather_container.add_child(weather_label)
+
+func update_weather_display(weather_name: String, weather_icon: String) -> void:
+	if weather_label:
+		weather_label.text = weather_name
+	if weather_icon_label:
+		weather_icon_label.text = weather_icon
 
 func setup_notification_label() -> void:
 	# Create a notification label for save/load messages

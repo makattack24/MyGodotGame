@@ -22,6 +22,7 @@ var npc_markers: Array = []
 var enemy_markers: Array = []
 # Time display
 @onready var time_label: Label = $TimeLabel
+var day_label: Label = null
 
 func _ready() -> void:
 	# Find player
@@ -45,6 +46,9 @@ func _ready() -> void:
 	visible = true
 	modulate = Color(1, 1, 1, 1)
 	
+	# Create day-of-week label below the time label
+	_create_day_label()
+	
 	print("Minimap initialized with size: ", size)
 	
 	# Connect to viewport resize
@@ -67,7 +71,7 @@ func _process(_delta: float) -> void:
 	# Update markers for NPCs and enemies
 	update_object_markers()
 	
-	# Update time display with AM/PM
+	# Update time display with AM/PM and day of week
 	if time_label:
 		var day_night = get_tree().get_first_node_in_group("DayNightCycle")
 		if day_night and "time_of_day" in day_night:
@@ -84,6 +88,14 @@ func _process(_delta: float) -> void:
 				if hour > 12:
 					display_hour = hour - 12
 			time_label.text = "%02d:%02d %s" % [display_hour, minute, ampm]
+	
+	# Update day-of-week display
+	if day_label:
+		var weather_sys = get_tree().get_first_node_in_group("WeatherSystem")
+		if weather_sys:
+			var day_name: String = weather_sys.get_day_name()
+			var day_num: int = weather_sys.get_day_count()
+			day_label.text = "%s - Day %d" % [day_name, day_num]
 
 func update_object_markers() -> void:
 	# Clear old markers
@@ -142,3 +154,27 @@ func toggle_minimap() -> void:
 
 func set_zoom(new_zoom: float) -> void:
 	zoom_scale = clamp(new_zoom, 5.0, 50.0)
+
+func _create_day_label() -> void:
+	day_label = Label.new()
+	day_label.name = "DayLabel"
+	
+	# Position below the time label
+	day_label.anchors_preset = Control.PRESET_BOTTOM_RIGHT
+	day_label.anchor_left = 1.0
+	day_label.anchor_top = 1.0
+	day_label.anchor_right = 1.0
+	day_label.anchor_bottom = 1.0
+	day_label.grow_horizontal = Control.GROW_DIRECTION_BEGIN
+	day_label.grow_vertical = Control.GROW_DIRECTION_BEGIN
+	day_label.offset_left = -70
+	day_label.offset_top = 15
+	day_label.offset_bottom = 29
+	day_label.offset_right = 0
+	
+	day_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+	day_label.add_theme_font_size_override("font_size", 9)
+	day_label.modulate = Color(0.8, 0.85, 1.0, 0.9)
+	day_label.text = "Mon - Day 1"
+	
+	add_child(day_label)

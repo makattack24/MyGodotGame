@@ -25,6 +25,10 @@ var enemy_cleanup_distance: float = 2000.0  # Free enemies beyond this distance
 # Day/Night Cycle
 var day_night_cycle: Node = null
 
+# Weather System
+var weather_system: Node = null
+var weather_vfx: CanvasLayer = null
+
 func _ready() -> void:
 	
 	# Create and add BiomeManager
@@ -67,6 +71,21 @@ func _ready() -> void:
 	else:
 		push_warning("DayNightOverlayRect node not found! Day/night cycle will not be visible.")
 		
+	# --- WEATHER SYSTEM SETUP ---
+	var WeatherSystem = load("res://Scripts/weather_system.gd")
+	weather_system = WeatherSystem.new()
+	weather_system.name = "WeatherSystem"
+	add_child(weather_system)
+	
+	# Connect weather change signal to HUD update
+	weather_system.weather_changed.connect(_on_weather_changed)
+	
+	# --- WEATHER VFX SETUP ---
+	var WeatherVFX = load("res://Scripts/weather_vfx.gd")
+	weather_vfx = WeatherVFX.new()
+	weather_vfx.name = "WeatherVFX"
+	add_child(weather_vfx)
+		
 
 func _process(delta: float) -> void:
 	# When debug fly camera is active, generate around that instead of player
@@ -105,6 +124,9 @@ func _process(delta: float) -> void:
 			var current_biome = biome_manager.get_biome_name_for_position(player.global_position)
 			if hud.has_method("update_biome_display"):
 				hud.update_biome_display(current_biome)
+			# Update weather system with current biome
+			if weather_system and weather_system.has_method("set_biome"):
+				weather_system.set_biome(current_biome)
 
 func _cleanup_distant_content(center: Vector2) -> void:
 	# Clean up ground tiles and cached data far from the player
@@ -159,3 +181,7 @@ func _on_debug_mode_changed(enabled: bool) -> void:
 			hud.show_notification("DEBUG MODE ON (F3)", 1.5)
 		else:
 			hud.show_notification("DEBUG MODE OFF", 1.5)
+
+func _on_weather_changed(_new_weather: String, _old_weather: String) -> void:
+	if hud and hud.has_method("update_weather_display") and weather_system:
+		hud.update_weather_display(weather_system.get_weather_name(), weather_system.get_weather_icon())

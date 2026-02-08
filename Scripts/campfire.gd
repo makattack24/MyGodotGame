@@ -5,7 +5,7 @@ extends Node2D
 
 # Light properties
 @export var light_energy_day: float = 0.6
-@export var light_energy_night: float = 2.5
+@export var light_energy_night: float = 2.0
 @export var light_radius: float = 120.0
 
 # State
