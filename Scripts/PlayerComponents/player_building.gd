@@ -24,6 +24,7 @@ var placeable_scenes: Dictionary = {
 	"saw_mill": preload("res://Scenes/saw_mill_machine.tscn"),
 	"wall": preload("res://Scenes/wall.tscn"),
 	"campfire": preload("res://Scenes/campfire.tscn"),
+	"sleeping_bag": preload("res://Scenes/sleeping_bag.tscn"),
 	"fence": null
 }
 
@@ -75,6 +76,15 @@ func place_object() -> void:
 	
 	# Check if position is valid
 	if not _is_position_valid(placement_preview.global_position):
+		# Give specific feedback for sleeping bag campfire requirement
+		if current_placeable_item == "sleeping_bag":
+			var SleepingBag = load("res://Scripts/sleeping_bag.gd")
+			if not SleepingBag.is_near_campfire(placement_preview.global_position, player.get_tree()):
+				print("Sleeping bag must be placed near a campfire!")
+				var vfx = player.get_node_or_null("PlayerVFX")
+				if vfx:
+					vfx.show_requirement_text("Must be near a campfire!", player.global_position)
+				return
 		print("Cannot place here - position occupied!")
 		return
 	
@@ -228,6 +238,12 @@ func _is_position_valid(pos: Vector2) -> bool:
 	# Too close to player
 	if player.global_position.distance_to(pos) < grid_size * 1.5:
 		return false
+	
+	# Sleeping bag must be near a campfire
+	if current_placeable_item == "sleeping_bag":
+		var SleepingBag = load("res://Scripts/sleeping_bag.gd")
+		if not SleepingBag.is_near_campfire(pos, player.get_tree()):
+			return false
 	
 	# Define check positions for larger objects (2x2 grid)
 	var check_positions = [

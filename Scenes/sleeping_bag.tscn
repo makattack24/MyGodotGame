@@ -1,0 +1,18 @@
+[gd_scene format=3 uid="uid://diw4t0n8rr712"]
+
+[ext_resource type="Script" uid="uid://cur8rln4m3hnp" path="res://Scripts/sleeping_bag.gd" id="1_3tlfe"]
+[ext_resource type="Texture2D" uid="uid://bqiyv4wy175y5" path="res://Assets/sleepingbag.png" id="2_o1kkv"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_3tlfe"]
+
+[node name="SleepingBag" type="Node2D" unique_id=52633121]
+script = ExtResource("1_3tlfe")
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=1870537627]
+texture = ExtResource("2_o1kkv")
+
+[node name="StaticBody2D" type="StaticBody2D" parent="." unique_id=1172548752]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="StaticBody2D" unique_id=1008762847]
+position = Vector2(0, 5)
+shape = SubResource("CircleShape2D_3tlfe")
