@@ -23,6 +23,7 @@ var placement_cooldown: float = 0.0
 var placeable_scenes: Dictionary = {
 	"saw_mill": preload("res://Scenes/saw_mill_machine.tscn"),
 	"wall": preload("res://Scenes/wall.tscn"),
+	"campfire": preload("res://Scenes/campfire.tscn"),
 	"fence": null
 }
 

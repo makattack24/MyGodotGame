@@ -1,0 +1,21 @@
+[gd_scene format=3 uid="uid://sv0p54g0oghe"]
+
+[ext_resource type="Texture2D" uid="uid://bwela3aephar1" path="res://Assets/campfire.png" id="1_kfptp"]
+[ext_resource type="Script" uid="uid://5fdy033jw5sa" path="res://Scripts/campfire.gd" id="2_camp"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_kfptp"]
+radius = 11.0
+
+[node name="Campfire" type="Node2D" unique_id=1868257054 groups=["PlacedObjects"]]
+script = ExtResource("2_camp")
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=533517073]
+texture = ExtResource("1_kfptp")
+
+[node name="StaticBody2D" type="StaticBody2D" parent="." unique_id=7565898]
+collision_layer = 2
+collision_mask = 3
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="StaticBody2D" unique_id=373658554]
+position = Vector2(0, 3)
+shape = SubResource("CircleShape2D_kfptp")

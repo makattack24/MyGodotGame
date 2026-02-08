@@ -7,7 +7,8 @@ var inventory: Dictionary = {
     "coin": 0,
     "axe": 1,  # Start with 1 axe
     "saw_mill": 400,  # Start with 1 saw mill for testing
-    "wall": 40
+    "wall": 40,
+    "campfire": 10
 }
 
 # Item textures - add your item textures here
@@ -16,7 +17,8 @@ var item_textures: Dictionary = {
     "wood": preload("res://Assets/woodItem.png"),
     "coin": preload("res://Assets/coin.png"),
     "axe": preload("res://Assets/WoodAxe.png"),
-    "saw_mill": preload("res://Assets/saw mill machine.png")
+    "saw_mill": preload("res://Assets/saw mill machine.png"),
+    "campfire": preload("res://Assets/campfire.png")
     # wall texture will be added from sprite sheet in _ready
 }
 

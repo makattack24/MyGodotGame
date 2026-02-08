@@ -120,9 +120,12 @@ func _physics_process(_delta: float) -> void:
 			if hop_progress >= 1.0:
 				finish_hop()
 			else:
-				# Smooth hop movement using ease out
-				var t = ease_out_quad(hop_progress)
-				global_position = hop_start_pos.lerp(hop_target_pos, t)
+				# Use velocity-based movement so move_and_slide() handles collisions
+				var direction = (hop_target_pos - hop_start_pos).normalized()
+				var total_distance = hop_start_pos.distance_to(hop_target_pos)
+				# Speed based on distance and duration, with ease-out feel
+				var speed = (total_distance / hop_duration) * (1.0 + (1.0 - hop_progress))
+				velocity = direction * speed
 				
 				# Stretch animation during hop
 				if sprite:
@@ -270,7 +273,7 @@ func create_shadow() -> void:
 
 func finish_hop() -> void:
 	hop_state = HopState.RESTING
-	global_position = hop_target_pos
+	velocity = Vector2.ZERO
 	
 	# Landing squash effect
 	if sprite:

@@ -69,6 +69,7 @@ var current_placeable_item: String = ""  # Currently selected placeable item
 var placeable_scenes: Dictionary = {
 	"saw_mill": preload("res://Scenes/saw_mill_machine.tscn"),
 	"wall": preload("res://Scenes/wall.tscn"),
+	"campfire": preload("res://Scenes/campfire.tscn"),
 	"fence": null  # Will be set when you create fence.tscn
 }
 var grid_size: int = 16  # Grid size for snapping placed items

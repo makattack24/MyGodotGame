@@ -25,6 +25,7 @@ var player_camera: Camera2D = null
 var main_node: Node2D = null
 var ground: TileMapLayer = null
 var object_spawner: Node2D = null
+var day_night_cycle: Node = null
 
 # Debug overlay (HUD)
 var overlay: CanvasLayer = null
@@ -142,6 +143,13 @@ func _create_options_panel() -> void:
 	fly_label.add_theme_font_size_override("font_size", 9)
 	fly_label.modulate = Color(0.7, 0.7, 0.7)
 	options_panel.add_child(fly_label)
+	
+	# Time of day controls
+	var time_label = Label.new()
+	time_label.text = "Time: [ / ] nudge, presets:\n  N=midnight M=dawn ,=noon .=dusk"
+	time_label.add_theme_font_size_override("font_size", 9)
+	time_label.modulate = Color(0.7, 0.7, 0.7)
+	options_panel.add_child(time_label)
 
 func _add_toggle(text: String, key: String, default_val: bool) -> void:
 	var cb = CheckBox.new()
@@ -250,6 +258,18 @@ func _input(event: InputEvent) -> void:
 				_set_time_scale(2.0)
 			KEY_5:
 				_set_time_scale(1.0)
+			KEY_BRACKETLEFT:
+				_nudge_time_of_day(-0.05)
+			KEY_BRACKETRIGHT:
+				_nudge_time_of_day(0.05)
+			KEY_N:
+				_set_time_of_day(0.0, "Midnight")
+			KEY_M:
+				_set_time_of_day(0.25, "Dawn")
+			KEY_COMMA:
+				_set_time_of_day(0.5, "Noon")
+			KEY_PERIOD:
+				_set_time_of_day(0.75, "Dusk")
 		get_viewport().set_input_as_handled()
 	
 	# Zoom with mouse wheel
@@ -331,6 +351,15 @@ func _update_info_label() -> void:
 	if freeze_enemies:
 		text += "[ENEMIES FROZEN]\n"
 	
+	# Time of day
+	var dnc = _get_day_night_cycle()
+	if dnc and "time_of_day" in dnc:
+		var t = dnc.time_of_day
+		var hours = int(t * 24.0) % 24
+		var minutes = int(fmod(t * 24.0 * 60.0, 60.0))
+		var period_name = _get_time_period_name(t)
+		text += "Time: %02d:%02d (%s) [%.2f]\n" % [hours, minutes, period_name, t]
+	
 	info_label.text = text
 
 # ==============================
@@ -376,6 +405,50 @@ func _set_time_scale(scale: float) -> void:
 	time_scale = scale
 	Engine.time_scale = scale
 	print("[DEBUG] Time scale: ", scale)
+
+func _get_day_night_cycle() -> Node:
+	"""Lazily find the day/night cycle node via its group (created after setup)"""
+	if day_night_cycle and is_instance_valid(day_night_cycle):
+		return day_night_cycle
+	var nodes = get_tree().get_nodes_in_group("DayNightCycle")
+	if nodes.size() > 0:
+		day_night_cycle = nodes[0]
+	return day_night_cycle
+
+func _set_time_of_day(value: float, label: String = "") -> void:
+	var dnc = _get_day_night_cycle()
+	if dnc and "time_of_day" in dnc:
+		dnc.time_of_day = fmod(value, 1.0)
+		if dnc.time_of_day < 0:
+			dnc.time_of_day += 1.0
+		var display = label if label != "" else "%.2f" % dnc.time_of_day
+		print("[DEBUG] Time of day set to: %s (%.2f)" % [display, dnc.time_of_day])
+	else:
+		print("[DEBUG] Day/night cycle not found!")
+
+func _nudge_time_of_day(amount: float) -> void:
+	var dnc = _get_day_night_cycle()
+	if dnc and "time_of_day" in dnc:
+		var new_time = fmod(dnc.time_of_day + amount, 1.0)
+		if new_time < 0:
+			new_time += 1.0
+		_set_time_of_day(new_time, _get_time_period_name(new_time))
+	else:
+		print("[DEBUG] Day/night cycle not found!")
+
+func _get_time_period_name(t: float) -> String:
+	if t < 0.2:
+		return "Night"
+	elif t < 0.3:
+		return "Dawn"
+	elif t < 0.35:
+		return "Morning"
+	elif t < 0.65:
+		return "Day"
+	elif t < 0.75:
+		return "Dusk"
+	else:
+		return "Night"
 
 # ==============================
 # PUBLIC QUERY
