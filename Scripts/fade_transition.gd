@@ -21,3 +21,9 @@ func fade_to_scene(scene_path: String) -> void:
 func fade_in():
 	$ColorRect.color = Color(0, 0, 0, 1)
 	$AnimationPlayer.play("fade_in", .25) #half speed
+
+func fade_and_reload() -> void:
+	$AnimationPlayer.play("fade_out")
+	await $AnimationPlayer.animation_finished
+	get_tree().reload_current_scene()
+	$AnimationPlayer.play("fade_in")

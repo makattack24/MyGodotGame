@@ -52,6 +52,9 @@ var hop_progress: float = 0.0
 # Shadow
 var shadow: Polygon2D = null
 
+# Base sprite scale (adjust to fit your sprite size)
+const BASE_SCALE := Vector2(1.1, 1.1)
+
 # Loot drop scenes
 var coin_scene = preload("res://Scenes/coin_item.tscn")
 var heart_scene = preload("res://Scenes/heart_item.tscn")
@@ -91,7 +94,7 @@ func _physics_process(_delta: float) -> void:
 			# Idle squash animation
 			if sprite:
 				var squash_amount = sin(Time.get_ticks_msec() / 200.0) * 0.05
-				sprite.scale = Vector2(0.65, 0.65) * Vector2(1.0 + squash_amount, 1.0 - squash_amount)
+				sprite.scale = BASE_SCALE * Vector2(1.0 + squash_amount, 1.0 - squash_amount)
 			
 			if hop_timer <= 0:
 				start_windup()
@@ -105,7 +108,7 @@ func _physics_process(_delta: float) -> void:
 				var progress = 1.0 - (hop_timer / 0.15)
 				var squash = 1.0 + (progress * 0.5)
 				var stretch = 1.0 - (progress * 0.3)
-				sprite.scale = Vector2(0.65, 0.65) * Vector2(squash, stretch)
+				sprite.scale = BASE_SCALE * Vector2(squash, stretch)
 			
 			if hop_timer <= 0:
 				start_hop()
@@ -124,7 +127,7 @@ func _physics_process(_delta: float) -> void:
 				# Stretch animation during hop
 				if sprite:
 					var jump_height = sin(hop_progress * PI) * 0.4
-					sprite.scale = Vector2(0.65, 0.65) * Vector2(1.0 - jump_height, 1.0 + jump_height)
+					sprite.scale = BASE_SCALE * Vector2(1.0 - jump_height, 1.0 + jump_height)
 					
 					# Adjust sprite position for jump height effect
 					sprite.position.y = -jump_height * 8
@@ -241,18 +244,20 @@ func create_shadow() -> void:
 	shadow = Polygon2D.new()
 	shadow.name = "Shadow"
 	
-	# Create an ellipse shape for the shadow
+	# Create an ellipse shape for the shadow, sized to match the sprite
+	var shadow_width = 8.0 * BASE_SCALE.x
+	var shadow_height = 4.0 * BASE_SCALE.y
 	var points = PackedVector2Array()
 	var num_points = 16
 	for i in range(num_points):
 		var angle = (float(i) / num_points) * TAU
-		var x = cos(angle) * 10
-		var y = sin(angle) * 5
+		var x = cos(angle) * shadow_width
+		var y = sin(angle) * shadow_height
 		points.append(Vector2(x, y))
 	
 	shadow.polygon = points
 	shadow.color = Color(0, 0, 0, 0.5)  # Semi-transparent black
-	shadow.position = Vector2(0, 6)  # Slightly below center
+	shadow.position = Vector2(0, 6.0 * BASE_SCALE.y)  # Slightly below center
 	
 	# Make sure shadow renders below sprite
 	if sprite:
@@ -270,11 +275,11 @@ func finish_hop() -> void:
 	# Landing squash effect
 	if sprite:
 		sprite.position.y = 0
-		sprite.scale = Vector2(0.65, 0.65) * Vector2(1.4, 0.6)
+		sprite.scale = BASE_SCALE * Vector2(1.4, 0.6)
 		var tween = create_tween()
 		tween.set_ease(Tween.EASE_OUT)
 		tween.set_trans(Tween.TRANS_ELASTIC)
-		tween.tween_property(sprite, "scale", Vector2(0.65, 0.65), 0.3)
+		tween.tween_property(sprite, "scale", BASE_SCALE, 0.3)
 	
 	# Reset shadow
 	if shadow:
@@ -301,9 +306,9 @@ func _on_hit(damage: int, knockback_direction: Vector2) -> void:
 	
 	# Flash/squash effect when hit
 	if sprite:
-		sprite.scale = Vector2(0.65, 0.65) * Vector2(0.8, 1.2)
+		sprite.scale = BASE_SCALE * Vector2(0.8, 1.2)
 		var tween = create_tween()
-		tween.tween_property(sprite, "scale", Vector2(0.65, 0.65), 0.15)
+		tween.tween_property(sprite, "scale", BASE_SCALE, 0.15)
 	
 	# Trigger hit visual/audio effects
 	play_hit_feedback()

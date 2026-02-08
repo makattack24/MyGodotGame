@@ -39,9 +39,9 @@ func _on_respawn_button_pressed() -> void:
 		get_tree().reload_current_scene()
 
 func _on_restart_button_pressed() -> void:
-	# Unpause and reload the scene
+	# Unpause and reload with fade
 	get_tree().paused = false
-	get_tree().reload_current_scene()
+	FadeTransition.fade_and_reload()
 
 func _on_quit_button_pressed() -> void:
 	# Quit the game
