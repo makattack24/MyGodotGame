@@ -1,3 +1,3 @@
-I am learning Godot and gdscript. This is my first 2d topdown game.
+Welcome to Wolfrest Wilds!
 
-Created with Godot 4.6.
+A fun simple 2d topdown adventurer/rpg game.
