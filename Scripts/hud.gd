@@ -159,6 +159,14 @@ func _input(event: InputEvent) -> void:
 	if debug_mgr and debug_mgr.get("debug_enabled"):
 		return
 	
+	# Don't handle scroll when stats panel is open
+	if get_node_or_null("/root/GameStats"):
+		var pause_menu = get_tree().root.find_child("PauseMenu", true, false)
+		if pause_menu:
+			var stats_panel = pause_menu.find_child("StatsPanel", true, false)
+			if stats_panel and stats_panel.visible:
+				return
+	
 	# Handle scroll wheel input for inventory selection
 	# This works in all modes including build mode
 	if event is InputEventMouseButton:

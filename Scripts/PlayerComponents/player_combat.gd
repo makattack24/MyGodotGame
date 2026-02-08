@@ -145,6 +145,10 @@ func _handle_enemy_hit(enemy: Node) -> void:
 	if enemy.has_method("_on_hit"):
 		var knockback_direction = (enemy.global_position - attack_area.global_position).normalized()
 		enemy.call("_on_hit", 1, knockback_direction)
+		# Track stat
+		var stats = player.get_node_or_null("/root/GameStats")
+		if stats:
+			stats.record_damage_dealt(1)
 
 func _handle_tree_hit(tree: Node) -> void:
 	"""Handle hitting a tree (requires axe)"""

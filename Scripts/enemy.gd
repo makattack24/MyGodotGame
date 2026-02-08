@@ -356,6 +356,10 @@ func die() -> void:
 	# Handle death behavior
 	#print("Enemy died!")
 	
+	# Track stat
+	if Engine.has_singleton("GameStats") or get_node_or_null("/root/GameStats"):
+		GameStats.record_enemy_killed()
+	
 	# Drop coins
 	drop_coins()
 	

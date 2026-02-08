@@ -1,8 +1,8 @@
 [gd_scene format=3 uid="uid://csfnht04fmb5"]
 
 [ext_resource type="Script" uid="uid://bv3aq5wyq6n5t" path="res://Scripts/enemy.gd" id="1_1f0kj"]
-[ext_resource type="Texture2D" uid="uid://dev5bpuufirpb" path="res://Assets/red slime.png" id="1_hghv2"]
 [ext_resource type="Shader" uid="uid://cvg5xlcv5wum7" path="res://Shaders/slimeEnemyGlow.gdshader" id="2_287tu"]
+[ext_resource type="Texture2D" uid="uid://w57yvr3o6pi3" path="res://Assets/better slime.png" id="3_0830c"]
 [ext_resource type="AudioStream" uid="uid://dc5cy7ttqy7eg" path="res://Audio/goopy-slime-4-219777.mp3" id="4_287tu"]
 [ext_resource type="AudioStream" uid="uid://bf45xkwsbyr8r" path="res://Audio/slime-squish-5-218569.mp3" id="5_0830c"]
 
@@ -16,43 +16,28 @@ shader_parameter/opacity = 0.5
 shader_parameter/glow_color = Color(0.15294118, 0.99215686, 0, 1)
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_1f0kj"]
-radius = 7.0
-
-[sub_resource type="Gradient" id="Gradient_afpow"]
-interpolation_mode = 2
-colors = PackedColorArray(0, 0, 0, 1, 0.84313726, 0.23529412, 0.28627452, 1)
-
-[sub_resource type="FastNoiseLite" id="FastNoiseLite_287tu"]
-
-[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_0830c"]
-width = 4
-height = 4
-noise = SubResource("FastNoiseLite_287tu")
-color_ramp = SubResource("Gradient_afpow")
-seamless = true
+radius = 8.0
 
 [sub_resource type="Curve" id="Curve_afpow"]
 _data = [Vector2(0, 0.8651686), 0.0, 0.0, 0, 0, Vector2(0.98936176, 0.11235964), 0.0, 0.0, 0, 0]
+point_count = 2
+
+[sub_resource type="Curve" id="Curve_hit"]
+_data = [Vector2(0, 1), 0.0, 0.0, 0, 0, Vector2(1, 0), 0.0, 0.0, 0, 0]
 point_count = 2
 
 [sub_resource type="Gradient" id="Gradient_hit"]
 interpolation_mode = 1
 colors = PackedColorArray(1, 1, 1, 1, 1, 0.8, 0.2, 0)
 
-[sub_resource type="Curve" id="Curve_hit"]
-_data = [Vector2(0, 1), 0.0, 0.0, 0, 0, Vector2(1, 0), 0.0, 0.0, 0, 0]
-point_count = 2
-
 [node name="CharacterBody2D" type="CharacterBody2D" unique_id=1868272876]
 script = ExtResource("1_1f0kj")
 
 [node name="Sprite2D" type="Sprite2D" parent="." unique_id=961764258]
 material = SubResource("ShaderMaterial_0830c")
-scale = Vector2(0.65, 0.65)
-texture = ExtResource("1_hghv2")
+texture = ExtResource("3_0830c")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=394148664]
-position = Vector2(0, 2)
 shape = SubResource("CircleShape2D_1f0kj")
 
 [node name="HitSound" type="AudioStreamPlayer2D" parent="." unique_id=1629555301]
@@ -61,7 +46,6 @@ stream = ExtResource("4_287tu")
 [node name="DeathEffect" type="CPUParticles2D" parent="." unique_id=1621623514]
 emitting = false
 amount = 50
-lifetime = 1.0
 one_shot = true
 explosiveness = 0.9
 randomness = 0.5

@@ -42,6 +42,10 @@ func pickup_item() -> void:
 	Inventory.add_item(item_name, pickup_amount)
 	print("Picked up ", pickup_amount, " ", item_name)
 	
+	# Track stat
+	if get_node_or_null("/root/GameStats"):
+		GameStats.record_item_collected("coin")
+	
 	# Play pickup sound if available
 	if audio_player and audio_player.stream:
 		# Hide the sprite so it looks picked up

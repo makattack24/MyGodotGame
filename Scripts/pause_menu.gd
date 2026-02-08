@@ -1,8 +1,15 @@
 extends CanvasLayer
 
+var stats_panel: CanvasLayer = null
+
 func _ready() -> void:
 	visible = false
 	get_tree().paused = false
+	
+	# Load and add stats panel as child
+	var stats_scene = preload("res://Scenes/stats_panel.tscn")
+	stats_panel = stats_scene.instantiate()
+	add_child(stats_panel)
 	
 	# Update toggle state to match music state
 	var music_toggle = $VBoxContainer/MusicToggle
@@ -69,3 +76,11 @@ func _on_controls_toggle_toggled(toggled_on: bool) -> void:
 
 func _on_screen_shake_toggle_toggled(toggled_on: bool) -> void:
 	PlayerSettings.screen_shake_enabled = toggled_on
+
+
+func _on_stats_pressed() -> void:
+	if stats_panel:
+		$VBoxContainer.visible = false
+		stats_panel.show_stats()
+		await stats_panel.closed
+		$VBoxContainer.visible = true

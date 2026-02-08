@@ -137,6 +137,10 @@ func take_damage(damage: int) -> void:
 	if damage_sound:
 		damage_sound.play()
 
+	# Track stat
+	if get_node_or_null("/root/GameStats"):
+		GameStats.record_damage_taken(damage)
+
 	emit_signal("health_changed", current_health, max_health)
 	print("Player emitted health_changed signal: ", current_health, "/", max_health)
 
@@ -159,6 +163,10 @@ func heal(amount: int) -> void:
 func die() -> void:
 	is_dead = true
 	velocity = Vector2.ZERO
+	
+	# Track stat
+	if get_node_or_null("/root/GameStats"):
+		GameStats.record_player_death()
 	
 	vfx.add_screen_shake(10.0)
 	vfx.create_death_flash()

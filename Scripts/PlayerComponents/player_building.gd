@@ -90,6 +90,11 @@ func place_object() -> void:
 			if placed_object.has_method("place_machine"):
 				placed_object.place_machine()
 			
+			# Track stat
+			var stats = player.get_node_or_null("/root/GameStats")
+			if stats:
+				stats.record_item_placed(current_placeable_item)
+			
 			print(current_placeable_item.capitalize(), " placed!")
 			placement_cooldown = placement_cooldown_time
 	else:
@@ -118,6 +123,10 @@ func try_pickup_nearest_object() -> void:
 	
 	if closest_object:
 		closest_object.pickup_machine()
+		# Track stat
+		var stats = player.get_node_or_null("/root/GameStats")
+		if stats:
+			stats.record_item_picked_up()
 	else:
 		print("No placeable objects nearby to pick up")
 

@@ -55,6 +55,10 @@ func _on_body_exited(body: Node2D) -> void:
 
 func destroy() -> void:
 	"""Called when bush is hit by player's attack"""
+	# Track stat
+	if get_node_or_null("/root/GameStats"):
+		GameStats.record_bush_destroyed()
+	
 	# Create a simple particle effect (fade and shrink)
 	var tween = create_tween()
 	tween.set_parallel(true)

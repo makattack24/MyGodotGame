@@ -21,6 +21,7 @@ BgMusic="*uid://cbongyooxyspb"
 Inventory="*uid://ch7g67cuqhk2s"
 PlayerSettings="*res://Scripts/player_settings.gd"
 FadeTransition="*uid://cjj4ttf2870px"
+GameStats="*res://Scripts/game_stats.gd"
 
 [display]
 

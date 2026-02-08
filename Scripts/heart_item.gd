@@ -39,6 +39,10 @@ func pickup_item(player: Node2D) -> void:
 		player.heal(heal_amount)
 		print("Player healed for ", heal_amount, " health")
 	
+	# Track stat
+	if get_node_or_null("/root/GameStats"):
+		GameStats.record_item_collected("heart")
+	
 	# Show floating text effect
 	show_heal_text()
 	

@@ -33,6 +33,10 @@ func pickup_item() -> void:
 	# Add item to the inventory singleton
 	Inventory.add_item(item_name, pickup_amount)
 	print("Picked up ", pickup_amount, " ", item_name)
+	
+	# Track stat
+	if get_node_or_null("/root/GameStats"):
+		GameStats.record_item_collected("wood")
 
 	if audio_player and audio_player.stream:
 		print("Playing wood pickup sound...")

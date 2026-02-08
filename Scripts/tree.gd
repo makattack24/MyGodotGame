@@ -42,6 +42,11 @@ func take_damage(damage: int) -> void:
 # Remove tree and drop items when destroyed
 func destroy_tree() -> void:
 	print("Tree destroyed! Dropping items.")
+	
+	# Track stat
+	if get_node_or_null("/root/GameStats"):
+		GameStats.record_tree_chopped()
+	
 	call_deferred("spawn_items")  # Defer spawning to avoid physics query conflicts
 	
 	var scene_root = get_tree().root
