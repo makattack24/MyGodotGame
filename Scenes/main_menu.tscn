@@ -2,6 +2,17 @@
 
 [ext_resource type="Script" uid="uid://b17nygg0vkkiy" path="res://Scripts/main_menu.gd" id="1_28flt"]
 [ext_resource type="Texture2D" uid="uid://bmmvvdyshnjli" path="res://Assets/FreeDownloadedAssets/mtn.png" id="2_48xlc"]
+[ext_resource type="Shader" path="res://Shaders/title_shimmer.gdshader" id="3_shdr"]
+[ext_resource type="FontFile" uid="uid://bm886pq73uilj" path="res://Assets/FreeDownloadedAssets/toxigenesis/toxigenesis bd.otf" id="4_font"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_title"]
+shader = ExtResource("3_shdr")
+shader_parameter/shimmer_speed = 0.7
+shader_parameter/shimmer_width = 0.18
+shader_parameter/glow_strength = 0.35
+shader_parameter/shimmer_color = Color(1, 0.95, 0.7, 1)
+shader_parameter/pulse_speed = 1.0
+shader_parameter/pulse_amount = 0.06
 
 [node name="CanvasLayer" type="CanvasLayer" unique_id=1158348340]
 script = ExtResource("1_28flt")
@@ -13,30 +24,86 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 texture = ExtResource("2_48xlc")
+stretch_mode = 6
+
+[node name="DarkOverlay" type="ColorRect" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0, 0, 0, 0.35)
+
+[node name="TitleContainer" type="VBoxContainer" parent="."]
+anchors_preset = 10
+anchor_right = 1.0
+offset_top = 55.0
+offset_bottom = 260.0
+grow_horizontal = 2
+mouse_filter = 2
+alignment = 1
+
+[node name="TitleLabel" type="Label" parent="TitleContainer"]
+material = SubResource("ShaderMaterial_title")
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.88, 0.5, 1)
+theme_override_colors/font_outline_color = Color(0.2, 0.1, 0.0, 1)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.85)
+theme_override_constants/outline_size = 14
+theme_override_constants/shadow_offset_x = 4
+theme_override_constants/shadow_offset_y = 5
+theme_override_font_sizes/font_size = 82
+theme_override_fonts/font = ExtResource("4_font")
+text = "WOLFREST"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="SubtitleLabel" type="Label" parent="TitleContainer"]
+material = SubResource("ShaderMaterial_title")
+layout_mode = 2
+theme_override_colors/font_color = Color(0.75, 0.92, 0.6, 1)
+theme_override_colors/font_outline_color = Color(0.05, 0.15, 0.02, 1)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.85)
+theme_override_constants/outline_size = 10
+theme_override_constants/shadow_offset_x = 3
+theme_override_constants/shadow_offset_y = 4
+theme_override_font_sizes/font_size = 50
+theme_override_fonts/font = ExtResource("4_font")
+text = "WILDS"
+horizontal_alignment = 1
+vertical_alignment = 1
 
 [node name="VBoxContainer" type="VBoxContainer" parent="." unique_id=520215819]
 anchors_preset = 8
 anchor_left = 0.5
-anchor_top = 0.5
+anchor_top = 0.62
 anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -20.0
-offset_top = -20.0
-offset_right = 20.0
-offset_bottom = 20.0
+anchor_bottom = 0.62
+offset_left = -125.0
+offset_top = -50.0
+offset_right = 125.0
+offset_bottom = 50.0
 grow_horizontal = 2
 grow_vertical = 2
+theme_override_constants/separation = 14
 
 [node name="Start" type="Button" parent="VBoxContainer" unique_id=891303499]
 layout_mode = 2
+custom_minimum_size = Vector2(250, 48)
+theme_override_font_sizes/font_size = 22
 text = "START"
 
 [node name="Options" type="Button" parent="VBoxContainer" unique_id=184896714]
 layout_mode = 2
+custom_minimum_size = Vector2(250, 48)
+theme_override_font_sizes/font_size = 22
 text = "OPTIONS"
 
 [node name="Quit" type="Button" parent="VBoxContainer" unique_id=1247049544]
 layout_mode = 2
+custom_minimum_size = Vector2(250, 48)
+theme_override_font_sizes/font_size = 22
 text = "QUIT"
 
 [connection signal="pressed" from="VBoxContainer/Start" to="." method="_on_start_pressed"]
