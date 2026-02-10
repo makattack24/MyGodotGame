@@ -1,7 +1,8 @@
 [gd_scene format=3 uid="uid://npun6utb7mql"]
 
 [ext_resource type="Texture2D" uid="uid://dwf0y1u3f4sxt" path="res://Assets/rock.png" id="1_b20rx"]
-[ext_resource type="Script" path="res://Scripts/rock_item.gd" id="2_rock_item"]
+[ext_resource type="Script" uid="uid://dfo8q3gepngo1" path="res://Scripts/rock_item.gd" id="2_rock_item"]
+[ext_resource type="AudioStream" uid="uid://dbeue4v4sgpna" path="res://Audio/stonedropsound.mp3" id="3_05erf"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_b20rx"]
 size = Vector2(16, 8.75)
@@ -17,3 +18,6 @@ texture = ExtResource("1_b20rx")
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D" unique_id=861113185]
 position = Vector2(0, 3.375)
 shape = SubResource("RectangleShape2D_b20rx")
+
+[node name="DropSound" type="AudioStreamPlayer2D" parent="." unique_id=1266804898]
+stream = ExtResource("3_05erf")

@@ -15,6 +15,10 @@ func _ready() -> void:
 	elif has_node("AudioStreamPlayer2D"):
 		audio_player = $AudioStreamPlayer2D
 	
+	# Play drop sound when spawned
+	if has_node("DropSound"):
+		$DropSound.play()
+	
 	if pickup_area:
 		pickup_area.body_entered.connect(_on_body_entered)
 	else:

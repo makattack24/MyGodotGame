@@ -23,6 +23,11 @@ func take_damage(damage: int) -> void:
 		hit_effect.restart()
 	if hit_sound:
 		hit_sound.play()
+		var snd = hit_sound
+		get_tree().create_timer(0.3).timeout.connect(func():
+			if is_instance_valid(snd) and snd.playing:
+				snd.stop()
+		)
 
 	# Only process damage if cooldown timer is 0
 	if health > 0 and hit_cooldown_timer <= 0.0:
@@ -53,10 +58,15 @@ func destroy_rock() -> void:
 	
 	# Reparent hit sound to continue playing independently
 	if hit_sound and hit_sound.playing:
-		remove_child(hit_sound)
-		scene_root.add_child(hit_sound)
-		hit_sound.global_position = global_position
-		hit_sound.finished.connect(func(): hit_sound.queue_free())
+		var snd = hit_sound
+		remove_child(snd)
+		scene_root.add_child(snd)
+		snd.global_position = global_position
+		get_tree().create_timer(0.3).timeout.connect(func():
+			if is_instance_valid(snd):
+				snd.stop()
+				snd.queue_free()
+		)
 	
 	# Reparent particles to continue playing independently
 	if hit_effect and hit_effect.emitting:
