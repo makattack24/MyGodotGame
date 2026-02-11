@@ -66,12 +66,8 @@ var damage_flash: ColorRect = null
 var placement_mode: bool = false
 var placement_preview: Node2D = null
 var current_placeable_item: String = ""  # Currently selected placeable item
-var placeable_scenes: Dictionary = {
-	"saw_mill": preload("res://Scenes/saw_mill_machine.tscn"),
-	"wall": preload("res://Scenes/wall.tscn"),
-	"campfire": preload("res://Scenes/campfire.tscn"),
-	"fence": null  # Will be set when you create fence.tscn
-}
+# Placeable item names — scenes are looked up via SceneRegistry autoload
+var placeable_items: Array[String] = ["saw_mill_machine", "wall", "campfire", "fence"]
 var grid_size: int = 16  # Grid size for snapping placed items
 var placement_cooldown: float = 0.0  # Cooldown for continuous placement
 var placement_cooldown_time: float = 0.2  # Time between placements
@@ -666,13 +662,13 @@ func toggle_placement_mode() -> void:
 			selected_item = item_data["name"]
 		
 		# Check if selected item is placeable and available
-		if placeable_scenes.has(selected_item) and placeable_scenes[selected_item] != null and Inventory.get_item_count(selected_item) > 0:
+		if selected_item in placeable_items and SceneRegistry.has_scene(selected_item) and Inventory.get_item_count(selected_item) > 0:
 			current_placeable_item = selected_item
 		else:
 			# No placeable item selected, try to find first available placeable item
 			var found_placeable = false
-			for item_name in placeable_scenes.keys():
-				if placeable_scenes[item_name] != null and Inventory.get_item_count(item_name) > 0:
+			for item_name in placeable_items:
+				if SceneRegistry.has_scene(item_name) and Inventory.get_item_count(item_name) > 0:
 					current_placeable_item = item_name
 					found_placeable = true
 					print("Auto-selected ", item_name, " for placement")
@@ -691,8 +687,8 @@ func start_placement_mode() -> void:
 	print("Build mode activated - Move mouse to place, Hold Left Click to place continuously, Right Click to cancel")
 	
 	# Create preview from current placeable item (if available)
-	if current_placeable_item != "" and placeable_scenes.has(current_placeable_item) and placeable_scenes[current_placeable_item] != null:
-		placement_preview = placeable_scenes[current_placeable_item].instantiate()
+	if current_placeable_item != "" and SceneRegistry.has_scene(current_placeable_item):
+		placement_preview = SceneRegistry.get_scene(current_placeable_item).instantiate()
 		get_parent().add_child(placement_preview)
 		placement_preview.modulate = Color(0.5, 1, 0.5, 0.7)  # Green tint
 		
@@ -731,7 +727,7 @@ func handle_placement_mode() -> void:
 		
 		# If selected item changed and is placeable, switch to it
 		if selected_item != current_placeable_item:
-			if placeable_scenes.has(selected_item) and placeable_scenes[selected_item] != null:
+			if selected_item in placeable_items and SceneRegistry.has_scene(selected_item):
 				# Check if player has the new item
 				if Inventory.get_item_count(selected_item) > 0:
 					# Switch to new placeable item
@@ -739,7 +735,7 @@ func handle_placement_mode() -> void:
 					# Recreate the preview with the new item
 					if placement_preview:
 						placement_preview.queue_free()
-					placement_preview = placeable_scenes[current_placeable_item].instantiate()
+					placement_preview = SceneRegistry.get_scene(current_placeable_item).instantiate()
 					get_parent().add_child(placement_preview)
 					placement_preview.modulate = Color(0.5, 1, 0.5, 0.7)
 					disable_preview_collisions(placement_preview)
@@ -807,8 +803,8 @@ func place_machine() -> void:
 		# Remove item from inventory
 		if Inventory.remove_item(current_placeable_item, 1):
 			# Create actual object
-			if placeable_scenes.has(current_placeable_item) and placeable_scenes[current_placeable_item] != null:
-				var placed_object = placeable_scenes[current_placeable_item].instantiate()
+			if SceneRegistry.has_scene(current_placeable_item):
+				var placed_object = SceneRegistry.get_scene(current_placeable_item).instantiate()
 				get_parent().add_child(placed_object)
 				placed_object.global_position = placement_preview.global_position
 				

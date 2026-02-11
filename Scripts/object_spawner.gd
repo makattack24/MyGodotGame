@@ -21,7 +21,7 @@ var biome_manager: Node = null
 var noise: FastNoiseLite = FastNoiseLite.new()
 var spawned_objects: Dictionary = {}  # Track which tiles have objects spawned
 var spawned_object_nodes: Array[Node2D] = []  # References to spawned object nodes
-var loaded_scenes: Dictionary = {}  # Cache for loaded scenes
+# Scene loading is handled by SceneRegistry autoload
 
 # ==============================
 # INITIALIZATION
@@ -97,8 +97,8 @@ func _try_spawn_object(tile_pos: Vector2i) -> void:
 		return
 	
 	# Check if this is a bush and should spawn in clusters
-	var scene_path: String = chosen_object.get("scene", "")
-	var is_bush: bool = scene_path.contains("bush.tscn")
+	var scene_name: String = chosen_object.get("scene", "")
+	var is_bush: bool = scene_name == "bush"
 	
 	# Use bush spacing if it's a bush, otherwise use normal spacing
 	var spacing_to_use: float = min_spacing
@@ -120,11 +120,11 @@ func _try_spawn_object(tile_pos: Vector2i) -> void:
 
 func _spawn_single_object(object_data: Dictionary, world_pos: Vector2) -> Node2D:
 	"""Spawn a single object at the given position"""
-	var scene_path: String = object_data.get("scene", "")
-	if scene_path.is_empty():
+	var scene_name: String = object_data.get("scene", "")
+	if scene_name.is_empty():
 		return null
 	
-	var object_scene: PackedScene = _load_scene(scene_path)
+	var object_scene: PackedScene = SceneRegistry.get_scene(scene_name)
 	if not object_scene:
 		return null
 	
@@ -246,15 +246,4 @@ func cleanup_distant_objects(world_pos: Vector2) -> void:
 	for tile_pos in tiles_to_remove:
 		spawned_objects.erase(tile_pos)
 
-func _load_scene(scene_path: String) -> PackedScene:
-	"""Load a scene from path, with caching"""
-	if loaded_scenes.has(scene_path):
-		return loaded_scenes[scene_path]
-	
-	if ResourceLoader.exists(scene_path):
-		var scene: PackedScene = load(scene_path)
-		loaded_scenes[scene_path] = scene
-		return scene
-	else:
-		push_error("ObjectSpawner: Scene not found: " + scene_path)
-		return null
+

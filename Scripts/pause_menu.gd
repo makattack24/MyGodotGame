@@ -7,7 +7,7 @@ func _ready() -> void:
 	get_tree().paused = false
 	
 	# Load and add stats panel as child
-	var stats_scene = preload("res://Scenes/stats_panel.tscn")
+	var stats_scene = SceneRegistry.get_scene("stats_panel")
 	stats_panel = stats_scene.instantiate()
 	add_child(stats_panel)
 	

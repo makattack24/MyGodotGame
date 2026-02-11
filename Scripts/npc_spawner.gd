@@ -1,7 +1,7 @@
 extends Node2D
 
 # NPC spawning settings
-@export var npc_scene: PackedScene = preload("res://Scenes/npc.tscn")
+@export var npc_scene: PackedScene  # Assign in inspector, or loaded from SceneRegistry
 @export var max_npcs: int = 3
 @export var spawn_radius_min: float = 200.0
 @export var spawn_radius_max: float = 400.0
@@ -43,6 +43,10 @@ var spawn_timer: float = 0.0
 var player_ref: Node2D = null
 
 func _ready() -> void:
+	# Load NPC scene from registry if not assigned in inspector
+	if not npc_scene:
+		npc_scene = SceneRegistry.get_scene("npc")
+	
 	# Find player
 	player_ref = get_tree().get_first_node_in_group("Player")
 	

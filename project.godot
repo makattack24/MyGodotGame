@@ -22,6 +22,7 @@ Inventory="*uid://ch7g67cuqhk2s"
 PlayerSettings="*res://Scripts/player_settings.gd"
 FadeTransition="*uid://cjj4ttf2870px"
 GameStats="*res://Scripts/game_stats.gd"
+SceneRegistry="*res://Scripts/scene_registry.gd"
 
 [display]
 
@@ -32,7 +33,7 @@ window/stretch/mode="canvas_items"
 
 [editor_plugins]
 
-enabled=PackedStringArray("res://addons/godot_vscode_ide/plugin.cfg")
+enabled=PackedStringArray("res://addons/chromatica/plugin.cfg")
 
 [global_group]
 

@@ -15,9 +15,9 @@ var weather_label: Label = null
 var weather_icon_label: Label = null
 var weather_container: HBoxContainer = null
 
-# Preload scenes
-var inventory_slot_scene = preload("res://Scenes/inventory_slot.tscn")
-var minimap_scene = preload("res://Scenes/minimap.tscn")
+# Scenes — loaded via SceneRegistry autoload
+var inventory_slot_scene: PackedScene
+var minimap_scene: PackedScene
 
 # Maximum number of inventory slots
 @export var max_inventory_slots: int = 10
@@ -26,6 +26,10 @@ var minimap_scene = preload("res://Scenes/minimap.tscn")
 var selected_slot_index: int = 0
 
 func _ready() -> void:
+	# Load scenes from registry
+	inventory_slot_scene = SceneRegistry.get_scene("inventory_slot")
+	minimap_scene = SceneRegistry.get_scene("minimap")
+	
 	inventory_label = find_child("ItemCountList", true, false)
 	inventory_bar = find_child("InventoryBar", true, false)
 	# Setup notification label

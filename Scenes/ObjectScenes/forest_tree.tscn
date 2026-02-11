@@ -2,7 +2,7 @@
 
 [ext_resource type="Texture2D" uid="uid://cweeljsofoc46" path="res://Assets/FreeDownloadedAssets/FreeEnvironment/FreePack 2.png" id="1_0vwjc"]
 [ext_resource type="Script" uid="uid://cbe6ko12lqd3m" path="res://Scripts/tree.gd" id="1_y0lnq"]
-[ext_resource type="PackedScene" uid="uid://u118vcppdcdd" path="res://Scenes/wood_item.tscn" id="2_2yptp"]
+[ext_resource type="PackedScene" uid="uid://u118vcppdcdd" path="res://Scenes/ObjectScenes/wood_item.tscn" id="2_2yptp"]
 [ext_resource type="AudioStream" uid="uid://kl86c1mvqic6" path="res://Audio/chopping-wood-96709.mp3" id="3_wjmfy"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_rsuno"]

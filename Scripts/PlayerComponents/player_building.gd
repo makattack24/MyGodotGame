@@ -19,14 +19,8 @@ var build_mode_label: Label = null
 @export var placement_cooldown_time: float = 0.2
 var placement_cooldown: float = 0.0
 
-# Placeable scenes registry
-var placeable_scenes: Dictionary = {
-	"saw_mill": preload("res://Scenes/saw_mill_machine.tscn"),
-	"wall": preload("res://Scenes/wall.tscn"),
-	"campfire": preload("res://Scenes/campfire.tscn"),
-	"sleeping_bag": preload("res://Scenes/sleeping_bag.tscn"),
-	"fence": null
-}
+# Placeable item names — scenes are looked up via SceneRegistry autoload
+var placeable_items: Array[String] = ["saw_mill_machine", "wall", "campfire", "sleeping_bag", "fence"]
 
 func initialize(p_player: CharacterBody2D, p_anim_sprite: AnimatedSprite2D) -> void:
 	"""Initialize component with references"""
@@ -91,8 +85,8 @@ func place_object() -> void:
 	# Remove item from inventory
 	if Inventory.remove_item(current_placeable_item, 1):
 		# Create actual object
-		if placeable_scenes.has(current_placeable_item) and placeable_scenes[current_placeable_item] != null:
-			var placed_object = placeable_scenes[current_placeable_item].instantiate()
+		if SceneRegistry.has_scene(current_placeable_item):
+			var placed_object = SceneRegistry.get_scene(current_placeable_item).instantiate()
 			player.get_parent().add_child(placed_object)
 			placed_object.global_position = placement_preview.global_position
 			
@@ -148,7 +142,7 @@ func _enter_build_mode() -> void:
 	var selected_item = _get_selected_item_name()
 	
 	# Check if selected item is placeable
-	if placeable_scenes.has(selected_item) and placeable_scenes[selected_item] != null and Inventory.get_item_count(selected_item) > 0:
+	if selected_item in placeable_items and SceneRegistry.has_scene(selected_item) and Inventory.get_item_count(selected_item) > 0:
 		current_placeable_item = selected_item
 	else:
 		# Try to find first available placeable item
@@ -182,8 +176,8 @@ func _create_placement_preview() -> void:
 		placement_preview.queue_free()
 		placement_preview = null
 	
-	if current_placeable_item != "" and placeable_scenes.has(current_placeable_item) and placeable_scenes[current_placeable_item] != null:
-		placement_preview = placeable_scenes[current_placeable_item].instantiate()
+	if current_placeable_item != "" and SceneRegistry.has_scene(current_placeable_item):
+		placement_preview = SceneRegistry.get_scene(current_placeable_item).instantiate()
 		player.get_parent().add_child(placement_preview)
 		placement_preview.modulate = Color(0.5, 1, 0.5, 0.7)
 		_disable_preview_collisions(placement_preview)
@@ -193,7 +187,7 @@ func _update_selected_item() -> void:
 	var selected_item = _get_selected_item_name()
 	
 	if selected_item != current_placeable_item:
-		if placeable_scenes.has(selected_item) and placeable_scenes[selected_item] != null:
+		if selected_item in placeable_items and SceneRegistry.has_scene(selected_item):
 			if Inventory.get_item_count(selected_item) > 0:
 				current_placeable_item = selected_item
 				_create_placement_preview()
@@ -362,8 +356,8 @@ func _get_selected_item_name() -> String:
 
 func _find_first_available_placeable() -> String:
 	"""Find first available placeable item in inventory"""
-	for item_name in placeable_scenes.keys():
-		if placeable_scenes[item_name] != null and Inventory.get_item_count(item_name) > 0:
+	for item_name in placeable_items:
+		if SceneRegistry.has_scene(item_name) and Inventory.get_item_count(item_name) > 0:
 			print("Auto-selected ", item_name, " for placement")
 			return item_name
 	print("Build mode: No placeable items available!")

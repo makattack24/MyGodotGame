@@ -32,8 +32,8 @@ var biome_data: Dictionary = {
 			Vector2i(10, 1), Vector2i(10, 2), Vector2i(11, 1), Vector2i(11, 2)
 		],
 		"objects": [
-			{"scene": "res://Scenes/forest_tree.tscn", "spawn_chance": 0.3, "weight": 0.6},
-			{"scene": "res://Scenes/bush.tscn", "spawn_chance": 0.22, "weight": 0.4, "cluster_size": 4}
+			{"scene": "forest_tree", "spawn_chance": 0.3, "weight": 0.6},
+			{"scene": "bush", "spawn_chance": 0.22, "weight": 0.4, "cluster_size": 4}
 		],
 		"min_object_spacing": 40.0,
 		"bush_spacing": 20.0,
@@ -59,8 +59,8 @@ var biome_data: Dictionary = {
 			Vector2i(5, 9),
 		],
 		"objects": [
-			{"scene": "res://Scenes/forest_tree.tscn", "spawn_chance": 0.4, "weight": 0.7},
-			{"scene": "res://Scenes/bush.tscn", "spawn_chance": 0.28, "weight": 0.3, "cluster_size": 4}
+			{"scene": "forest_tree", "spawn_chance": 0.4, "weight": 0.7},
+			{"scene": "bush", "spawn_chance": 0.28, "weight": 0.3, "cluster_size": 4}
 		],
 		"min_object_spacing": 35.0,
 		"bush_spacing": 18.0,
@@ -76,8 +76,8 @@ var biome_data: Dictionary = {
 			Vector2i(0, 9), Vector2i(1, 9), Vector2i(2, 9), Vector2i(3, 9), Vector2i(4, 9), Vector2i(5, 9),
 		],
 		"objects": [
-			{"scene": "res://Scenes/forest_tree.tscn", "spawn_chance": 0.45, "weight": 0.8},
-			{"scene": "res://Scenes/bush.tscn", "spawn_chance": 0.32, "weight": 0.2, "cluster_size": 5}
+			{"scene": "forest_tree", "spawn_chance": 0.45, "weight": 0.8},
+			{"scene": "bush", "spawn_chance": 0.32, "weight": 0.2, "cluster_size": 5}
 		],
 		"min_object_spacing": 30.0,
 		"bush_spacing": 16.0,
@@ -93,9 +93,9 @@ var biome_data: Dictionary = {
 			Vector2i(10, 1), Vector2i(10, 2), Vector2i(11, 1), Vector2i(11, 2)
 		],
 		"objects": [
-			{"scene": "res://Scenes/dead_tree.tscn", "spawn_chance": 0.25, "weight": 0.5},
-			{"scene": "res://Scenes/bush.tscn", "spawn_chance": 0.2, "weight": 0.3, "cluster_size": 3},
-			{"scene": "res://Scenes/rock.tscn", "spawn_chance": 0.18, "weight": 0.2}
+			{"scene": "dead_tree", "spawn_chance": 0.25, "weight": 0.5},
+			{"scene": "bush", "spawn_chance": 0.2, "weight": 0.3, "cluster_size": 3},
+			{"scene": "rock", "spawn_chance": 0.18, "weight": 0.2}
 		],
 		"min_object_spacing": 45.0,
 		"bush_spacing": 20.0,
@@ -111,8 +111,8 @@ var biome_data: Dictionary = {
 			Vector2i(10, 1), Vector2i(10, 2), Vector2i(11, 1), Vector2i(11, 2)
 		],
 		"objects": [
-			{"scene": "res://Scenes/forest_tree.tscn", "spawn_chance": 0.3, "weight": 0.7},
-			{"scene": "res://Scenes/rock.tscn", "spawn_chance": 0.25, "weight": 0.3}
+			{"scene": "forest_tree", "spawn_chance": 0.3, "weight": 0.7},
+			{"scene": "rock", "spawn_chance": 0.25, "weight": 0.3}
 		],
 		"min_object_spacing": 45.0,
 		"enemy_spawn_chance": 0.3,
@@ -138,9 +138,9 @@ var biome_data: Dictionary = {
 
 		],
 		"objects": [
-			{"scene": "res://Scenes/cactus.tscn", "spawn_chance": 0.25, "weight": 0.6},
-			{"scene": "res://Scenes/rock.tscn", "spawn_chance": 0.2, "weight": 0.3},
-			{"scene": "res://Scenes/dead_tree.tscn", "spawn_chance": 0.1, "weight": 0.1}
+			{"scene": "cactus", "spawn_chance": 0.25, "weight": 0.6},
+			{"scene": "rock", "spawn_chance": 0.2, "weight": 0.3},
+			{"scene": "dead_tree", "spawn_chance": 0.1, "weight": 0.1}
 		],
 		"min_object_spacing": 50.0,
 		"enemy_spawn_chance": 0.4,
@@ -155,8 +155,8 @@ var biome_data: Dictionary = {
 			Vector2i(10, 1), Vector2i(10, 2), Vector2i(11, 1), Vector2i(11, 2)
 		],
 		"objects": [
-			{"scene": "res://Scenes/rock.tscn", "spawn_chance": 0.25, "weight": 0.7},
-			{"scene": "res://Scenes/dead_tree.tscn", "spawn_chance": 0.15, "weight": 0.3}
+			{"scene": "rock", "spawn_chance": 0.25, "weight": 0.7},
+			{"scene": "dead_tree", "spawn_chance": 0.15, "weight": 0.3}
 		],
 		"min_object_spacing": 60.0,
 		"enemy_spawn_chance": 0.6,
@@ -170,7 +170,7 @@ var biome_data: Dictionary = {
 			Vector2i(5, 3), Vector2i(6, 1), Vector2i(6, 2), Vector2i(6, 3)
 		],
 		"objects": [
-			{"scene": "res://Scenes/rock.tscn", "spawn_chance": 0.3, "weight": 1.0}
+			{"scene": "rock", "spawn_chance": 0.3, "weight": 1.0}
 		],
 		"min_object_spacing": 60.0,
 		"enemy_spawn_chance": 0.7,

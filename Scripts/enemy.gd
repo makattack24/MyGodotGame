@@ -58,10 +58,10 @@ var shadow: Polygon2D = null
 # Base sprite scale (adjust to fit your sprite size)
 const BASE_SCALE := Vector2(1.1, 1.1)
 
-# Loot drop scenes
-var coin_scene = preload("res://Scenes/coin_item.tscn")
-var heart_scene = preload("res://Scenes/heart_item.tscn")
-var slimeball_scene = preload("res://Scenes/slimeball.tscn")
+# Loot drop scenes — loaded via SceneRegistry autoload
+var coin_scene: PackedScene
+var heart_scene: PackedScene
+var slimeball_scene: PackedScene
 
 func _physics_process(_delta: float) -> void:
 	# Update attack cooldown
@@ -491,6 +491,11 @@ func set_camp_position(camp_pos: Vector2) -> void:
 	camp_position = camp_pos
 
 func _ready() -> void:
+	# Load loot scenes from registry
+	coin_scene = SceneRegistry.get_scene("coin_item")
+	heart_scene = SceneRegistry.get_scene("heart_item")
+	slimeball_scene = SceneRegistry.get_scene("slimeball")
+	
 	# Add enemy to the Enemies group for player attack detection
 	add_to_group("Enemies")
 	#print("Enemy added to Enemies group!")
