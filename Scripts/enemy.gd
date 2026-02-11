@@ -21,6 +21,9 @@ extends CharacterBody2D
 @export var min_coins: int = 1                 # Minimum coins to drop
 @export var max_coins: int = 3                 # Maximum coins to drop
 @export var heart_drop_chance: float = 0.15    # Chance to drop a heart (0.0 to 1.0)
+@export var slimeball_drop_chance: float = 0.75  # Chance to drop slimeballs (0.0 to 1.0)
+@export var min_slimeballs: int = 1              # Minimum slimeballs to drop
+@export var max_slimeballs: int = 2              # Maximum slimeballs to drop
 
 # Reference to the player (set this in the Inspector or dynamically during gameplay)
 @export var player: CharacterBody2D                     # Target player node to follow
@@ -58,6 +61,7 @@ const BASE_SCALE := Vector2(1.1, 1.1)
 # Loot drop scenes
 var coin_scene = preload("res://Scenes/coin_item.tscn")
 var heart_scene = preload("res://Scenes/heart_item.tscn")
+var slimeball_scene = preload("res://Scenes/slimeball.tscn")
 
 func _physics_process(_delta: float) -> void:
 	# Update attack cooldown
@@ -374,6 +378,9 @@ func die() -> void:
 	# Drop heart (chance based)
 	drop_heart()
 	
+	# Drop slimeballs
+	drop_slimeballs()
+	
 	# Detach and play death particle effect
 	if death_effect and is_instance_valid(death_effect) and death_effect.get_parent() == self:
 		var scene_root = get_tree().root
@@ -461,6 +468,19 @@ func drop_heart() -> void:
 		
 		# Add to parent (deferred to avoid issues)
 		get_parent().add_child.call_deferred(heart)
+
+func drop_slimeballs() -> void:
+	"""Drop slimeballs when enemy dies"""
+	if randf() <= slimeball_drop_chance:
+		var num_slimeballs = randi_range(min_slimeballs, max_slimeballs)
+		for i in range(num_slimeballs):
+			var slimeball = slimeball_scene.instantiate()
+			var offset = Vector2(
+				randf_range(-12, 12),
+				randf_range(-12, 12)
+			)
+			slimeball.global_position = global_position + offset
+			get_parent().add_child.call_deferred(slimeball)
 
 func set_player_reference(player_ref: Node2D) -> void:
 	# Set the player reference for this enemy

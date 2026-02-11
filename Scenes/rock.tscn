@@ -3,7 +3,7 @@
 [ext_resource type="Texture2D" uid="uid://cweeljsofoc46" path="res://Assets/FreeDownloadedAssets/FreeEnvironment/FreePack 2.png" id="1_rock"]
 [ext_resource type="PackedScene" uid="uid://npun6utb7mql" path="res://Scenes/rock_dropped_from_mining.tscn" id="2_1rhfe"]
 [ext_resource type="Script" uid="uid://br6c5nsy3hre5" path="res://Scripts/rock.gd" id="2_rock_script"]
-[ext_resource type="AudioStream" uid="uid://dkrj8dkt25h76" path="res://Audio/sennafoxy-metal-clicking-240573.mp3" id="4_1rhfe"]
+[ext_resource type="AudioStream" uid="uid://dbeue4v4sgpna" path="res://Audio/stonedropsound.mp3" id="4_1rhfe"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_lgx4v"]
 size = Vector2(98, 65)

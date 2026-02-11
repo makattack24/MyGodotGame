@@ -1,0 +1,22 @@
+[gd_scene format=3 uid="uid://dpehjhbwxbs4s"]
+
+[ext_resource type="Texture2D" uid="uid://dglma7vca0rji" path="res://Assets/slimeball.png" id="1_eckd1"]
+[ext_resource type="Script" uid="uid://gmnobfur3uio" path="res://Scripts/slimeball.gd" id="1_k1nt5"]
+[ext_resource type="AudioStream" uid="uid://bygq8ub5sngoa" path="res://Audio/slimeballdrop.mp3" id="2_n87uw"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_eckd1"]
+radius = 7.071068
+
+[node name="Slimeball" type="Node2D" unique_id=1308878110]
+script = ExtResource("1_k1nt5")
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=540788917]
+texture = ExtResource("1_eckd1")
+
+[node name="Area2D" type="Area2D" parent="." unique_id=317149575]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D" unique_id=1901422239]
+shape = SubResource("CircleShape2D_eckd1")
+
+[node name="PickupSound" type="AudioStreamPlayer2D" parent="." unique_id=1826912871]
+stream = ExtResource("2_n87uw")

@@ -21,3 +21,6 @@ shape = SubResource("RectangleShape2D_b20rx")
 
 [node name="DropSound" type="AudioStreamPlayer2D" parent="." unique_id=1266804898]
 stream = ExtResource("3_05erf")
+
+[node name="PickupSound" type="AudioStreamPlayer2D" parent="." unique_id=1894325560]
+stream = ExtResource("3_05erf")

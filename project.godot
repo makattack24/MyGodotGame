@@ -30,6 +30,10 @@ window/size/viewport_height=540
 window/size/mode=3
 window/stretch/mode="canvas_items"
 
+[editor_plugins]
+
+enabled=PackedStringArray("res://addons/godot_vscode_ide/plugin.cfg")
+
 [global_group]
 
 Enemies=""

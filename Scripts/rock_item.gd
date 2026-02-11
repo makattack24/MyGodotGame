@@ -4,17 +4,10 @@ extends Node2D
 
 @export var item_name: String = "rock"
 @export var pickup_amount: int = 1
-
+@onready var pickup_sound: AudioStreamPlayer2D = $PickupSound
 @onready var pickup_area: Area2D = $Area2D
-@onready var audio_player: AudioStreamPlayer2D = null
 
 func _ready() -> void:
-	# Get audio player if it exists
-	if has_node("PickupSound"):
-		audio_player = $PickupSound
-	elif has_node("AudioStreamPlayer2D"):
-		audio_player = $AudioStreamPlayer2D
-	
 	# Play drop sound when spawned
 	if has_node("DropSound"):
 		$DropSound.play()
@@ -36,18 +29,19 @@ func pickup_item() -> void:
 	if get_node_or_null("/root/GameStats"):
 		GameStats.record_item_collected("rock")
 
-	if audio_player and audio_player.stream:
-		var scene_root = get_tree().root
-		remove_child(audio_player)
-		scene_root.add_child(audio_player)
-		audio_player.global_position = global_position
-		
-		# Hide sprite so it looks picked up
-		if has_node("Sprite2D"):
-			$Sprite2D.visible = false
-		
-		pickup_area.set_deferred("monitoring", false)
-		audio_player.play()
-		audio_player.finished.connect(func(): queue_free())
+	# Disable further pickups and hide the sprite immediately
+	pickup_area.set_deferred("monitoring", false)
+	if has_node("Sprite2D"):
+		$Sprite2D.visible = false
+
+	if pickup_sound and pickup_sound.stream:
+		# Reparent the sound so it keeps playing after we free this node
+		var pos = global_position
+		remove_child(pickup_sound)
+		get_tree().root.add_child(pickup_sound)
+		pickup_sound.global_position = pos
+		pickup_sound.play()
+		pickup_sound.finished.connect(pickup_sound.queue_free)
+		queue_free()
 	else:
 		queue_free()
