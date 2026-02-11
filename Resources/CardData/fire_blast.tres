@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="CardData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://Scripts/card_data.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+card_name = "fire_blast"
+display_name = "Fire Blast"
+cost = 3
+ability = "Damage"
+description = "Deal 5 damage to all enemies"
+card_type = "Fire"

@@ -200,11 +200,6 @@ func _choose_object_to_spawn(object_list: Array, tile_pos: Vector2i) -> Dictiona
 
 func _can_spawn_object_here(world_pos: Vector2, min_spacing: float) -> bool:
 	"""Check if we can spawn an object at this position"""
-	# Check if position is in a chasm
-	if ground_layer and ground_layer.has_method("is_position_in_chasm"):
-		if ground_layer.is_position_in_chasm(world_pos):
-			return false
-	
 	# Check spacing from nearby objects only (using squared distance to avoid sqrt)
 	var spacing_sq: float = min_spacing * min_spacing
 	for obj in spawned_object_nodes:

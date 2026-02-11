@@ -1,6 +1,7 @@
 extends CanvasLayer
 
 var stats_panel: CanvasLayer = null
+var card_library: CanvasLayer = null
 
 func _ready() -> void:
 	visible = false
@@ -10,6 +11,12 @@ func _ready() -> void:
 	var stats_scene = SceneRegistry.get_scene("stats_panel")
 	stats_panel = stats_scene.instantiate()
 	add_child(stats_panel)
+	
+	# Load and add card library as child
+	var library_scene = SceneRegistry.get_scene("card_library")
+	if library_scene:
+		card_library = library_scene.instantiate()
+		add_child(card_library)
 	
 	# Update toggle state to match music state
 	var music_toggle = $VBoxContainer/MusicToggle
@@ -37,16 +44,29 @@ func _ready() -> void:
 func _input(event: InputEvent) -> void:
 	if event.is_action_pressed("ui_cancel"):
 		if get_tree().paused:
-			visible = false
-			get_tree().paused = false
+			_unpause()
 		else:
-			visible = true
-			get_tree().paused = true
+			_pause()
+
+
+func _pause() -> void:
+	visible = true
+	get_tree().paused = true
+	var hud = get_tree().current_scene.get_node_or_null("HUD")
+	if hud:
+		hud.visible = false
+
+
+func _unpause() -> void:
+	visible = false
+	get_tree().paused = false
+	var hud = get_tree().current_scene.get_node_or_null("HUD")
+	if hud:
+		hud.visible = true
 
 
 func _on_resume_pressed() -> void:
-	visible = false
-	get_tree().paused = false
+	_unpause()
 
 
 func _on_quit_pressed() -> void:
@@ -83,4 +103,13 @@ func _on_stats_pressed() -> void:
 		$VBoxContainer.visible = false
 		stats_panel.show_stats()
 		await stats_panel.closed
+		$VBoxContainer.visible = true
+
+
+func _on_card_library_pressed() -> void:
+	if card_library:
+		$VBoxContainer.visible = false
+		card_library.show_library()
+		await card_library.closed
+		$VBoxContainer.visible = true
 		$VBoxContainer.visible = true

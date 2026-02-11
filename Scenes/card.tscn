@@ -1,0 +1,79 @@
+[gd_scene load_steps=3 format=3 uid="uid://j1u3oj5pkbro"]
+
+[ext_resource type="Texture2D" uid="uid://dqedwigd7awwh" path="res://Assets/woodCard.png" id="1_0qqmn"]
+[ext_resource type="Script" uid="uid://kv2jhufc8f0u" path="res://Scripts/card.gd" id="2_card"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_card"]
+size = Vector2(52, 80)
+
+[node name="Card" type="Node2D" unique_id=882431104]
+script = ExtResource("2_card")
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=1468919855]
+scale = Vector2(2, 2)
+texture = ExtResource("1_0qqmn")
+
+[node name="Area2D" type="Area2D" parent="."]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D"]
+shape = SubResource("RectangleShape2D_card")
+
+[node name="CardLayout" type="Control" parent="." unique_id=24264169]
+layout_mode = 3
+anchors_preset = 0
+offset_left = -32.0
+offset_top = -48.0
+offset_right = 32.0
+offset_bottom = 48.0
+
+[node name="CardCost" type="Label" parent="CardLayout" unique_id=2139921117]
+layout_mode = 1
+anchors_preset = -1
+anchor_right = 0.35
+anchor_bottom = 0.25
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_font_sizes/font_size = 10
+text = "1"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="CardAbility" type="Label" parent="CardLayout" unique_id=577205877]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.35
+anchor_right = 1.0
+anchor_bottom = 0.25
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_font_sizes/font_size = 6
+text = "Damage"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="CardDescription" type="Label" parent="CardLayout" unique_id=554307325]
+layout_mode = 1
+anchors_preset = -1
+anchor_top = 0.55
+anchor_right = 1.0
+anchor_bottom = 0.82
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_font_sizes/font_size = 5
+text = "Deal 1 damage"
+horizontal_alignment = 1
+vertical_alignment = 1
+autowrap_mode = 2
+
+[node name="CardType" type="Label" parent="CardLayout" unique_id=523292382]
+layout_mode = 1
+anchors_preset = -1
+anchor_top = 0.82
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_font_sizes/font_size = 7
+text = "Wood"
+horizontal_alignment = 1
+vertical_alignment = 2

@@ -1,6 +1,7 @@
 extends Node
 
 signal inventory_updated  # Signal emitted when inventory is updated
+signal card_discovered(card_name: String)  # Signal emitted when a new card is discovered
 
 var inventory: Dictionary = {
     "wood": 0,
@@ -12,7 +13,10 @@ var inventory: Dictionary = {
     "wall": 40,
     "campfire": 10,
     "sleeping_bag": 5,
-    "slimeball": 0
+    "slimeball": 0,
+    "wood_strike": 0,
+    "wood_shield": 0,
+    "fire_blast": 0
 }
 
 # Item textures - add your item textures here
@@ -26,9 +30,15 @@ var item_textures: Dictionary = {
     "saw_mill": preload("res://Assets/saw mill machine.png"),
     "campfire": preload("res://Assets/campfire.png"),
     "sleeping_bag": preload("res://Assets/sleepingbag.png"),
-    "slimeball": preload("res://Assets/slimeball.png")
+    "slimeball": preload("res://Assets/slimeball.png"),
+    "wood_strike": preload("res://Assets/woodCard.png"),
+    "wood_shield": preload("res://Assets/woodCard.png"),
+    "fire_blast": preload("res://Assets/woodCard.png")
     # wall texture will be added from sprite sheet in _ready
 }
+
+# Discovered cards — tracks which unique cards the player has found
+var discovered_cards: Dictionary = {}  # card_name -> true
 
 # Helper function to create texture from sprite sheet region
 func create_atlas_texture(sprite_sheet_path: String, region: Rect2) -> AtlasTexture:
@@ -77,10 +87,28 @@ func print_inventory() -> void:
     for item in inventory.keys():
         print(item, ": ", inventory[item])
 
+# ==============================
+# CARD DISCOVERY
+# ==============================
+
+func discover_card(card_name: String) -> void:
+    """Mark a card as discovered. Only emits signal on first discovery."""
+    if not discovered_cards.has(card_name):
+        discovered_cards[card_name] = true
+        card_discovered.emit(card_name)
+        print("[Inventory] New card discovered: ", card_name)
+
+func is_card_discovered(card_name: String) -> bool:
+    return discovered_cards.has(card_name)
+
+func get_discovered_card_names() -> Array:
+    return discovered_cards.keys()
+
 # Save inventory data
 func save() -> Dictionary:
     return {
-        "inventory": inventory.duplicate()
+        "inventory": inventory.duplicate(),
+        "discovered_cards": discovered_cards.duplicate()
     }
 
 # Load inventory data
@@ -88,6 +116,8 @@ func load_data(data: Dictionary) -> void:
     if data.has("inventory"):
         inventory = data["inventory"].duplicate()
         emit_signal("inventory_updated")
+    if data.has("discovered_cards"):
+        discovered_cards = data["discovered_cards"].duplicate()
 
 func show_pickup_text(item_name: String, amount: int, position: Vector2) -> void:
     """Creates a floating text effect at the given position"""
